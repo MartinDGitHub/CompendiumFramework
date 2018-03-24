@@ -7,6 +7,8 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Events;
 
 namespace Web
 {
@@ -14,12 +16,35 @@ namespace Web
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger();
+
+            try
+            {
+                Log.Information("Starting web host");
+                BuildWebHost(args).Run();
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Host terminated unexpectedly");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .UseSerilog()
                 .Build();
     }
 }
