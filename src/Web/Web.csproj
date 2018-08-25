@@ -5,6 +5,7 @@
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <IsPackable>false</IsPackable>
+    <UserSecretsId>5b142794-66b1-4fe4-b2ce-4e36bbf116de</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
