@@ -17,6 +17,9 @@
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.0.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
+    <PackageReference Include="SimpleInjector" Version="4.4.3" />
+    <PackageReference Include="SimpleInjector.Integration.AspNetCore.Mvc" Version="4.4.3" />
+    <PackageReference Include="SimpleInjector.Packaging" Version="4.4.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,8 +32,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core\Core.csproj" />
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\CF.Core\CF.Core.csproj" />
+    <ProjectReference Include="..\CF.Infrastructure\CF.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

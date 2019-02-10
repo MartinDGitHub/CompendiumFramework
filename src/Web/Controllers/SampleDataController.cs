@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CF.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Web.Controllers
@@ -15,6 +16,13 @@ namespace Web.Controllers
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
+
+        private readonly IWeatherForecastService _weatherForecastService;
+
+        public SampleDataController(IWeatherForecastService weatherForecastService)
+        {
+            this._weatherForecastService = weatherForecastService ?? throw new ArgumentNullException(nameof(weatherForecastService));
+        }
 
         [HttpGet("[action]")]
         public IEnumerable<WeatherForecast> WeatherForecasts()
