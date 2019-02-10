@@ -8,7 +8,7 @@ using System.Text;
 
 namespace CF.Infrastructure.DI
 {
-    public class InfrastructureRegistrations: IRegistrations
+    class InfrastructureRegistrations: IRegistrations
     {
         public void RegisterServices(IRegistrar registrar)
         {

@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Web.DI
 {
-    public class WebRegistrations: IRegistrations
+    class WebRegistrations: IRegistrations
     {
         public void RegisterServices(IRegistrar registrar)
         {

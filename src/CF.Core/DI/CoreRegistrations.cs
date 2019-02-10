@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CF.Core.DI
 {
-    public class CoreRegistrations: IRegistrations
+    class CoreRegistrations: IRegistrations
     {
         public void RegisterServices(IRegistrar registrar)
         {
