@@ -12,7 +12,7 @@ namespace CF.Core.DI
     {
         public string Foo { get; private set; }
 
-        public FooConfig(IOptionsMonitor<CFOptions> options)
+        public FooConfig(IOptionsMonitor<RootOptions> options)
         {
             this.Foo = options.CurrentValue.FooOptions.Foo;
         }

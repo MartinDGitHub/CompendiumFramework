@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CF.Core.Domain.Weather;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,6 +7,6 @@ namespace CF.Core.Services
 {
     public interface IWeatherForecastService
     {
-        bool Test { get; }
+        IEnumerable<WeatherForecast> GetWeatherForecasts();
     }
 }

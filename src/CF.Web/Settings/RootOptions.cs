@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Web.Settings
 {
-    class CFOptions
+    class RootOptions
     {
         public FooOptions FooOptions { get; set;}
     }

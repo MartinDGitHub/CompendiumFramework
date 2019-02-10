@@ -5,11 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SimpleInjector" Version="4.4.3" />
-    <PackageReference Include="SimpleInjector.Packaging" Version="4.4.3" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Repositories\" />
   </ItemGroup>
 
