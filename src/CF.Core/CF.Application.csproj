@@ -8,4 +8,8 @@
     <Folder Include="Repositories\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CF.Domain\CF.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

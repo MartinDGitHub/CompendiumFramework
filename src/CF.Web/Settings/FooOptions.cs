@@ -1,4 +1,4 @@
-﻿using CF.Core.Config;
+﻿using CF.Application.Config;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;

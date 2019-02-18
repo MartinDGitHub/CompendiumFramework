@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using CF.Core.Config;
+using CF.Application.Config;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -18,7 +18,7 @@ namespace Web.Controllers
             this._logger, 
             this._fooConfig) = (
             logger ?? throw new ArgumentNullException(nameof(logger)),
-            fooConfig ?? throw new ArgumentNullException(nameof(logger)));
+            fooConfig ?? throw new ArgumentNullException(nameof(fooConfig)));
 
         [HttpGet]
         public IActionResult Index()

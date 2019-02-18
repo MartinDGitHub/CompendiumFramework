@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CF.Core.DI
+namespace CF.Application.DI
 {
     public interface IRegistrations
     {

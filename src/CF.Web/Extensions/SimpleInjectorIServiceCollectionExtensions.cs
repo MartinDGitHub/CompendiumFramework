@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleInjector;
 using SimpleInjector.Integration.AspNetCore.Mvc;
+using SimpleInjector.Integration.Web;
 using SimpleInjector.Lifestyles;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace Web.Extensions
     {
         public static void IntegrateSimpleInjector(this IServiceCollection services, Container container)
         {
-            container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
+            container.Options.DefaultScopedLifestyle = new WebRequestLifestyle();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 

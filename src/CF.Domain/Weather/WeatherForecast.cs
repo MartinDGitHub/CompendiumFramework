@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CF.Core.Domain.Weather
+namespace CF.Domain.Weather
 {
     public class WeatherForecast
     {

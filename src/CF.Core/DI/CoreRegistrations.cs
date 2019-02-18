@@ -1,9 +1,9 @@
-﻿using CF.Core.Services;
+﻿using CF.Application.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CF.Core.DI
+namespace CF.Application.DI
 {
     class CoreRegistrations: IRegistrations
     {

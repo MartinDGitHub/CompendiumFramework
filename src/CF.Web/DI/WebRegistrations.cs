@@ -1,6 +1,6 @@
-﻿using CF.Core.Config;
-using CF.Core.DI;
-using CF.Core.Services;
+﻿using CF.Application.Config;
+using CF.Application.DI;
+using CF.Application.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;

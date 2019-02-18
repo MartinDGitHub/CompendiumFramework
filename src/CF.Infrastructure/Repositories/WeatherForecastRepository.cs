@@ -1,5 +1,5 @@
-﻿using CF.Core.Domain.Weather;
-using CF.Core.Repositories;
+﻿using CF.Domain.Weather;
+using CF.Application.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;

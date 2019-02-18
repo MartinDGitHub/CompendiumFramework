@@ -1,5 +1,5 @@
-﻿using CF.Core.Config;
-using CF.Core.DI;
+﻿using CF.Application.Config;
+using CF.Application.DI;
 using Microsoft.AspNetCore.Builder;
 using SimpleInjector;
 using System;

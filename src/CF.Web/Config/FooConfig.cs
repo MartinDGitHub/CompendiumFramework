@@ -1,4 +1,4 @@
-﻿using CF.Core.Config;
+﻿using CF.Application.Config;
 using Microsoft.Extensions.Options;
 using System;
 using System.Configuration;
@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using Web.Settings;
 
-namespace CF.Core.DI
+namespace CF.Application.DI
 {
     class FooConfig : IFooConfig
     {

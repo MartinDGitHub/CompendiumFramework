@@ -1,5 +1,6 @@
-﻿using CF.Core.DI;
+﻿using CF.Application.DI;
 using SimpleInjector;
+using SimpleInjector.Integration.Web;
 using System;
 using System.Collections.Generic;
 using System.Text;

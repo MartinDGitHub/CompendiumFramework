@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CF.Core.Domain.Weather;
-using CF.Core.Services;
+using CF.Application.Config;
+using CF.Domain.Weather;
+using CF.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Web.Controllers
@@ -14,10 +15,12 @@ namespace Web.Controllers
     public class SampleDataController : ControllerBase
     {
         private readonly IWeatherForecastService _weatherForecastService;
+        private IFooConfig _fooConfig;
 
-        public SampleDataController(IWeatherForecastService weatherForecastService)
+        public SampleDataController(IWeatherForecastService weatherForecastService, IFooConfig fooConfig)
         {
             this._weatherForecastService = weatherForecastService ?? throw new ArgumentNullException(nameof(weatherForecastService));
+            this._fooConfig = fooConfig ?? throw new ArgumentNullException(nameof(fooConfig));
         }
 
         [HttpGet("[action]")]

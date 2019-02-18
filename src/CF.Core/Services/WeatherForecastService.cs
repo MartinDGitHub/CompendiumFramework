@@ -1,11 +1,11 @@
-﻿using CF.Core.Config;
-using CF.Core.Domain.Weather;
-using CF.Core.Repositories;
+﻿using CF.Application.Config;
+using CF.Domain.Weather;
+using CF.Application.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CF.Core.Services
+namespace CF.Application.Services
 {
     internal class WeatherForecastService : IWeatherForecastService
     {

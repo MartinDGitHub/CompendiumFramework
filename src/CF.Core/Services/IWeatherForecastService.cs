@@ -1,9 +1,9 @@
-﻿using CF.Core.Domain.Weather;
+﻿using CF.Domain.Weather;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CF.Core.Services
+namespace CF.Application.Services
 {
     public interface IWeatherForecastService
     {
