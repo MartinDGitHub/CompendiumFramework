@@ -17,7 +17,7 @@ namespace Web.Extensions
     {
         public static void IntegrateSimpleInjector(this IServiceCollection services, Container container)
         {
-            container.Options.DefaultScopedLifestyle = new WebRequestLifestyle();
+            container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 

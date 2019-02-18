@@ -1,6 +1,7 @@
 ﻿using CF.Application.DI;
 using CF.Application.Repositories;
 using CF.Application.Services;
+using CF.Common.DI;
 using CF.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;

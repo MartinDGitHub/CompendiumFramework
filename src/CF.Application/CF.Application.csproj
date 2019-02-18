@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CF.Common\CF.Common.csproj" />
     <ProjectReference Include="..\CF.Domain\CF.Domain.csproj" />
   </ItemGroup>
 

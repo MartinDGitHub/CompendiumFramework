@@ -21,7 +21,6 @@
     <PackageReference Include="SimpleInjector.Integration.AspNetCore.Mvc" Version="4.4.3" />
     <PackageReference Include="SimpleInjector.Integration.AspNetCore.Mvc.Core" Version="4.4.3" />
     <PackageReference Include="SimpleInjector.Integration.Web" Version="4.4.3" />
-    <PackageReference Include="SimpleInjector.Packaging" Version="4.4.3" />
   </ItemGroup>
 
   <ItemGroup>

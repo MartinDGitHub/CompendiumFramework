@@ -4,23 +4,29 @@ using CF.Application.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using CF.Common.Messaging;
+using System.Threading.Tasks;
 
 namespace CF.Application.Services
 {
     internal class WeatherForecastService : IWeatherForecastService
     {
-        private readonly IFooConfig _fooConfig;
         private readonly IWeatherForecastRepository _weatherForecastRepository;
+        private readonly IScopedMessageRecorder _messageRecorder;
+        private readonly IFooConfig _fooConfig;
 
-        public WeatherForecastService(IWeatherForecastRepository weatherForecastRepository, IFooConfig fooConfig)
+        public WeatherForecastService(IWeatherForecastRepository weatherForecastRepository, IScopedMessageRecorder messageRecorder, IFooConfig fooConfig)
         {
-            this._fooConfig = fooConfig ?? throw new ArgumentNullException(nameof(fooConfig));
             this._weatherForecastRepository = weatherForecastRepository ?? throw new ArgumentNullException(nameof(weatherForecastRepository));
+            this._messageRecorder = messageRecorder ?? throw new ArgumentNullException(nameof(messageRecorder));
+            this._fooConfig = fooConfig ?? throw new ArgumentNullException(nameof(fooConfig));
         }
 
-        public IEnumerable<WeatherForecast> GetWeatherForecasts()
+        public async Task<IEnumerable<WeatherForecast>> GetWeatherForecastsAsync()
         {
-            return this._weatherForecastRepository.ReadWeatherForecasts();
+            this._messageRecorder.Record(MessageSeverity.Info, "Services checking in!");
+
+            return await this._weatherForecastRepository.ReadWeatherForecastsAsync();
         }
     }
 }

@@ -1,11 +1,12 @@
 ﻿using CF.Application.Services;
+using CF.Common.DI;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace CF.Application.DI
 {
-    class CoreRegistrations: IRegistrations
+    class CoreRegistrations : IRegistrations
     {
         public void RegisterServices(IRegistrar registrar)
         {

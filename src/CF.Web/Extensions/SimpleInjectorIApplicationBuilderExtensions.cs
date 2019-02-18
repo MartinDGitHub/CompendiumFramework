@@ -1,6 +1,9 @@
 ﻿using CF.Application.Config;
 using CF.Application.DI;
+using CF.Common.DI;
+using CF.Web.Extensions;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using SimpleInjector;
 using System;
 using System.Collections.Generic;
@@ -14,7 +17,7 @@ namespace Web.Extensions
 {
     public static class SimpleInjectorIApplicationBuilderExtensions
     {
-        public static void InitializeContainer(this IApplicationBuilder app, Container container)
+        public static void InitializeContainer(this IApplicationBuilder app, IHostingEnvironment env, Container container)
         {
             // Wire up for MVC components.
             container.RegisterMvcControllers(app);
@@ -36,6 +39,14 @@ namespace Web.Extensions
                 .Select(type => (IRegistrations)Activator.CreateInstance(type))
                 .ToList()
                 .ForEach(registrations => registrations.RegisterServices(registrar));
+
+            // Wire up middlewares
+            app.UseMiddleware<SimpleInjectorRequestScopedMiddleware>(container);
+
+            if (env.IsDevelopment())
+            {
+                container.Verify();
+            }
         }
     }
 }

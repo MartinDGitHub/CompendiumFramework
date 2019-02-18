@@ -1,20 +1,17 @@
-﻿using CF.Application.Config;
-using CF.Application.DI;
-using CF.Application.Services;
-using CF.Common.DI;
+﻿using CF.Common.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Web.DI
+namespace CF.Common.DI
 {
-    class WebRegistrations: IRegistrations
+    class CommonRegistrations : IRegistrations
     {
         public void RegisterServices(IRegistrar registrar)
         {
             if (registrar == null) throw new ArgumentNullException(nameof(registrar));
 
-            registrar.Register<IFooConfig, FooConfig>(Lifetime.Scoped);
+            registrar.Register<IScopedMessageRecorder, ScopedMessageRecorder>(Lifetime.Scoped);
         }
     }
 }

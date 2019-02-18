@@ -2,11 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CF.Application.Services
 {
     public interface IWeatherForecastService
     {
-        IEnumerable<WeatherForecast> GetWeatherForecasts();
+        Task<IEnumerable<WeatherForecast>> GetWeatherForecastsAsync();
     }
 }

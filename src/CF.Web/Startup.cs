@@ -37,7 +37,7 @@ namespace Web
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             // DI container
-            app.InitializeContainer(this._container);
+            app.InitializeContainer(env, this._container);
 
             if (env.IsDevelopment())
             {
@@ -46,8 +46,6 @@ namespace Web
                 {
                     HotModuleReplacement = true
                 });
-
-                this._container.Verify();
             }
             else
             {
