@@ -4,15 +4,12 @@ using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleInjector;
-using Web.Settings;
-using Web.Extensions;
+using CF.WebBootstrap.Extensions;
 
-namespace Web
+namespace CF.Web
 {
     public class Startup
     {
-        private readonly Container _container = new Container();
-
         public Startup(IConfiguration configuration)
         {
             this.Configuration = configuration;
@@ -26,18 +23,21 @@ namespace Web
             services.AddMvc();
             services.AddApiVersioning();
 
-            // Configure custom settings as options.
-            services.Configure<RootOptions>(this.Configuration);
+            // Bootstrap configuration before any custom services configuration that may rely on configuration.
+            services.AddConfig(this.Configuration);
 
-            // DI container
-            services.IntegrateSimpleInjector(this._container);
+            // Add a custom IoC/DI container.
+            services.AddCustomContainer();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            // DI container
-            app.InitializeContainer(env, this._container);
+            // Use custom logging.
+            app.UseCustomLogging();
+
+            // Use a custom IoC/DI container.
+            app.UseCustomContainer(env);
 
             if (env.IsDevelopment())
             {

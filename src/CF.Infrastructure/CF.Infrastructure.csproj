@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CF.Application\CF.Application.csproj" />
+    <ProjectReference Include="..\CF.Common\CF.Common.csproj" />
     <ProjectReference Include="..\CF.Domain\CF.Domain.csproj" />
   </ItemGroup>
 

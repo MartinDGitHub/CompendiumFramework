@@ -1,12 +1,12 @@
+using CF.Application.Services;
+using CF.Common.Config;
+using CF.Common.Logging;
+using CF.Common.Messaging;
+using CF.Domain.Weather;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using CF.Application.Config;
-using CF.Domain.Weather;
-using CF.Application.Services;
-using Microsoft.AspNetCore.Mvc;
-using CF.Common.Messaging;
 
 namespace Web.Controllers
 {
@@ -18,17 +18,21 @@ namespace Web.Controllers
         private readonly IWeatherForecastService _weatherForecastService;
         private readonly IScopedMessageRecorder _messageRecorder;
         private IFooConfig _fooConfig;
+        private readonly ILogger _logger;
 
-        public SampleDataController(IWeatherForecastService weatherForecastService, IScopedMessageRecorder messageRecorder, IFooConfig fooConfig)
+        public SampleDataController(IWeatherForecastService weatherForecastService, IScopedMessageRecorder messageRecorder, IFooConfig fooConfig, ILogger logger)
         {
             this._weatherForecastService = weatherForecastService ?? throw new ArgumentNullException(nameof(weatherForecastService));
             this._messageRecorder = messageRecorder ?? throw new ArgumentNullException(nameof(messageRecorder));
             this._fooConfig = fooConfig ?? throw new ArgumentNullException(nameof(fooConfig));
+            this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         [HttpGet("[action]")]
         public async Task<IEnumerable<WeatherForecast>> WeatherForecasts()
         {
+            this._logger.Information($"In [{nameof(SampleDataController)}].");
+
             var forecasts = await this._weatherForecastService.GetWeatherForecastsAsync();
 
             return forecasts;

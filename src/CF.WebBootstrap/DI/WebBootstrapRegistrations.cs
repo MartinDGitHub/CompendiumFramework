@@ -1,20 +1,20 @@
-﻿using CF.Application.Config;
-using CF.Application.DI;
-using CF.Application.Services;
+﻿using CF.Common.Config;
 using CF.Common.DI;
+using CF.Common.Logging;
+using CF.WebBootstrap.Logging;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Web.DI
+namespace CF.WebBootstrap.DI
 {
-    class WebRegistrations: IRegistrations
+    class WebBootstrapRegistrations: IRegistrations
     {
         public void RegisterServices(IRegistrar registrar)
         {
             if (registrar == null) throw new ArgumentNullException(nameof(registrar));
 
             registrar.Register<IFooConfig, FooConfig>(Lifetime.Scoped);
+
+            registrar.Register<ILogger, Logger>(Lifetime.Singleton);
         }
     }
 }

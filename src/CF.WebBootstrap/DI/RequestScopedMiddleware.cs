@@ -2,17 +2,15 @@
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace CF.Web.Extensions
 {
-    public class SimpleInjectorRequestScopedMiddleware : IMiddleware
+    internal class RequestScopedMiddleware : IMiddleware
     {
         private Container _container;
 
-        public SimpleInjectorRequestScopedMiddleware(Container container)
+        public RequestScopedMiddleware(Container container)
         {
             this._container = container ?? throw new ArgumentNullException(nameof(container));
         }

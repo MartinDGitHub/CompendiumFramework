@@ -1,24 +1,23 @@
-﻿using CF.Application.Config;
-using CF.Application.DI;
-using CF.Common.DI;
+﻿using CF.Common.DI;
 using CF.Web.Extensions;
+using CF.WebBootstrap.DI;
+using CF.WebBootstrap.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using SimpleInjector;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
-using Web.DI;
 
-namespace Web.Extensions
+namespace CF.WebBootstrap.Extensions
 {
-    public static class SimpleInjectorIApplicationBuilderExtensions
+    public static class ContainerIApplicationBuilderExtensions
     {
-        public static void InitializeContainer(this IApplicationBuilder app, IHostingEnvironment env, Container container)
+        public static void UseCustomContainer(this IApplicationBuilder app, IHostingEnvironment env)
         {
+            var container = ContainerProvider.Container.Value;
+
             // Wire up for MVC components.
             container.RegisterMvcControllers(app);
             container.RegisterMvcViewComponents(app);
@@ -40,8 +39,9 @@ namespace Web.Extensions
                 .ToList()
                 .ForEach(registrations => registrations.RegisterServices(registrar));
 
-            // Wire up middlewares
-            app.UseMiddleware<SimpleInjectorRequestScopedMiddleware>(container);
+            // Wire up middleware components.
+            // Register a middleware that scopes objects registered with a lifetime of "scoped" at the web request level.
+            app.UseMiddleware<RequestScopedMiddleware>(container);
 
             if (env.IsDevelopment())
             {

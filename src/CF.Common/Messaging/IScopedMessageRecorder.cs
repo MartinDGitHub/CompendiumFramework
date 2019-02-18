@@ -6,6 +6,8 @@ namespace CF.Common.Messaging
 {
     public interface IScopedMessageRecorder
     {
+        IEnumerable<IMessage> Messages { get; }
+
         void Record(MessageSeverity severity, string message);
     }
 }

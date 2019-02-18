@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CF.Application.Config
+namespace CF.Common.Config
 {
     public interface IFooConfig
     {

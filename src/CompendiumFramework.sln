@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CF.Domain", "CF.Domain\CF.D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CF.Common", "CF.Common\CF.Common.csproj", "{4A7CD4A5-ED68-4A3E-9FF9-7443B7E268EE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CF.WebBootstrap", "CF.WebBootstrap\CF.WebBootstrap.csproj", "{454CBF9A-7BAF-4423-A5E9-5CB94C77DF07}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{4A7CD4A5-ED68-4A3E-9FF9-7443B7E268EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A7CD4A5-ED68-4A3E-9FF9-7443B7E268EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A7CD4A5-ED68-4A3E-9FF9-7443B7E268EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{454CBF9A-7BAF-4423-A5E9-5CB94C77DF07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{454CBF9A-7BAF-4423-A5E9-5CB94C77DF07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{454CBF9A-7BAF-4423-A5E9-5CB94C77DF07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{454CBF9A-7BAF-4423-A5E9-5CB94C77DF07}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

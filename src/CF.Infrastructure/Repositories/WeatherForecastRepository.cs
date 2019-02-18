@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using CF.Common.Messaging;
 using System.Threading.Tasks;
+using CF.Common.Logging;
 
 namespace CF.Infrastructure.Repositories
 {
@@ -17,14 +18,17 @@ namespace CF.Infrastructure.Repositories
         };
 
         private readonly IScopedMessageRecorder _messageRecorder;
+        private readonly ILogger _logger;
 
-        public WeatherForecastRepository(IScopedMessageRecorder messageRecorder)
+        public WeatherForecastRepository(IScopedMessageRecorder messageRecorder, ILogger logger)
         {
+            this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this._messageRecorder = messageRecorder ?? throw new ArgumentNullException(nameof(messageRecorder));
         }
 
         public async Task<IEnumerable<WeatherForecast>> ReadWeatherForecastsAsync()
         {
+            this._logger.Information($"In [{nameof(WeatherForecastRepository)}].");
             this._messageRecorder.Record(MessageSeverity.Info, "Repository checking in!");
 
             var rng = new Random();

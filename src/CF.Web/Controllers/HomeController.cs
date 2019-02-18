@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using CF.Application.Config;
+using CF.Common.Config;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Diagnostics;
 
 namespace Web.Controllers
 {
@@ -14,11 +11,11 @@ namespace Web.Controllers
         private ILogger<HomeController> _logger;
         private IFooConfig _fooConfig;
 
-        public HomeController(ILogger<HomeController> logger, IFooConfig fooConfig) =>  (
-            this._logger, 
-            this._fooConfig) = (
-            logger ?? throw new ArgumentNullException(nameof(logger)),
-            fooConfig ?? throw new ArgumentNullException(nameof(fooConfig)));
+        public HomeController(ILogger<HomeController> logger, IFooConfig fooConfig)
+        {
+            this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this._fooConfig = fooConfig ?? throw new ArgumentNullException(nameof(fooConfig));
+        }
 
         [HttpGet]
         public IActionResult Index()

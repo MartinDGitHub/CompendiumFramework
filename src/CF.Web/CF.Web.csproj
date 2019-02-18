@@ -11,16 +11,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="3.1.2" />
-    <PackageReference Include="Serilog.AspNetCore" Version="2.1.1" />
-    <PackageReference Include="Serilog.Enrichers.Environment" Version="2.1.2" />
-    <PackageReference Include="Serilog.Enrichers.Thread" Version="3.0.0" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="3.0.1" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
-    <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
-    <PackageReference Include="SimpleInjector" Version="4.4.3" />
-    <PackageReference Include="SimpleInjector.Integration.AspNetCore.Mvc" Version="4.4.3" />
-    <PackageReference Include="SimpleInjector.Integration.AspNetCore.Mvc.Core" Version="4.4.3" />
-    <PackageReference Include="SimpleInjector.Integration.Web" Version="4.4.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,8 +24,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CF.Application\CF.Application.csproj" />
+    <ProjectReference Include="..\CF.Common\CF.Common.csproj" />
     <ProjectReference Include="..\CF.Domain\CF.Domain.csproj" />
-    <ProjectReference Include="..\CF.Infrastructure\CF.Infrastructure.csproj" />
+    <ProjectReference Include="..\CF.WebBootstrap\CF.WebBootstrap.csproj" />
   </ItemGroup>
 
   <ItemGroup>

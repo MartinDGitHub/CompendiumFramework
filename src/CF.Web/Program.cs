@@ -1,3 +1,4 @@
+using CF.WebBootstrap.Extensions;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -5,7 +6,7 @@ using Serilog;
 using System;
 using System.IO;
 
-namespace Web
+namespace CF.Web
 {
     public class Program
     {
@@ -18,29 +19,29 @@ namespace Web
                 .AddEnvironmentVariables()
                 .Build();
 
-            Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(configuration)
-                .CreateLogger();
+            // Bootstrap the logger as early as possible in the startup.
+            var logger = configuration.AddLogging();
 
             try
             {
-                Log.Information("Starting web host");
+                logger.Information("Starting web host");
                 BuildWebHost(args).Run();
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "Host terminated unexpectedly");
+                logger.Critical(ex, "Host terminated unexpectedly");
             }
             finally
             {
-                Log.CloseAndFlush();
+                logger.CloseAndFlush();
             }
         }
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .UseSerilog()
+                // Bootstrap custom logging.
+                .UseCustomLogging()
                 .Build();
     }
 }

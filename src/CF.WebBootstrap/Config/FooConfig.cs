@@ -1,12 +1,7 @@
-﻿using CF.Application.Config;
+﻿using CF.Common.Config;
 using Microsoft.Extensions.Options;
-using System;
-using System.Configuration;
-using System.Collections.Generic;
-using System.Text;
-using Web.Settings;
 
-namespace CF.Application.DI
+namespace CF.WebBootstrap.DI
 {
     class FooConfig : IFooConfig
     {
