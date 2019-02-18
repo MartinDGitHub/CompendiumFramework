@@ -1,10 +1,9 @@
+using CF.WebBootstrap.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleInjector;
-using CF.WebBootstrap.Extensions;
 
 namespace CF.Web
 {

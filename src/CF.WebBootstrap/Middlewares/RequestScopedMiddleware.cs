@@ -4,7 +4,7 @@ using SimpleInjector.Lifestyles;
 using System;
 using System.Threading.Tasks;
 
-namespace CF.Web.Extensions
+namespace CF.WebBootstrap.Middlewares
 {
     internal class RequestScopedMiddleware : IMiddleware
     {

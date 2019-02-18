@@ -1,7 +1,6 @@
 ﻿using CF.WebBootstrap.DI;
-using CF.WebBootstrap.Logging;
+using CF.WebBootstrap.Middlewares;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using SimpleInjector;
 
 namespace CF.WebBootstrap.Extensions

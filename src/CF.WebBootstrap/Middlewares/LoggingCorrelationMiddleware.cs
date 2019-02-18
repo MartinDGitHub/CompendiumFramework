@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CF.WebBootstrap.Logging
+namespace CF.WebBootstrap.Middlewares
 {
     internal class LoggingCorrelationMiddleware : IMiddleware
     {
