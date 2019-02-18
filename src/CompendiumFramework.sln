@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CF.Web", "CF.Web\CF.Web.csproj", "{38DEEE44-B307-4265-8BE8-A2D0E9E43DD9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CF.Application", "CF.Core\CF.Application.csproj", "{86B22340-DDAE-4827-919E-87A91C3447A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CF.Application", "CF.Application\CF.Application.csproj", "{86B22340-DDAE-4827-919E-87A91C3447A4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CF.Infrastructure", "CF.Infrastructure\CF.Infrastructure.csproj", "{668069D7-EBC9-4423-B2D2-DE40D8AF4ED2}"
 EndProject
