@@ -1,7 +1,8 @@
 ﻿using CF.Common.Config;
+using CF.WebBootstrap.Config.Options;
 using Microsoft.Extensions.Options;
 
-namespace CF.WebBootstrap.DI
+namespace CF.WebBootstrap.Config
 {
     class FooConfig : IFooConfig
     {

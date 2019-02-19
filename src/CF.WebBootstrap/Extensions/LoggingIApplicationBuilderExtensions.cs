@@ -10,7 +10,7 @@ namespace CF.WebBootstrap.Extensions
         public static void UseCustomLogging(this IApplicationBuilder app)
         {
             var container = ContainerProvider.Container.Value;
-            app.UseMiddleware<LoggingCorrelationMiddleware>(container);
+            app.UseMiddleware<RequestLoggingMiddleware>(container);
         }
     }
 }

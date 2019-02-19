@@ -1,7 +1,6 @@
 ﻿using CF.Common.Config;
 using CF.Common.DI;
-using CF.Common.Logging;
-using CF.WebBootstrap.Logging;
+using CF.WebBootstrap.Config;
 using System;
 
 namespace CF.WebBootstrap.DI
@@ -13,8 +12,6 @@ namespace CF.WebBootstrap.DI
             if (registrar == null) throw new ArgumentNullException(nameof(registrar));
 
             registrar.Register<IFooConfig, FooConfig>(Lifetime.Scoped);
-
-            registrar.Register<ILogger, Logger>(Lifetime.Singleton);
         }
     }
 }

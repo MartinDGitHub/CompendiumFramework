@@ -1,18 +1,14 @@
-﻿using CF.WebBootstrap.Logging;
+﻿using CF.Common.Logging;
+using CF.Infrastructure.Logging;
 using Microsoft.Extensions.Configuration;
-using Serilog;
 
 namespace CF.WebBootstrap.Extensions
 {
     public static class LoggingIConfigurationRootExtensions
     {
-        public static Common.Logging.ILogger AddLogging(this IConfigurationRoot configurationRoot)
+        public static ILogger AddLogging(this IConfigurationRoot configurationRoot)
         {
-            Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(configurationRoot)
-                .CreateLogger();
-
-            return new Logger();
+            return new LoggerFactory().GetLogger(configurationRoot);
         }
     }
 }

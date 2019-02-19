@@ -4,7 +4,7 @@ using CF.Common.Logging;
 using Serilog.Context;
 using Serilog.Events;
 
-namespace CF.WebBootstrap.Logging
+namespace CF.Infrastructure.Logging
 {
     internal class Logger : ILogger
     {

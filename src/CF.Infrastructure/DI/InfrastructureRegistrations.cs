@@ -1,11 +1,9 @@
-﻿using CF.Application.DI;
-using CF.Application.Repositories;
-using CF.Application.Services;
+﻿using CF.Application.Repositories;
 using CF.Common.DI;
+using CF.Common.Logging;
+using CF.Infrastructure.Logging;
 using CF.Infrastructure.Repositories;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CF.Infrastructure.DI
 {
@@ -14,6 +12,8 @@ namespace CF.Infrastructure.DI
         public void RegisterServices(IRegistrar registrar)
         {
             if (registrar == null) throw new ArgumentNullException(nameof(registrar));
+
+            registrar.Register<ILogger, Logger>(Lifetime.Singleton);
 
             registrar.Register<IWeatherForecastRepository, WeatherForecastRepository>();
         }

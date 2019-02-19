@@ -1,4 +1,5 @@
-﻿using CF.WebBootstrap.DI;
+﻿using CF.WebBootstrap.Config.Options;
+using CF.WebBootstrap.DI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

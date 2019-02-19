@@ -1,4 +1,4 @@
-﻿namespace CF.WebBootstrap.DI
+﻿namespace CF.WebBootstrap.Config.Options
 {
     class BarOptions
     {
