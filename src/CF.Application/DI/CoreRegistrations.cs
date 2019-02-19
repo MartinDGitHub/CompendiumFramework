@@ -1,18 +1,16 @@
 ﻿using CF.Application.Services;
 using CF.Common.DI;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CF.Application.DI
 {
     class CoreRegistrations : IRegistrations
     {
-        public void RegisterServices(IRegistrar registrar)
+        public void RegisterServices(IContainer container)
         {
-            if (registrar == null) throw new ArgumentNullException(nameof(registrar));
+            if (container == null) throw new ArgumentNullException(nameof(container));
 
-            registrar.Register<IWeatherForecastService, WeatherForecastService>();
+            container.Register<IWeatherForecastService, WeatherForecastService>();
         }
     }
 }

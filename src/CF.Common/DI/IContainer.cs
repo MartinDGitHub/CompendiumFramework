@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CF.Common.DI
 {
-    public interface IRegistrar
+    public interface IContainer : IDisposable
     {
         void Register<TService, TImplementation>()
             where TService : class

@@ -7,11 +7,11 @@ namespace CF.WebBootstrap.DI
 {
     class WebBootstrapRegistrations: IRegistrations
     {
-        public void RegisterServices(IRegistrar registrar)
+        public void RegisterServices(IContainer container)
         {
-            if (registrar == null) throw new ArgumentNullException(nameof(registrar));
+            if (container == null) throw new ArgumentNullException(nameof(container));
 
-            registrar.Register<IFooConfig, FooConfig>(Lifetime.Scoped);
+            container.Register<IFooConfig, FooConfig>(Lifetime.Scoped);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using CF.WebBootstrap.DI;
+﻿using CF.Infrastructure.DI;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
@@ -13,7 +13,10 @@ namespace CF.WebBootstrap.Extensions
     {
         public static void AddCustomContainer(this IServiceCollection services)
         {
-            var container = ContainerProvider.Container.Value;
+            var container = new Container();
+            var containerRegistry = new ContainerRegistry<Container>();
+
+            containerRegistry.RegisterContainer(container);
 
             container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
 

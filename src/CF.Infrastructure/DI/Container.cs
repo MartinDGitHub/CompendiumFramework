@@ -3,21 +3,28 @@ using SimpleInjector;
 using SimpleInjector.Lifestyles;
 using System;
 
-namespace CF.WebBootstrap.DI
+namespace CF.Infrastructure.DI
 {
-    internal class Registrar : IRegistrar
+    internal class Container : IContainer
     {
-        private readonly Container _container;
+        private readonly SimpleInjector.Container _simpleInjectorContainer;
 
-        public Registrar(Container container) =>
-            this._container = container ?? throw new ArgumentNullException(nameof(container));
-
-        void IRegistrar.Register<TService, TImplementation>()
+        public Container(SimpleInjector.Container simpleInjectorContainer)
         {
-            this._container.Register<TService, TImplementation>();
+            this._simpleInjectorContainer = simpleInjectorContainer;
         }
 
-        void IRegistrar.Register<TService, TImplementation>(Lifetime lifetime)
+        public void Dispose()
+        {
+            this._simpleInjectorContainer.Dispose();
+        }
+
+        void IContainer.Register<TService, TImplementation>()
+        {
+            this._simpleInjectorContainer.Register<TService, TImplementation>();
+        }
+
+        void IContainer.Register<TService, TImplementation>(Lifetime lifetime)
         {
             Lifestyle lifestyle;
 
@@ -36,7 +43,7 @@ namespace CF.WebBootstrap.DI
                     throw new Exception($"The specified lifetime [{Enum.GetName(typeof(Lifetime), lifetime)}] is unsuported.");
             }
 
-            this._container.Register<TService, TImplementation>(lifestyle);
+            this._simpleInjectorContainer.Register<TService, TImplementation>(lifestyle);
         }
     }
 }

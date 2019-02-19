@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CF.Common.DI
+﻿namespace CF.Common.DI
 {
     public interface IRegistrations
     {
-        void RegisterServices(IRegistrar registrar);
+        void RegisterServices(IContainer container);
     }
 }

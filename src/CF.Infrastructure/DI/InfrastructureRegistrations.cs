@@ -7,15 +7,15 @@ using System;
 
 namespace CF.Infrastructure.DI
 {
-    class InfrastructureRegistrations: IRegistrations
+    internal class InfrastructureRegistrations: IRegistrations
     {
-        public void RegisterServices(IRegistrar registrar)
+        public void RegisterServices(IContainer container)
         {
-            if (registrar == null) throw new ArgumentNullException(nameof(registrar));
+            if (container == null) throw new ArgumentNullException(nameof(container));
 
-            registrar.Register<ILogger, Logger>(Lifetime.Singleton);
+            container.Register<ILogger, Logger>(Lifetime.Singleton);
 
-            registrar.Register<IWeatherForecastRepository, WeatherForecastRepository>();
+            container.Register<IWeatherForecastRepository, WeatherForecastRepository>();
         }
     }
 }

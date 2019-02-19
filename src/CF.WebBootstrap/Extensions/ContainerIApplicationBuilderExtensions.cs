@@ -1,13 +1,8 @@
-﻿using CF.Common.DI;
-using CF.WebBootstrap.DI;
+﻿using CF.Infrastructure.DI;
 using CF.WebBootstrap.Middlewares;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using SimpleInjector;
-using System;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 
 namespace CF.WebBootstrap.Extensions
 {
@@ -15,36 +10,25 @@ namespace CF.WebBootstrap.Extensions
     {
         public static void UseCustomContainer(this IApplicationBuilder app, IHostingEnvironment env)
         {
-            var container = ContainerProvider.Container.Value;
+            var containerRegistry = new ContainerRegistry<Container>();
 
-            // Wire up for MVC components.
-            container.RegisterMvcControllers(app);
-            container.RegisterMvcViewComponents(app);
+            containerRegistry.ConfigureContainer(container =>
+            {
+                // Wire up MVC components.
+                container.RegisterMvcControllers(app);
+                container.RegisterMvcViewComponents(app);
 
-            // Wire up with built-in DI container.
-            container.AutoCrossWireAspNetComponents(app);
-
-            // Wire up Compendium Framework assemblies.
-            var registrar = new Registrar(container);
-            var registrationsTypes = new DirectoryInfo(
-                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
-                .GetFiles("CF.*.dll") // Compendium Framework assemblies are prefixed with "CF."
-                .SelectMany(file => Assembly.LoadFrom(file.FullName)
-                    .GetTypes()
-                    .Where(type => type.IsClass && typeof(IRegistrations).IsAssignableFrom(type)))
-                .ToArray();
-            registrationsTypes
-                .Select(type => (IRegistrations)Activator.CreateInstance(type))
-                .ToList()
-                .ForEach(registrations => registrations.RegisterServices(registrar));
+                // Wire up with built-in DI container.
+                container.AutoCrossWireAspNetComponents(app);
+            });
 
             // Wire up middleware components.
             // Register a middleware that scopes objects registered with a lifetime of "scoped" at the web request level.
-            app.UseMiddleware<RequestScopedMiddleware>(container);
+            app.UseMiddleware<RequestScopedMiddleware>(containerRegistry.ContainerImpl);
 
             if (env.IsDevelopment())
             {
-                container.Verify();
+                containerRegistry.ContainerImpl.Verify();
             }
         }
     }

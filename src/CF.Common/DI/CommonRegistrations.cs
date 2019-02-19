@@ -7,11 +7,11 @@ namespace CF.Common.DI
 {
     class CommonRegistrations : IRegistrations
     {
-        public void RegisterServices(IRegistrar registrar)
+        public void RegisterServices(IContainer container)
         {
-            if (registrar == null) throw new ArgumentNullException(nameof(registrar));
+            if (container == null) throw new ArgumentNullException(nameof(container));
 
-            registrar.Register<IScopedMessageRecorder, ScopedMessageRecorder>(Lifetime.Scoped);
+            container.Register<IScopedMessageRecorder, ScopedMessageRecorder>(Lifetime.Scoped);
         }
     }
 }
