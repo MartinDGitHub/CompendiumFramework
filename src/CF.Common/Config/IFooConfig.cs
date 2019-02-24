@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CF.Common.Config
+﻿namespace CF.Common.Config
 {
-    public interface IFooConfig
+    public interface IFooConfig : IConfig
     {
         string Foo { get; }
     }

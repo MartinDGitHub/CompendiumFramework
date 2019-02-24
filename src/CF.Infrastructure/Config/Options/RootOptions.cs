@@ -1,4 +1,4 @@
-﻿namespace CF.WebBootstrap.Config.Options
+﻿namespace CF.Infrastructure.Config.Options
 {
     class RootOptions
     {

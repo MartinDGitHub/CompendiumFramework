@@ -22,7 +22,7 @@ namespace CF.Web
             services.AddMvc();
             services.AddApiVersioning();
 
-            // Bootstrap configuration before any custom services configuration that may rely on configuration.
+            // Bootstrap configuration before adding custom services configuration that may rely on configuration.
             services.AddConfig(this.Configuration);
 
             // Add a custom IoC/DI container.

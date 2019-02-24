@@ -9,6 +9,8 @@ namespace CF.Infrastructure.DI
     {
         private readonly SimpleInjector.Container _simpleInjectorContainer;
 
+        public Lifetime DefaultLifetime => Lifetime.Transient;
+
         public Container(SimpleInjector.Container simpleInjectorContainer)
         {
             this._simpleInjectorContainer = simpleInjectorContainer;
@@ -19,12 +21,31 @@ namespace CF.Infrastructure.DI
             this._simpleInjectorContainer.Dispose();
         }
 
-        void IContainer.Register<TService, TImplementation>()
+        public void Register(Type serviceType, Type implementationType)
         {
-            this._simpleInjectorContainer.Register<TService, TImplementation>();
+            this.Register(serviceType, implementationType, this.DefaultLifetime);
         }
 
-        void IContainer.Register<TService, TImplementation>(Lifetime lifetime)
+        public void Register(Type serviceType, Type implementationType, Lifetime lifetime)
+        {
+            this._simpleInjectorContainer.Register(serviceType, implementationType, this.ResolveLifestyle(lifetime));
+        }
+
+        public void Register<TService, TImplementation>() 
+            where TService : class
+            where TImplementation : class, TService
+        {
+            this.Register<TService, TImplementation>(this.DefaultLifetime);
+        }
+
+        public void Register<TService, TImplementation>(Lifetime lifetime)
+            where TService : class
+            where TImplementation : class, TService
+        {
+            this._simpleInjectorContainer.Register<TService, TImplementation>(this.ResolveLifestyle(lifetime));
+        }
+
+        private Lifestyle ResolveLifestyle(Lifetime lifetime)
         {
             Lifestyle lifestyle;
 
@@ -43,7 +64,7 @@ namespace CF.Infrastructure.DI
                     throw new Exception($"The specified lifetime [{Enum.GetName(typeof(Lifetime), lifetime)}] is unsuported.");
             }
 
-            this._simpleInjectorContainer.Register<TService, TImplementation>(lifestyle);
+            return lifestyle;
         }
     }
 }

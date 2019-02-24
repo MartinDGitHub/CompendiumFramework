@@ -11,6 +11,7 @@ namespace CF.Web
     {
         public static void Main(string[] args)
         {
+            // Configuration has to come before adding logging, as it is used to configure the logger.
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -18,20 +19,21 @@ namespace CF.Web
                 .AddEnvironmentVariables()
                 .Build();
 
-            // Bootstrap the logger as early as possible in the startup.
+            // Add logging as early as possible to record errors ramping up the application.
             var logger = configuration.AddLogging();
 
             try
             {
-                logger.Information("Starting web host");
+                logger.Information("Running the web host.");
                 BuildWebHost(args).Run();
             }
             catch (Exception ex)
             {
-                logger.Critical(ex, "Host terminated unexpectedly");
+                logger.Critical(ex, "Web host terminated unexpectedly.");
             }
             finally
             {
+                // Ensure all entries are sent to the configured sinks.
                 logger.CloseAndFlush();
             }
         }

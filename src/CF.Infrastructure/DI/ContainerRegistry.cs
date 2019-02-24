@@ -10,6 +10,8 @@ namespace CF.Infrastructure.DI
     {
         private static readonly object _lock = new object();
 
+        private const string RegistrationsNamespaceTail = "DI";
+
         private static IContainer _container;
         public IContainer Container => _container;
 
@@ -70,7 +72,17 @@ namespace CF.Infrastructure.DI
             registrationsTypes
                 .Select(type => (IRegistrations)Activator.CreateInstance(type))
                 .ToList()
-                .ForEach(registrations => registrations.RegisterServices(_container));
+                .ForEach(registrations => this.RegisterServices(registrations));
+        }
+
+        private void RegisterServices(IRegistrations registrations)
+        {
+            if (!registrations.GetType().Namespace.EndsWith(RegistrationsNamespaceTail, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new Exception($"Registrations file [{registrations.GetType().Name}] was found in the namespace [{registrations.GetType().Namespace}]. It must reside in a namspace ending in \"{RegistrationsNamespaceTail}\".");
+            }
+
+            registrations.RegisterServices(_container);
         }
     }
 }
