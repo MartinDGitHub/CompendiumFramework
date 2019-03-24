@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using CF.Common.Logging;
+﻿using CF.Common.Logging;
+using CF.Common.Logging.Scopes;
+using Microsoft.Extensions.Logging.Abstractions.Internal;
 using Serilog.Context;
 using Serilog.Events;
+using System;
+using System.Collections.Generic;
 
 namespace CF.Infrastructure.Logging
 {
     internal class Logger : ILogger
     {
-        private static readonly Dictionary<LogLevel, LogEventLevel> _logEventByLogLevel = 
+        protected static readonly Dictionary<LogLevel, LogEventLevel> _logEventLevelByLogLevel = 
             new Dictionary<LogLevel, LogEventLevel>()
             {
                 { LogLevel.Critical, LogEventLevel.Fatal },
@@ -89,14 +91,35 @@ namespace CF.Infrastructure.Logging
             this.Log(LogLevel.Trace, message);
         }
 
-        public void Log(LogLevel logLevel, Exception exception, string message)
+        public virtual void Log(LogLevel logLevel, Exception exception, string message)
         {
-            Serilog.Log.Write(_logEventByLogLevel[logLevel], exception, message);
+            Serilog.Log.Write(_logEventLevelByLogLevel[logLevel], exception, message);
         }
 
-        public void Log(LogLevel logLevel, string message)
+        public virtual void Log(LogLevel logLevel, string message)
         {
-            Serilog.Log.Write(_logEventByLogLevel[logLevel], message);
+            Serilog.Log.Write(_logEventLevelByLogLevel[logLevel], message);
+        }
+    }
+
+    internal class Logger<T> : Logger, ILogger<T>
+    {
+        public override void Log(LogLevel logLevel, Exception exception, string message)
+        {
+            var property = new ContextTypeNameScopeProperty(TypeNameHelper.GetTypeDisplayName(typeof(T)));
+            using (this.BeginScope(property))
+            {
+                Serilog.Log.Write(_logEventLevelByLogLevel[logLevel], exception, message);
+            }
+        }
+
+        public override void Log(LogLevel logLevel, string message)
+        {
+            var property = new ContextTypeNameScopeProperty(TypeNameHelper.GetTypeDisplayName(typeof(T)));
+            using (this.BeginScope(property))
+            {
+                Serilog.Log.Write(_logEventLevelByLogLevel[logLevel], message);
+            }
         }
     }
 }

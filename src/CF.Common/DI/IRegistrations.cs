@@ -2,6 +2,6 @@
 {
     public interface IRegistrations
     {
-        void RegisterServices(IContainer container);
+        void RegisterServices();
     }
 }

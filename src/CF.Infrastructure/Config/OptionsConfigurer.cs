@@ -4,9 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CF.Infrastructure.Config
 {
-    public class ConfigurationLoader
+    public static class OptionsConfigurer
     {
-        public void Load(IServiceCollection services, IConfiguration configuration)
+        public static void ConfigureOptions(IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<RootOptions>(configuration);
         }

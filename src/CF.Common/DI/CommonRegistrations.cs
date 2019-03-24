@@ -1,17 +1,19 @@
 ﻿using CF.Common.Messaging;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CF.Common.DI
 {
-    class CommonRegistrations : IRegistrations
+    internal class CommonRegistrations :  RegistrationsBase, IRegistrations
     {
-        public void RegisterServices(IContainer container)
+        public CommonRegistrations(IContainer container) : base(container)
         {
-            if (container == null) throw new ArgumentNullException(nameof(container));
+        }
 
-            container.Register<IScopedMessageRecorder, ScopedMessageRecorder>(Lifetime.Scoped);
+        public void RegisterServices()
+        {
+            // Messages are recorded to the scope of an operation.
+            this.Container.Register<IScopedMessageRecorder, ScopedMessageRecorder>(Lifetime.Scoped);
+
+            this.RegisterPolicies();
         }
     }
 }

@@ -36,4 +36,8 @@ namespace CF.Common.Logging
 
         void Log(LogLevel logLevel, Exception exception, string message);
     }
+
+    public interface ILogger<out T> : ILogger
+    {
+    }
 }

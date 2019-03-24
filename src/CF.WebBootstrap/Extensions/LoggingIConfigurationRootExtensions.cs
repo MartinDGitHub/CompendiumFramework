@@ -8,7 +8,7 @@ namespace CF.WebBootstrap.Extensions
     {
         public static ILogger AddLogging(this IConfigurationRoot configurationRoot)
         {
-            return new LoggerFactory().GetLogger(configurationRoot);
+            return LoggerFactory.GetLogger(configurationRoot);
         }
     }
 }

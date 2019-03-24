@@ -9,10 +9,12 @@ namespace CF.Infrastructure.DI
     public class ContainerRegistry<TContainerImpl> where TContainerImpl : class
     {
         private static readonly object _lock = new object();
+        private static bool _configured = false;
 
-        private const string RegistrationsNamespaceTail = "DI";
+        private const string RegistrationsNamespaceTail = @"DI";
 
         private static IContainer _container;
+
         public IContainer Container => _container;
 
         private static TContainerImpl _containerImpl;
@@ -35,7 +37,7 @@ namespace CF.Infrastructure.DI
             }
 
             // Use double-checked locking for thread safety to enforce that only one 
-            // container is ever registered per application.
+            // container is ever registered per application instance.
             if (_container == null)
             {
                 lock (_lock)
@@ -58,21 +60,36 @@ namespace CF.Infrastructure.DI
         /// <param name="configure">An action for custom configuration.</param>
         public void ConfigureContainer(Action<TContainerImpl> configure = null)
         {
-            // Perform custom configuration, when specified.
-            configure?.Invoke(_containerImpl);
+            if (_container == null)
+            {
+                throw new InvalidOperationException("No container is available - ensure a container is registered prior to configuring.");
+            }
 
-            // Wire up Compendium Framework assemblies.
-            var registrationsTypes = new DirectoryInfo(
-                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
-                .GetFiles("CF.*.dll") // Compendium Framework assemblies are prefixed with "CF."
-                .SelectMany(file => Assembly.LoadFrom(file.FullName)
-                    .GetTypes()
-                    .Where(type => type.IsClass && typeof(IRegistrations).IsAssignableFrom(type)))
-                .ToArray();
-            registrationsTypes
-                .Select(type => (IRegistrations)Activator.CreateInstance(type))
-                .ToList()
-                .ForEach(registrations => this.RegisterServices(registrations));
+            // Use double-checked locking for thread safety to enforce that the container
+            // is only configured once per application instance.
+            if (!_configured)
+            {
+                lock (_lock)
+                {
+                    if (!_configured)
+                    {
+                        // Perform custom configuration, when specified.
+                        configure?.Invoke(_containerImpl);
+
+                        // Wire up Compendium Framework assemblies.
+                        var registrationsTypes = 
+                            RegistrationTypes.CFTypes
+                            .Where(type => type.IsClass && typeof(IRegistrations).IsAssignableFrom(type))
+                            .ToArray();
+                        registrationsTypes
+                            .Select(type => (IRegistrations)Activator.CreateInstance(type, this.Container))
+                            .ToList()
+                            .ForEach(registrations => this.RegisterServices(registrations));
+
+                        _configured = true;
+                    }
+                }
+            }
         }
 
         private void RegisterServices(IRegistrations registrations)
@@ -82,7 +99,7 @@ namespace CF.Infrastructure.DI
                 throw new Exception($"Registrations file [{registrations.GetType().Name}] was found in the namespace [{registrations.GetType().Namespace}]. It must reside in a namspace ending in \"{RegistrationsNamespaceTail}\".");
             }
 
-            registrations.RegisterServices(_container);
+            registrations.RegisterServices();
         }
     }
 }

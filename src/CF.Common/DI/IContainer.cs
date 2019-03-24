@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace CF.Common.DI
 {
@@ -17,5 +18,9 @@ namespace CF.Common.DI
         void Register<TService, TImplementation>(Lifetime lifetime)
             where TService : class
             where TImplementation : class, TService;
+
+        void Register(Type serviceType, Assembly implementationAssembly);
+
+        void Register(Type serviceType, Assembly implementationAssembly, Lifetime lifetime);
     }
 }

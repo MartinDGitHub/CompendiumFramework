@@ -20,7 +20,7 @@ namespace Web.Controllers
         private IFooConfig _fooConfig;
         private readonly ILogger _logger;
 
-        public SampleDataController(IWeatherForecastService weatherForecastService, IScopedMessageRecorder messageRecorder, IFooConfig fooConfig, ILogger logger)
+        public SampleDataController(IWeatherForecastService weatherForecastService, IScopedMessageRecorder messageRecorder, IFooConfig fooConfig, ILogger<SampleDataController> logger)
         {
             this._weatherForecastService = weatherForecastService ?? throw new ArgumentNullException(nameof(weatherForecastService));
             this._messageRecorder = messageRecorder ?? throw new ArgumentNullException(nameof(messageRecorder));

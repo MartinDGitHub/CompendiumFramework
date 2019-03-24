@@ -1,6 +1,12 @@
 using CF.WebBootstrap.Extensions;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,14 +25,37 @@ namespace CF.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+
+            // Use MVC for presentation and Web API.
+            services.AddMvc(config =>
+            {
+                // By default, only permit authenticated users to access controller actions.
+                var policy = new AuthorizationPolicyBuilder()
+                                 .RequireAuthenticatedUser()
+                                 .Build();
+                config.Filters.Add(new AuthorizeFilter(policy));
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            // Use extended API versioning.
             services.AddApiVersioning();
 
+            // Enable the HTTP context accessor for obtaining user information for requests.
+            services.AddHttpContextAccessor();
+
             // Bootstrap configuration before adding custom services configuration that may rely on configuration.
-            services.AddConfig(this.Configuration);
+            services.AddCustomConfig(this.Configuration);
 
             // Add a custom IoC/DI container.
             services.AddCustomContainer();
+
+            // Add custom authorization and the authentication that authorization depends on.
+            services.AddCustomAuthorization();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,9 +78,13 @@ namespace CF.Web
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+                app.UseHsts();
+
             }
 
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseCookiePolicy();
 
             app.UseMvc(routes =>
             {

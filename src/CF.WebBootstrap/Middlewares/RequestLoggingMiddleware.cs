@@ -11,7 +11,7 @@ namespace CF.WebBootstrap.Middlewares
     {
         private readonly ILogger _logger;
 
-        public RequestLoggingMiddleware(ILogger logger)
+        public RequestLoggingMiddleware(ILogger<RequestLoggingMiddleware> logger)
         {
             this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }

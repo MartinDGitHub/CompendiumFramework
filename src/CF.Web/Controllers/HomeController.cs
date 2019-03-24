@@ -1,4 +1,6 @@
+using CF.Common.Authorization.Policies;
 using CF.Common.Config;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -24,6 +26,7 @@ namespace Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = nameof(IUserAccessPolicy))]
         public IActionResult Error()
         {
             ViewData["RequestId"] = Activity.Current?.Id ?? HttpContext.TraceIdentifier;

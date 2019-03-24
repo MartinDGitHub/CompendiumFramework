@@ -1,10 +1,7 @@
 ﻿using CF.Infrastructure.DI;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Mvc.ViewComponents;
+using CF.WebBootstrap.DI;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleInjector;
-using SimpleInjector.Integration.AspNetCore.Mvc;
 using SimpleInjector.Lifestyles;
 
 namespace CF.WebBootstrap.Extensions
@@ -20,11 +17,10 @@ namespace CF.WebBootstrap.Extensions
 
             container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
 
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-            services.AddSingleton<IControllerActivator>(new SimpleInjectorControllerActivator(container));
-
-            services.AddSingleton<IViewComponentActivator>(new SimpleInjectorViewComponentActivator(container));
+            // Register services with the native .NET Core container that cannot be
+            // successfully registered with the custom container implementation.
+            var webBootstrapRegistrations = new WebBootstrapRegistrations(containerRegistry.Container);
+            webBootstrapRegistrations.RegisterNativeServices(services, containerRegistry.ContainerImpl);
 
             services.EnableSimpleInjectorCrossWiring(container);
 

@@ -4,11 +4,11 @@ using System.Threading;
 
 namespace CF.Infrastructure.Logging
 {
-    public class LoggerFactory
+    public static class LoggerFactory
     {
         private static Serilog.Core.Logger _logger;
 
-        public Common.Logging.ILogger GetLogger(IConfigurationRoot configurationRoot)
+        public static Common.Logging.ILogger GetLogger(IConfigurationRoot configurationRoot)
         {
             // Perform a thread-safe swap of the logger if one has already been established.
             // Loggers should be stateless and this permits reconfiguration.

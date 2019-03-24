@@ -2,10 +2,11 @@
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 using System;
+using System.Reflection;
 
 namespace CF.Infrastructure.DI
 {
-    internal class Container : IContainer
+    internal class Container : IContainer, IServiceLocatorContainer
     {
         private readonly SimpleInjector.Container _simpleInjectorContainer;
 
@@ -19,6 +20,11 @@ namespace CF.Infrastructure.DI
         public void Dispose()
         {
             this._simpleInjectorContainer.Dispose();
+        }
+
+        internal void RegisterInstance<TService>(TService instance) where TService : class
+        {
+            this._simpleInjectorContainer.RegisterInstance<TService>(instance);
         }
 
         public void Register(Type serviceType, Type implementationType)
@@ -45,6 +51,17 @@ namespace CF.Infrastructure.DI
             this._simpleInjectorContainer.Register<TService, TImplementation>(this.ResolveLifestyle(lifetime));
         }
 
+        public void Register(Type serviceType, Assembly implementationAssembly)
+        {
+            this.Register(serviceType, implementationAssembly, this.DefaultLifetime);
+        }
+
+        public void Register(Type serviceType, Assembly implementationAssembly, Lifetime lifetime)
+        {
+            this._simpleInjectorContainer.Register(serviceType, implementationAssembly, this.ResolveLifestyle(lifetime));
+        }
+
+
         private Lifestyle ResolveLifestyle(Lifetime lifetime)
         {
             Lifestyle lifestyle;
@@ -65,6 +82,16 @@ namespace CF.Infrastructure.DI
             }
 
             return lifestyle;
+        }
+
+        TService IServiceLocatorContainer.GetInstance<TService>()
+        {
+            return this._simpleInjectorContainer.GetInstance<TService>();
+        }
+
+        object IServiceLocatorContainer.GetInstance(Type serviceType)
+        {
+            return this._simpleInjectorContainer.GetInstance(serviceType);
         }
     }
 }

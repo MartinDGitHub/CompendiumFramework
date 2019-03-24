@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CF.Application.Repositories
 {
-    public interface IWeatherForecastRepository
+    public interface IWeatherForecastRepository : IRepository
     {
         Task<IEnumerable<WeatherForecast>> ReadWeatherForecastsAsync();
     }

@@ -3,14 +3,13 @@ using CF.Application.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using CF.Common.Messaging;
 using System.Threading.Tasks;
 using CF.Common.Logging;
 
 namespace CF.Infrastructure.Repositories
 {
-    class WeatherForecastRepository : IWeatherForecastRepository
+    class WeatherForecastRepository : RepositoryBase, IWeatherForecastRepository
     {
         private static string[] Summaries = new[]
         {
@@ -20,7 +19,7 @@ namespace CF.Infrastructure.Repositories
         private readonly IScopedMessageRecorder _messageRecorder;
         private readonly ILogger _logger;
 
-        public WeatherForecastRepository(IScopedMessageRecorder messageRecorder, ILogger logger)
+        public WeatherForecastRepository(IScopedMessageRecorder messageRecorder, ILogger<WeatherForecastRepository> logger)
         {
             this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this._messageRecorder = messageRecorder ?? throw new ArgumentNullException(nameof(messageRecorder));
