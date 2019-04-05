@@ -9,9 +9,10 @@ namespace CF.WebBootstrap.Authorization
     {
         private IHttpContextAccessor _httpContextAccessor;
 
-        public ClaimsPrincipal User => 
+        public ClaimsPrincipal User =>
+            // Always go after the current claims principal on the HTTP context instead of 
+            // holding a reference to the claims principal itself, which could become stale.
             this._httpContextAccessor?.HttpContext?.User as ClaimsPrincipal ?? throw new InvalidOperationException("Could not obtain a claims principal from the supplied HTTP context.");
-
 
         public HttpClaimsPrincipalProvider(IHttpContextAccessor httpContextAccessor)
         {

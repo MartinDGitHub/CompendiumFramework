@@ -1,4 +1,4 @@
-﻿using CF.Infrastructure.Config;
+﻿using CF.WebBootstrap.Config.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,13 +8,7 @@ namespace CF.WebBootstrap.Extensions
     {
         public static void AddCustomConfig(this IServiceCollection services, IConfiguration configuration)
         {
-            // Ideally we wouldn't have to couple the configuration loader to the interfaces.
-            // However, there is no non-generic overload of IServiceCollection.Configure that
-            // accepts the type as a parameter such that we could instead call:
-            // new ConfigurationLoader().Load(type => { services.Configure(type, configuration); });
-            // Reflection could be used, but is messy and creates a runtime dependency on
-            // a CLR type that could change.
-            OptionsConfigurer.ConfigureOptions(services, configuration);
+            services.Configure<Root>(configuration);
         }
     }
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CF.Common.Logging
+﻿namespace CF.Common.Logging
 {
     public interface IScopeProperty<TValue>
     {

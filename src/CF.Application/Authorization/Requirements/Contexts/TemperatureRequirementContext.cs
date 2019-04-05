@@ -1,12 +1,15 @@
-﻿using CF.Common.Authorization.Requirements.Contexts;
-using System;
+﻿using CF.Common.Authorization.Requirements;
+using CF.Domain.Weather;
 
 namespace CF.Application.Authorization.Requirements.Contexts
 {
     public class TemperatureRequirementContext : IRequirementContext
     {
-        public int Temperature { get; }
+        public Temperature Temperature { get; }
 
-        public TemperatureRequirementContext(int temperature) => (this.Temperature) = temperature;
+        public TemperatureRequirementContext(Temperature temperature)
+        {
+            this.Temperature = temperature;
+        }
     }
 }

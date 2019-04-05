@@ -1,13 +1,11 @@
 ﻿using CF.Common.Authorization.Policies;
 using Microsoft.AspNetCore.Authorization;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CF.WebBootstrap.Authorization.Requirements
 {
-    internal class PolicyRequirement : IAuthorizationRequirement
+    public class PolicyRequirement : IAuthorizationRequirement
     {
         public Type PolicyType { get; }
 

@@ -1,3 +1,5 @@
+using CF.Common.Authorization.Policies;
+using CF.WebBootstrap.Authorization.Requirements;
 using CF.WebBootstrap.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -83,8 +85,12 @@ namespace CF.Web
             }
 
             app.UseHttpsRedirection();
+
             app.UseStaticFiles();
+
             app.UseCookiePolicy();
+
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {

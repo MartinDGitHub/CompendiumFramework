@@ -1,23 +1,14 @@
 ﻿using CF.Common.Exceptions;
+using CF.WebBootstrap.Authentication;
 using CF.WebBootstrap.Authorization.Requirements;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CF.WebBootstrap.Authorization
 {
     internal class AuthorizationPolicyProvider : IAuthorizationPolicyProvider
     {
-        private static readonly IEnumerable<string> _authenticationSchemes = new string[]
-        {
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            JwtBearerDefaults.AuthenticationScheme,
-        };
-
         private readonly IPolicyTypeFactory _policyTypeFactory;
 
         public AuthorizationPolicyProvider(IPolicyTypeFactory policyTypeFactory)
@@ -42,7 +33,8 @@ namespace CF.WebBootstrap.Authorization
             }
 
             var policy = new AuthorizationPolicyBuilder()
-                .AddAuthenticationSchemes(_authenticationSchemes.ToArray())
+                // NOTE: adding authentication schemes here can oddly break the lookup for IsInRole on a Windows claims principal...
+                .AddAuthenticationSchemes(Constants.AuthenticationSchemes)
                 .RequireAuthenticatedUser()
                 .AddRequirements(new PolicyRequirement(policyType));
 

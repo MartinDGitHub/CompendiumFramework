@@ -1,5 +1,5 @@
 ﻿using CF.Application.Authorization.Requirements.Contexts;
-using CF.Common.Authorization.Requirements.Handlers;
+using CF.Common.Authorization.Requirements;
 using CF.Common.Logging;
 using System;
 using System.Threading.Tasks;
@@ -15,21 +15,20 @@ namespace CF.Application.Authorization.Requirements.Handlers
             this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<bool> HandleRequirementAsync(TemperatureRequirementContext context, TemperatureRangeRequirement requirement)
+        public Task<RequirementResult> HandleRequirementAsync(TemperatureRequirementContext context, TemperatureRangeRequirement requirement)
         {
             if (context == null)
             {
                 throw new ArgumentNullException(nameof(context));
             }
 
-            var isAuthorized = await Task.FromResult(context.Temperature >= requirement.MinTemperature && context.Temperature < requirement.MaxTemperature);
+            var isMet = requirement.Range.IsInRange(context.Temperature);
 
-            if (!isAuthorized)
-            {
-                this._logger.Information($"Temperature of [{context.Temperature}] is unauthorized for required temperature range [{requirement.MinTemperature}] [{requirement.MaxTemperature}]");
-            }
-
-            return isAuthorized;
+            return Task.FromResult(new RequirementResult(isMet, 
+                isMet
+                ? null 
+                : $"Temperature of [{context.Temperature}] is not within range of: [{requirement.Range.Min}](inclusive) to [{requirement.Range.Max}](exclusive).")
+            );
         }
     }
 }

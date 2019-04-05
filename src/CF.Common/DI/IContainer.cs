@@ -7,6 +7,8 @@ namespace CF.Common.DI
     {
         Lifetime DefaultLifetime { get; }
 
+        void RegisterInstance<TService>(TService instance) where TService : class;
+
         void Register(Type serviceType, Type implementationType);
 
         void Register(Type serviceType, Type implementationType, Lifetime lifetime);

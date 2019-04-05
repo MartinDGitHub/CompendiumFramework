@@ -22,7 +22,7 @@ namespace CF.Infrastructure.DI
             this._simpleInjectorContainer.Dispose();
         }
 
-        internal void RegisterInstance<TService>(TService instance) where TService : class
+        public void RegisterInstance<TService>(TService instance) where TService : class
         {
             this._simpleInjectorContainer.RegisterInstance<TService>(instance);
         }

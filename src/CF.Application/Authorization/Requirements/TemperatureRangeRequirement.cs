@@ -1,29 +1,16 @@
 ﻿using CF.Common.Authorization.Requirements;
+using CF.Domain.Weather;
 using System;
 
 namespace CF.Application.Authorization.Requirements
 {
     internal class TemperatureRangeRequirement : IRequirement
     {
-        /// <summary>
-        /// Gets the minimum temperature (inclusive).
-        /// </summary>
-        public int MinTemperature { get; }
+        public TemperatureRange Range { get; }
 
-        /// <summary>
-        /// Gets the maximum temperature (exclusive).
-        /// </summary>
-        public int MaxTemperature { get; }
-
-        public TemperatureRangeRequirement(int minTemperature, int maxTemperature)
+        public TemperatureRangeRequirement(TemperatureRange range)
         {
-            if (minTemperature > maxTemperature)
-            {
-                throw new ArgumentOutOfRangeException(nameof(minTemperature), $"The min temperature of [{minTemperature}] is greater than the max temperature of [{maxTemperature}].");
-            }
-
-            this.MinTemperature = minTemperature;
-            this.MaxTemperature = maxTemperature;
+            this.Range = range;
         }
     }
 }

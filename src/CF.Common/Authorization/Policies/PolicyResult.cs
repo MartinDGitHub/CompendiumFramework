@@ -1,25 +1,49 @@
-﻿using CF.Common.Utility;
+﻿using CF.Common.Exceptions;
+using CF.Common.Utility;
+using System;
+using System.Collections.Generic;
 
 namespace CF.Common.Authorization.Policies
 {
     public class PolicyResult
     {
         /// <summary>
+        /// The policy the result is for.
+        /// </summary>
+        public IPolicy Policy { get; }
+
+        /// <summary>
         /// Gets whether the policy evaluated to authorized.
         /// </summary>
         public bool IsAuthorized { get; }
 
         /// <summary>
-        /// Gets a user-facing reason for a policy evaluating to unauthorized.
-        /// IMPORTANT! Security-sensitive, and technical information should not be included here. Rather, if there
-        /// are such details, they should be logged as required by the policy.
+        /// Gets a user-friendly message that can be surfaced to consumers.
         /// </summary>
-        public string UnauthorizedReason { get; }
+        public string UserFriendlyMessage { get; }
 
-        public PolicyResult(bool isAuthorized, string unauthorizedReason = null)
+        /// <summary>
+        /// Gets the technical reasons for why the policy evaluated to unauthorized.
+        /// </summary>
+        public IEnumerable<string> UnauthorizedReasons { get; }
+
+        public PolicyResult(IPolicy policy, bool isAuthorized, IEnumerable<string> unauthorizedReasons, string userFriendlyMessage = null)
         {
+            this.Policy = policy ?? throw new ArgumentNullException(nameof(policy));
             this.IsAuthorized = isAuthorized;
-            this.UnauthorizedReason = unauthorizedReason ?? string.Empty;
+            this.UnauthorizedReasons = unauthorizedReasons ?? new string[] { };
+            this.UserFriendlyMessage = userFriendlyMessage ?? "Unauthorized.";
+        }
+
+        /// <summary>
+        /// Throws an <c>AuthorizationPolicyException</c> if unauthorized.
+        /// </summary>
+        public void EnsureAuthorized()
+        {
+            if (!this.IsAuthorized)
+            {
+                throw new AuthorizationPolicyException(this);
+            }
         }
 
         public static bool Equals(PolicyResult policyResult1, PolicyResult policyResult2)
@@ -40,7 +64,7 @@ namespace CF.Common.Authorization.Policies
 
         public override int GetHashCode()
         {
-            return HashCodeCalculator.Calculate(this.IsAuthorized, this.UnauthorizedReason);
+            return HashCodeCalculator.Calculate(this.IsAuthorized, this.UnauthorizedReasons);
         }
 
         public override bool Equals(object obj)
@@ -67,31 +91,51 @@ namespace CF.Common.Authorization.Policies
 
         public static bool operator ==(PolicyResult policyResultOperand1, PolicyResult policyResultOperand2)
         {
-            return PolicyResult.Equals(policyResultOperand1, policyResultOperand2);
+            return Equals(policyResultOperand1, policyResultOperand2);
         }
 
         public static bool operator !=(PolicyResult policyResultOperand1, PolicyResult policyResultOperand2)
         {
-            return !PolicyResult.Equals(policyResultOperand1, policyResultOperand2);
+            return !Equals(policyResultOperand1, policyResultOperand2);
         }
 
         public static bool operator==(bool boolOperand, PolicyResult policyResultOperand)
         {
+            if (policyResultOperand == null)
+            {
+                return false;
+            }
+
             return boolOperand == policyResultOperand.IsAuthorized;
         }
 
         public static bool operator!=(bool boolOperand, PolicyResult policyResultOperand)
         {
+            if (policyResultOperand == null)
+            {
+                return true;
+            }
+
             return boolOperand != policyResultOperand.IsAuthorized;
         }
 
         public static bool operator ==(PolicyResult policyResultOperand, bool boolOperand)
         {
+            if (policyResultOperand == null)
+            {
+                return false;
+            }
+
             return boolOperand == policyResultOperand.IsAuthorized;
         }
 
         public static bool operator !=(PolicyResult policyResultOperand, bool boolOperand)
         {
+            if (policyResultOperand == null)
+            {
+                return true;
+            }
+
             return boolOperand != policyResultOperand.IsAuthorized;
         }
 

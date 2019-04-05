@@ -13,7 +13,7 @@
 
             foreach (var value in values)
             {
-                hash = hash * 23 + value?.GetHashCode() ?? 0;
+                hash = hash * 23 + (value?.GetHashCode() ?? 0);
             }
 
             return hash;

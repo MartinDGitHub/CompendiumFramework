@@ -11,12 +11,10 @@ namespace Web.Controllers
     public class HomeController : Controller
     {
         private ILogger<HomeController> _logger;
-        private IFooConfig _fooConfig;
 
-        public HomeController(ILogger<HomeController> logger, IFooConfig fooConfig)
+        public HomeController(ILogger<HomeController> logger)
         {
             this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            this._fooConfig = fooConfig ?? throw new ArgumentNullException(nameof(fooConfig));
         }
 
         [HttpGet]

@@ -1,5 +1,5 @@
 ﻿using CF.Common.Authorization.Policies;
-using CF.Common.Authorization.Requirements.Handlers;
+using CF.Common.Authorization.Requirements;
 using CF.Common.Extensions;
 using System;
 using System.Collections.Generic;
@@ -15,12 +15,7 @@ namespace CF.Common.DI
 
         protected RegistrationsBase(IContainer container)
         {
-            if (container == null)
-            {
-                throw new ArgumentNullException(nameof(container));
-            }
-
-            this.Container = container;
+            this.Container = container ?? throw new ArgumentNullException(nameof(container));
         }
 
         /// <summary>
