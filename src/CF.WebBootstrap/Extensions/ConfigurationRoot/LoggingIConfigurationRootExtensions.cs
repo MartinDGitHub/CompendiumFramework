@@ -2,7 +2,7 @@
 using CF.Infrastructure.Logging;
 using Microsoft.Extensions.Configuration;
 
-namespace CF.WebBootstrap.Extensions
+namespace CF.WebBootstrap.Extensions.ConfigurationRoot
 {
     public static class LoggingIConfigurationRootExtensions
     {

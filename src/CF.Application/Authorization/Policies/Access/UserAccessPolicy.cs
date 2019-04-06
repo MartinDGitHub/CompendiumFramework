@@ -5,17 +5,19 @@ using CF.Common.Authorization.Requirements.Roles;
 using CF.Common.Config;
 using System.Collections.Generic;
 
-namespace CF.Application.Authorization.Policies
+namespace CF.Application.Authorization.Policies.Access
 {
     internal class UserAccessPolicy : AccessPolicyBase, IUserAccessPolicy
     {
-        protected override IEnumerable<RoleClaimRequirement> RoleClaimRequirements { get; } = new []
+        private readonly static IEnumerable<RoleClaimRequirement> _roleClaimRequirements = new []
         {
             new RoleClaimRequirement(UserRoleName),
             // Include higher access groups that include lower access groups.
             // Important! An authorize mode of any must be used when evaluating.
             new RoleClaimRequirement(AdminRoleName),
         };
+
+        protected override IEnumerable<RoleClaimRequirement> RoleClaimRequirements => _roleClaimRequirements;
 
         protected override IEnumerable<WindowsRoleRequirement> WindowsRoleRequirements { get; }
 

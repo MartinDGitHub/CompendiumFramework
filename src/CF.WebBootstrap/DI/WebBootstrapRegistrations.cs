@@ -6,7 +6,6 @@ using CF.Infrastructure.DI;
 using CF.WebBootstrap.Authorization;
 using CF.WebBootstrap.Authorization.Requirements.Handlers;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
@@ -44,9 +43,6 @@ namespace CF.WebBootstrap.DI
             services.AddSingleton<IControllerActivator>(new SimpleInjectorControllerActivator(containerImpl));
 
             services.AddSingleton<IViewComponentActivator>(new SimpleInjectorViewComponentActivator(containerImpl));
-
-            // For a web application, we will need to access the HTTP context to get the claims principal.
-            services.AddHttpContextAccessor();
         }
 
         public void RegisterServices()

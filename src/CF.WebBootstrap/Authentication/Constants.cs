@@ -6,7 +6,6 @@ namespace CF.WebBootstrap.Authentication
     {
         public static readonly string[] AuthenticationSchemes = new string[]
         {
-            // Any changes to this set should be reflected in AuthenticationIServiceCollectionExtensions.
             IISDefaults.AuthenticationScheme,
         };
 

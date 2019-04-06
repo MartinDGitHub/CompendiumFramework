@@ -1,4 +1,6 @@
-using CF.WebBootstrap.Extensions;
+using CF.Common.Logging;
+using CF.WebBootstrap.Extensions.ConfigurationRoot;
+using CF.WebBootstrap.Extensions.WebHostBuilder;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -11,16 +13,27 @@ namespace CF.Web
     {
         public static void Main(string[] args)
         {
-            // Configuration has to come before adding logging, as it is used to configure the logger.
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: false, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
+            ILogger logger;
+            try
+            {
+                // Configuration has to come before adding logging, as it is used to configure the logger.
+                var configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                    .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: false, reloadOnChange: true)
+                    .AddEnvironmentVariables()
+                    .Build();
 
-            // Add logging as early as possible to record errors ramping up the application.
-            var logger = configuration.AddLogging();
+                // Add logging as early as possible to record errors ramping up the application.
+                logger = configuration.AddLogging();
+            }
+            catch (Exception ex)
+            {
+                // Ensure any errors incurred while getting configuration and logging set up
+                // are written to stdout.
+                Console.WriteLine($"Error occurred building configuration:\n{ex.Message}");
+                throw;
+            }
 
             try
             {

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CF.WebBootstrap.Extensions
+namespace CF.WebBootstrap.Extensions.ServiceCollection
 {
     public static class ConfigIServiceCollectionExtensions
     {

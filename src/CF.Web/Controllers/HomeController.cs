@@ -1,3 +1,4 @@
+using CF.Application.Authorization.Policies.Access;
 using CF.Common.Authorization.Policies;
 using CF.Common.Config;
 using Microsoft.AspNetCore.Authorization;

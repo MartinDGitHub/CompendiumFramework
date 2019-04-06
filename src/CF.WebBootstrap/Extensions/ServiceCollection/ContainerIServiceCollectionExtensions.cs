@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 
-namespace CF.WebBootstrap.Extensions
+namespace CF.WebBootstrap.Extensions.ServiceCollection
 {
     public static class ContainerIServiceCollectionExtensions
     {

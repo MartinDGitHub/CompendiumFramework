@@ -5,11 +5,16 @@ using CF.Common.Authorization.Requirements.Roles;
 using CF.Common.Config;
 using System.Collections.Generic;
 
-namespace CF.Application.Authorization.Policies
+namespace CF.Application.Authorization.Policies.Access
 {
     internal class AdminAccessPolicy : AccessPolicyBase, IAdminAccessPolicy
     {
-        protected override IEnumerable<RoleClaimRequirement> RoleClaimRequirements { get; } = new[] { new RoleClaimRequirement(AdminRoleName) };
+        private readonly static IEnumerable<RoleClaimRequirement> _roleClaimRequirements = new [] 
+        {
+            new RoleClaimRequirement(AdminRoleName)
+        };
+
+        protected override IEnumerable<RoleClaimRequirement> RoleClaimRequirements => _roleClaimRequirements;
 
         protected override IEnumerable<WindowsRoleRequirement> WindowsRoleRequirements { get; }
 

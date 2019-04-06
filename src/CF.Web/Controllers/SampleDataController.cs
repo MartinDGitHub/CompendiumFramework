@@ -1,11 +1,9 @@
+using CF.Application.Authorization.Policies.Access;
 using CF.Application.Services;
-using CF.Common.Authorization.Policies;
-using CF.Common.Config;
 using CF.Common.Logging;
 using CF.Common.Messaging;
 using CF.Domain.Weather;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -22,17 +20,11 @@ namespace Web.Controllers
         private readonly IScopedMessageRecorder _messageRecorder;
         private readonly ILogger _logger;
 
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAdminAccessPolicy _adminAccessPolicy;
-
-        public SampleDataController(IAdminAccessPolicy adminAccessPolicy, IHttpContextAccessor httpContextAccessor, IWeatherForecastService weatherForecastService, IScopedMessageRecorder messageRecorder, ILogger<SampleDataController> logger)
+        public SampleDataController(IWeatherForecastService weatherForecastService, IScopedMessageRecorder messageRecorder, ILogger<SampleDataController> logger)
         {
             this._weatherForecastService = weatherForecastService ?? throw new ArgumentNullException(nameof(weatherForecastService));
             this._messageRecorder = messageRecorder ?? throw new ArgumentNullException(nameof(messageRecorder));
             this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
-            this._httpContextAccessor = httpContextAccessor;
-            this._adminAccessPolicy = adminAccessPolicy;
         }
 
         [HttpGet("[action]")]

@@ -1,4 +1,4 @@
-﻿using CF.Common.Exceptions;
+﻿using CF.Common.Extensions;
 
 namespace CF.Common.Authorization.Requirements.Roles
 {
@@ -11,15 +11,8 @@ namespace CF.Common.Authorization.Requirements.Roles
 
         public WindowsRoleRequirement(string domainName, string roleName)
         {
-            if (string.IsNullOrWhiteSpace(domainName))
-            {
-                throw new ArgumentNullOrWhitespaceException(nameof(domainName));
-            }
-
-            if (string.IsNullOrWhiteSpace(roleName))
-            {
-                throw new ArgumentNullOrWhitespaceException(nameof(roleName));
-            }
+            domainName.EnsureArgumentNotNullOrWhitespace(nameof(domainName));
+            roleName.EnsureArgumentNotNullOrWhitespace(nameof(roleName));
 
             this.FullyQualifiedRoleName = $@"{domainName}\{roleName}";
         }

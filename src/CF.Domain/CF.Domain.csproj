@@ -6,4 +6,8 @@
     <Win32Resource />
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CF.Common\CF.Common.csproj" />
+  </ItemGroup>
+
 </Project>

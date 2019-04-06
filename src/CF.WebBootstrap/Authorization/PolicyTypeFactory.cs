@@ -1,4 +1,4 @@
-﻿using CF.Common.Exceptions;
+﻿using CF.Common.Extensions;
 using System;
 using System.Collections.Concurrent;
 
@@ -10,10 +10,7 @@ namespace CF.WebBootstrap.Authorization
 
         public void RegisterPolicyType(string policyName, Type policyType)
         {
-            if (string.IsNullOrWhiteSpace(policyName))
-            {
-                throw new ArgumentNullOrWhitespaceException(nameof(policyName));
-            }
+            policyName.EnsureArgumentNotNullOrWhitespace(nameof(policyName));
 
             if (policyType == null)
             {

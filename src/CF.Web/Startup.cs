@@ -1,14 +1,11 @@
-using CF.Common.Authorization.Policies;
-using CF.WebBootstrap.Authorization.Requirements;
-using CF.WebBootstrap.Extensions;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using CF.WebBootstrap.Extensions.ApplicationBuilder;
+using CF.WebBootstrap.Extensions.ServiceCollection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,9 +44,6 @@ namespace CF.Web
             // Use extended API versioning.
             services.AddApiVersioning();
 
-            // Enable the HTTP context accessor for obtaining user information for requests.
-            services.AddHttpContextAccessor();
-
             // Bootstrap configuration before adding custom services configuration that may rely on configuration.
             services.AddCustomConfig(this.Configuration);
 
@@ -63,8 +57,8 @@ namespace CF.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            // Use custom logging.
-            app.UseCustomLogging();
+            // Register custom middleware first.
+            app.UseCustomMiddleware();
 
             // Use a custom IoC/DI container.
             app.UseCustomContainer(env);

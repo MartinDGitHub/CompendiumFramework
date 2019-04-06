@@ -8,6 +8,5 @@ namespace CF.Common.Exceptions
             : base($"String value cannot be {(paramName == null ? "null" : "whitespace")}.", paramName)
         {
         }
-
     }
 }

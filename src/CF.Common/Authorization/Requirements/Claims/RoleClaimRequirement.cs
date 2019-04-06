@@ -1,5 +1,4 @@
-﻿using CF.Common.Exceptions;
-using System;
+﻿using CF.Common.Extensions;
 using System.Security.Claims;
 
 namespace CF.Common.Authorization.Requirements.Claims
@@ -11,12 +10,7 @@ namespace CF.Common.Authorization.Requirements.Claims
     {
         public RoleClaimRequirement(string roleName) : base(ClaimTypes.Role)
         {
-            if (string.IsNullOrWhiteSpace(roleName))
-            {
-                throw new ArgumentNullOrWhitespaceException(nameof(roleName));
-            }
-
-            this.Value = roleName;
+            this.Value = roleName.EnsureArgumentNotNullOrWhitespace(nameof(roleName));
         }
     }
 }

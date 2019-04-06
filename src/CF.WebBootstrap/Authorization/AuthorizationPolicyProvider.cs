@@ -1,4 +1,5 @@
 ﻿using CF.Common.Exceptions;
+using CF.Common.Extensions;
 using CF.WebBootstrap.Authentication;
 using CF.WebBootstrap.Authorization.Requirements;
 using Microsoft.AspNetCore.Authorization;
@@ -21,10 +22,7 @@ namespace CF.WebBootstrap.Authorization
 
         public Task<AuthorizationPolicy> GetPolicyAsync(string policyName)
         {
-            if (string.IsNullOrWhiteSpace(policyName))
-            {
-                throw new ArgumentNullOrWhitespaceException(nameof(policyName));
-            }
+            policyName.EnsureArgumentNotNullOrWhitespace(nameof(policyName));
 
             var policyType = this._policyTypeFactory.GetPolicyType(policyName);
             if (policyType == null)

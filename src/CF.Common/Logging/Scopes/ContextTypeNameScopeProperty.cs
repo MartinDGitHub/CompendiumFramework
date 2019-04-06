@@ -1,4 +1,5 @@
 ﻿using CF.Common.Exceptions;
+using CF.Common.Extensions;
 
 namespace CF.Common.Logging.Scopes
 {
@@ -8,12 +9,7 @@ namespace CF.Common.Logging.Scopes
 
         public ContextTypeNameScopeProperty(string contextTypeName)
         {
-            if (string.IsNullOrWhiteSpace(contextTypeName))
-            {
-                throw new ArgumentNullOrWhitespaceException(nameof(contextTypeName));
-            }
-
-            this.ContextTypeName = contextTypeName;
+            this.ContextTypeName = contextTypeName.EnsureArgumentNotNullOrWhitespace(nameof(contextTypeName));
         }
 
         public string Name => "ContextTypeName";

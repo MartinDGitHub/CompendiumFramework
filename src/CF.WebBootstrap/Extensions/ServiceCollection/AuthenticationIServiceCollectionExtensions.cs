@@ -1,7 +1,7 @@
 ﻿using CF.WebBootstrap.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CF.WebBootstrap.Extensions
+namespace CF.WebBootstrap.Extensions.ServiceCollection
 {
     public static class AuthenticationIServiceCollectionExtensions
     {
