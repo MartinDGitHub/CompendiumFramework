@@ -47,7 +47,7 @@ namespace CF.Web
             // Bootstrap configuration before adding custom services configuration that may rely on configuration.
             services.AddCustomConfig(this.Configuration);
 
-            // Add a custom IoC/DI container.
+            // Add a custom IoC/DI container and perform the custom registrations to set up the container.
             services.AddCustomContainer();
 
             // Add custom authorization and the authentication that authorization depends on.
@@ -60,12 +60,13 @@ namespace CF.Web
             // Register custom middleware first.
             app.UseCustomMiddleware();
 
-            // Use a custom IoC/DI container.
+            // Wire up a custom IoC/DI container integrated with MVC and the native .NET Core container.
             app.UseCustomContainer(env);
 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseDatabaseErrorPage();
                 app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
                 {
                     HotModuleReplacement = true
@@ -73,19 +74,26 @@ namespace CF.Web
             }
             else
             {
+                // In deployed environments 
                 app.UseExceptionHandler("/Home/Error");
-                app.UseHsts();
 
+                // Indicate to browsers that all interactions must be over HTTPS.
+                app.UseHsts();
             }
 
+            // Redirect HTTP to HTTPS prior to processing requests.
             app.UseHttpsRedirection();
 
+            // Serve up static content prior to authentication/authorization.
             app.UseStaticFiles();
 
+            // Enable cookies (with consent) for authentication.
             app.UseCookiePolicy();
 
+            // Secure the application with authentication, and by extension, authorization.
             app.UseAuthentication();
 
+            // Use the MVC pattern for routing requests to actions.
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
