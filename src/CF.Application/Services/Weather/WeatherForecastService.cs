@@ -1,7 +1,6 @@
 ﻿using CF.Application.Authorization.Policies.Weather;
 using CF.Application.Authorization.Requirements.Contexts;
 using CF.Application.Repositories;
-using CF.Common.Config;
 using CF.Common.Logging;
 using CF.Common.Messaging;
 using CF.Domain.Weather;

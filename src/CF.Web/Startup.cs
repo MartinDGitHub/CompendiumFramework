@@ -65,8 +65,8 @@ namespace CF.Web
 
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
+                //app.UseDeveloperExceptionPage();
+                //app.UseDatabaseErrorPage();
                 app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
                 {
                     HotModuleReplacement = true
@@ -74,9 +74,6 @@ namespace CF.Web
             }
             else
             {
-                // In deployed environments 
-                app.UseExceptionHandler("/Home/Error");
-
                 // Indicate to browsers that all interactions must be over HTTPS.
                 app.UseHsts();
             }

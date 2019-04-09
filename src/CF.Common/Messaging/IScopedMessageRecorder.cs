@@ -1,6 +1,5 @@
-﻿using System;
+﻿using CF.Common.Dto.Messages;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CF.Common.Messaging
 {
@@ -8,6 +7,8 @@ namespace CF.Common.Messaging
     {
         IEnumerable<IMessage> Messages { get; }
 
-        void Record(MessageSeverity severity, string message);
+        void Record(MessageSeverity severity, string text);
+
+        void Record(IMessage message);
     }
 }

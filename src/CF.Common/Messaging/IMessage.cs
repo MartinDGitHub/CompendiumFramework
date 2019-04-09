@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using CF.Common.Dto.Messages;
+using System;
 
 namespace CF.Common.Messaging
 {
     public interface IMessage
     {
         DateTimeOffset Timestamp { get; }
+
         MessageSeverity Severity { get; }
-        string Value { get; }
+
+        string Text { get; }
     }
 }

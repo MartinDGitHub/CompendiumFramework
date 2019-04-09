@@ -2,7 +2,7 @@
 
 namespace CF.Common.Correlation
 {
-    internal class ScopedCorrelationIdProvider : IScopedCorrelationIdProvider
+    internal class ScopedCorrelationGuidProvider : IScopedCorrelationGuidProvider
     {
         public Guid CorrelationGuid { get; } = Guid.NewGuid();
     }

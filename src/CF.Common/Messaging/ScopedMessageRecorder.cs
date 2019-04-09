@@ -1,33 +1,28 @@
-﻿using System;
+﻿using CF.Common.Dto.Messages;
+using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CF.Common.Messaging
 {
     class ScopedMessageRecorder : IScopedMessageRecorder
     {
-        private class Message : IMessage
-        {
-            public DateTimeOffset Timestamp { get; private set; }
-
-            public MessageSeverity Severity { get; private set; }
-
-            public string Value { get; private set; }
-
-            public Message(MessageSeverity severity, string value)
-            {
-                this.Timestamp = DateTimeOffset.Now;
-                this.Severity = severity;
-                this.Value = value;
-            }
-        }
-
-        private HashSet<IMessage> _messages = new HashSet<IMessage>();
+        // Use a list to preserve recording order.
+        private List<IMessage> _messages = new List<IMessage>();
         public IEnumerable<IMessage> Messages => this._messages;
 
-        public void Record(MessageSeverity severity, string value)
+        public void Record(MessageSeverity severity, string text)
         {
-            this._messages.Add(new Message(severity, value));
+            this._messages.Add(new Message { Severity = severity, Text = text });
+        }
+
+        public void Record(IMessage message)
+        {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            this._messages.Add(message);
         }
     }
 }

@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace CF.WebBootstrap.Middlewares
 {
-    internal class RequestScopedMiddleware : IMiddleware
+    internal class AsyncScopedLifestyleMiddleware : IMiddleware
     {
         private Container _container;
 
-        public RequestScopedMiddleware(Container container)
+        public AsyncScopedLifestyleMiddleware(Container container)
         {
             this._container = container ?? throw new ArgumentNullException(nameof(container));
         }

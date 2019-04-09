@@ -41,7 +41,7 @@ namespace CF.Common.Codes
         {
             var otherCode = obj as TCode;
 
-            // Avoid using operators which cause overload issues.
+            // Avoid using operators which cause operator overload issues.
             return !object.ReferenceEquals(otherCode, null) && Enum.Equals(this.Id, otherCode.Id);
         }
 
@@ -59,7 +59,7 @@ namespace CF.Common.Codes
 
         public static bool operator ==(CodeBase<TCode, TId> code1, CodeBase<TCode, TId> code2)
         {
-            // Avoid using operators which cause overload issues.
+            // Avoid using operators which cause operator overload issues.
             if (object.ReferenceEquals(code1, null))
             {
                 return object.ReferenceEquals(code2, null);

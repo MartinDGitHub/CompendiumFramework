@@ -4,7 +4,7 @@ namespace CF.Common.Logging.Scopes
 {
     public class CorrelationGuidScopeProperty : IScopeProperty<Guid>
     {
-        public string Name => "CorrelationId";
+        public string Name => "CorrelationGuid";
 
         public Guid Value { get; } = Guid.NewGuid();
 

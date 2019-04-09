@@ -15,6 +15,7 @@ namespace CF.Common.Authorization.Policies
     public abstract class AccessPolicyBase : IPolicy
     {
         private readonly IDomainConfig _domainConfig;
+        private readonly IClaimsPrincipalProvider _claimsPrincipalProvider;
         private readonly IRequirementHandler<RoleClaimRequirement> _roleClaimRequirementHandler;
         private readonly IRequirementHandler<WindowsRoleRequirement> _windowsRoleRequirementHandler;
         private readonly AuthorizeMode _authorizeMode;
@@ -38,11 +39,13 @@ namespace CF.Common.Authorization.Policies
 
         protected AccessPolicyBase(
             IDomainConfig domainConfig,
+            IClaimsPrincipalProvider claimsPrincipalProvider,
             IRequirementHandler<RoleClaimRequirement> roleClaimRequirementHandler,
             IRequirementHandler<WindowsRoleRequirement> windowsRoleRequirementHandler,
             AuthorizeMode authorizeMode = AuthorizeMode.All)
         {
             this._domainConfig = domainConfig ?? throw new ArgumentNullException(nameof(domainConfig));
+            this._claimsPrincipalProvider = claimsPrincipalProvider ?? throw new ArgumentNullException(nameof(claimsPrincipalProvider));
             this._roleClaimRequirementHandler = roleClaimRequirementHandler ?? throw new ArgumentNullException(nameof(roleClaimRequirementHandler));
             this._windowsRoleRequirementHandler = windowsRoleRequirementHandler ?? throw new ArgumentNullException(nameof(windowsRoleRequirementHandler));
             this._authorizeMode = authorizeMode;
@@ -66,7 +69,7 @@ namespace CF.Common.Authorization.Policies
                 isAuthorized = IsAuthorized(taskResults);
             }
 
-            var unauthorizedReason = isAuthorized ? null : "User has insufficient access for the operation.";
+            var unauthorizedReason = isAuthorized ? null : $"User [{this._claimsPrincipalProvider?.User?.Identity?.Name}] has insufficient access for the operation.";
 
             return new PolicyResult(this, isAuthorized, (new string[] { unauthorizedReason }).Concat(unmetReasons));
 

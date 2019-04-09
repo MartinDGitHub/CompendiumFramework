@@ -1,4 +1,5 @@
-﻿using CF.Common.Authorization.Policies;
+﻿using CF.Common.Authorization;
+using CF.Common.Authorization.Policies;
 using CF.Common.Authorization.Requirements;
 using CF.Common.Authorization.Requirements.Claims;
 using CF.Common.Authorization.Requirements.Roles;
@@ -23,9 +24,10 @@ namespace CF.Application.Authorization.Policies.Access
 
         public UserAccessPolicy(
             IDomainConfig domainConfig,
+            IClaimsPrincipalProvider claimsPrincipalProvider,
             IRequirementHandler<RoleClaimRequirement> roleClaimRequirementHandler,
             IRequirementHandler<WindowsRoleRequirement> windowsRoleRequirementHandler)
-            : base(domainConfig, roleClaimRequirementHandler, windowsRoleRequirementHandler, AuthorizeMode.Any)
+            : base(domainConfig, claimsPrincipalProvider, roleClaimRequirementHandler, windowsRoleRequirementHandler, AuthorizeMode.Any)
         {
             this.WindowsRoleRequirements = new[]
             {

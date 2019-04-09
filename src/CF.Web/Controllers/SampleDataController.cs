@@ -28,7 +28,6 @@ namespace Web.Controllers
         }
 
         [HttpGet("[action]")]
-        [Authorize(Policy = nameof(IAdminAccessPolicy))]
         public async Task<IEnumerable<WeatherForecast>> WeatherForecasts()
         {
             this._logger.Information($"In [{nameof(SampleDataController)}].");

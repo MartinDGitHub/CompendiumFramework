@@ -1,10 +1,10 @@
 ﻿using CF.Common.Logging;
 using CF.Common.Logging.Scopes;
-using Microsoft.Extensions.Logging.Abstractions.Internal;
 using Serilog.Context;
 using Serilog.Events;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace CF.Infrastructure.Logging
 {
@@ -63,32 +63,32 @@ namespace CF.Infrastructure.Logging
 
         public void Critical(Exception exception, string message)
         {
-            this.Log(LogLevel.Critical, message);
+            this.Log(LogLevel.Critical, exception, message);
         }
 
         public void Error(Exception exception, string message)
         {
-            this.Log(LogLevel.Error, message);
+            this.Log(LogLevel.Error, exception, message);
         }
 
         public void Warning(Exception exception, string message)
         {
-            this.Log(LogLevel.Warning, message);
+            this.Log(LogLevel.Warning, exception, message);
         }
 
         public void Information(Exception exception, string message)
         {
-            this.Log(LogLevel.Information, message);
+            this.Log(LogLevel.Information, exception, message);
         }
 
         public void Debug(Exception exception, string message)
         {
-            this.Log(LogLevel.Debug, message);
+            this.Log(LogLevel.Debug, exception, message);
         }
 
         public void Trace(Exception exception, string message)
         {
-            this.Log(LogLevel.Trace, message);
+            this.Log(LogLevel.Trace, exception, message);
         }
 
         public virtual void Log(LogLevel logLevel, Exception exception, string message)
@@ -109,7 +109,7 @@ namespace CF.Infrastructure.Logging
             var property = new ContextTypeNameScopeProperty(TypeNameHelper.GetTypeDisplayName(typeof(T)));
             using (this.BeginScope(property))
             {
-                Serilog.Log.Write(_logEventLevelByLogLevel[logLevel], exception, message);
+                Serilog.Log.Write(_logEventLevelByLogLevel[logLevel], exception.Demystify(), message);
             }
         }
 

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CF.Common.Messaging
+﻿namespace CF.Common.Messaging
 {
     public enum MessageSeverity
     {
-        Error,
+        None,
+        Info,
         Warning,
-        Info
+        Error,
     }
 }

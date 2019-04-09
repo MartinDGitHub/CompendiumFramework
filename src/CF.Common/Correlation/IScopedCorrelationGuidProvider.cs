@@ -2,7 +2,7 @@
 
 namespace CF.Common.Correlation
 {
-    public interface IScopedCorrelationIdProvider
+    public interface IScopedCorrelationGuidProvider
     {
         Guid CorrelationGuid { get; }
     }
