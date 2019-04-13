@@ -1,9 +1,7 @@
-using CF.Application.Authorization.Policies.Access;
 using CF.Application.Services;
 using CF.Common.Logging;
 using CF.Common.Messaging;
 using CF.Domain.Weather;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;

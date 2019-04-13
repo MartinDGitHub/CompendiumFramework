@@ -19,13 +19,13 @@ namespace Web.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = nameof(IUserAccessPolicy))]
         public IActionResult Index()
         {
             return View();
         }
 
         [HttpGet]
-        [Authorize(Policy = nameof(IUserAccessPolicy))]
         public IActionResult Error()
         {
             ViewData["RequestId"] = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
