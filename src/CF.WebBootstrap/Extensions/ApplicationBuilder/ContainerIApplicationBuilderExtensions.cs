@@ -1,5 +1,4 @@
 ﻿using CF.Infrastructure.DI;
-using CF.WebBootstrap.Middlewares;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using SimpleInjector;

@@ -5,6 +5,7 @@ using CF.Common.Exceptions;
 using CF.Common.Logging;
 using CF.Common.Messaging;
 using CF.WebBootstrap.Extensions;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
@@ -17,13 +18,15 @@ namespace CF.WebBootstrap.Middlewares
 {
     internal class GlobalExceptionHandlerMiddleware : IMiddleware
     {
+        private readonly IHostingEnvironment _env;
         private readonly IScopedCorrelationIdProvider _scopedCorrelationGuidProvider;
         private readonly ILogger _logger;
 
-        public GlobalExceptionHandlerMiddleware(IScopedCorrelationIdProvider scopedCorrelationGuidProvider, ILogger<GlobalExceptionHandlerMiddleware> logger)
+        public GlobalExceptionHandlerMiddleware(IHostingEnvironment env, IScopedCorrelationIdProvider scopedCorrelationGuidProvider, ILogger<GlobalExceptionHandlerMiddleware> logger)
         {
-            this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this._env = env ?? throw new ArgumentNullException(nameof(env));
             this._scopedCorrelationGuidProvider = scopedCorrelationGuidProvider ?? throw new ArgumentNullException(nameof(scopedCorrelationGuidProvider));
+            this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -72,7 +75,7 @@ namespace CF.WebBootstrap.Middlewares
 
                             resultPackage.ValidationMessages = new Message[] 
                             {
-                                new Message { Severity = MessageSeverity.Error, Text = $"An unexpected error has occurred. Please contact your system administrator with the following code [{resultPackage.CorrelationId}]." }
+                                new Message { Severity = MessageSeverity.Error, Text = $"An unexpected error has occurred. Please contact your system administrator with the following code {resultPackage.CorrelationId}." }
                             };
 
                             this._logger.Error(ex, $"An unexpected error occurred. Correlation GUID [{resultPackage.CorrelationId}].");
@@ -82,6 +85,13 @@ namespace CF.WebBootstrap.Middlewares
                     }
                     else
                     {
+                        // If not in a development environment redirect to the error page. Otherwise, rethrow to show the full error
+                        // details.
+                        if (this._env.IsDevelopment())
+                        {
+                            throw ex;
+                        }
+
                         // Redirect ordinary browser requests to the error page.
                         context.Request.Path = "/Error";
                     }

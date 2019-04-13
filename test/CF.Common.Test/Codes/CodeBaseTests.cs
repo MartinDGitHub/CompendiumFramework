@@ -76,7 +76,9 @@ namespace CF.Common.Test.Codes
         public void EqualsOperator_CheckForEquality_AreEqual()
         {
             // Assert
+            #pragma warning disable CS1718 // Comparison made to same variable
             Assert.True(MockCode.Two == MockCode.Two);
+            #pragma warning restore CS1718 // Comparison made to same variable
         }
 
         [Fact]
