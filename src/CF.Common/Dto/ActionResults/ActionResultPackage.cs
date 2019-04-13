@@ -1,5 +1,4 @@
 ﻿using CF.Common.Dto.Messages;
-using System;
 using System.Collections.Generic;
 
 namespace CF.Common.Dto.ActionResults
@@ -17,13 +16,18 @@ namespace CF.Common.Dto.ActionResults
         public bool Success { get; set; }
 
         /// <summary>
-        /// Gets consumer-friendly messages.
+        /// Gets consumer-friendly validation messages.
         /// </summary>
-        public IEnumerable<Message> ConsumerFriendlyMessages { get; set; }
+        public IEnumerable<Message> ValidationMessages { get; set; }
 
         /// <summary>
-        /// Gets the correlation GUID for associating log messages, etc.
+        /// Get a consumer-friendly message for when an unexpected error occurred.
         /// </summary>
-        public Guid CorrelationGuid { get; set; }
+        public IEnumerable<Message> UnexpectedErrorMessage { get; set; }
+
+        /// <summary>
+        /// Gets the correlation ID for associating log messages to an action result, etc.
+        /// </summary>
+        public string CorrelationId { get; set; }
     }
 }

@@ -17,10 +17,10 @@ namespace CF.WebBootstrap.Middlewares
 {
     internal class GlobalExceptionHandlerMiddleware : IMiddleware
     {
-        private readonly IScopedCorrelationGuidProvider _scopedCorrelationGuidProvider;
+        private readonly IScopedCorrelationIdProvider _scopedCorrelationGuidProvider;
         private readonly ILogger _logger;
 
-        public GlobalExceptionHandlerMiddleware(IScopedCorrelationGuidProvider scopedCorrelationGuidProvider, ILogger<GlobalExceptionHandlerMiddleware> logger)
+        public GlobalExceptionHandlerMiddleware(IScopedCorrelationIdProvider scopedCorrelationGuidProvider, ILogger<GlobalExceptionHandlerMiddleware> logger)
         {
             this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this._scopedCorrelationGuidProvider = scopedCorrelationGuidProvider ?? throw new ArgumentNullException(nameof(scopedCorrelationGuidProvider));
@@ -46,36 +46,36 @@ namespace CF.WebBootstrap.Middlewares
 
                         resultPackage.Success = false;
 
-                        // Use the explicit correlation GUID if provided.
+                        // Use the explicit correlation ID if provided.
                         var correlatedException = ex as ICorrelatedException;
-                        if (correlatedException != null && correlatedException.CorrelationGuid.HasValue)
+                        if (correlatedException != null && !string.IsNullOrWhiteSpace(correlatedException.CorrelationId))
                         {
-                            resultPackage.CorrelationGuid = correlatedException.CorrelationGuid.Value;
+                            resultPackage.CorrelationId = correlatedException.CorrelationId;
                         }
                         else
                         {
-                            // Use the ambient correlation GUID for the request if an explicit GUID wasn't found.
-                            resultPackage.CorrelationGuid = this._scopedCorrelationGuidProvider.CorrelationGuid;
+                            // Use the ambient correlation ID for the request if an explicit ID wasn't found.
+                            resultPackage.CorrelationId = this._scopedCorrelationGuidProvider.CorrelationId;
                         }
 
-                        if (ex is ValidationFailedException)
+                        if (ex is ValidationMessagesException)
                         {
                             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
-                            var consumerFriendlyMessagesException = ex as IConsumerFriendlyMessagesException;
-                            resultPackage.ConsumerFriendlyMessages = consumerFriendlyMessagesException?.ConsumerFriendlyMessages
+                            var consumerFriendlyMessagesException = ex as IValidationMessagesException;
+                            resultPackage.ValidationMessages = consumerFriendlyMessagesException?.ValidationMessages
                                 .Select(x => new Message { Timestamp = x.Timestamp, Severity = x.Severity, Text = x.Text }) ?? new Message[] { };
                         }
                         else
                         {
                             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-                            resultPackage.ConsumerFriendlyMessages = new Message[] 
+                            resultPackage.ValidationMessages = new Message[] 
                             {
-                                new Message { Severity = MessageSeverity.Error, Text = $"An unexpected error has occurred. Please contact your system administrator with the following code [{resultPackage.CorrelationGuid}]." }
+                                new Message { Severity = MessageSeverity.Error, Text = $"An unexpected error has occurred. Please contact your system administrator with the following code [{resultPackage.CorrelationId}]." }
                             };
 
-                            this._logger.Error(ex, $"An unexpected error occurred. Correlation GUID [{resultPackage.CorrelationGuid}].");
+                            this._logger.Error(ex, $"An unexpected error occurred. Correlation GUID [{resultPackage.CorrelationId}].");
                         }
 
                         await context.Response.WriteAsync(JsonConvert.SerializeObject(resultPackage));
@@ -89,7 +89,7 @@ namespace CF.WebBootstrap.Middlewares
                 catch (Exception ex2)
                 {
                     // An exception was thrown handling the exception. Log it and return an error status with no information.
-                    this._logger.Error(ex, $"An unexpected error occurred during global exception handling!");
+                    this._logger.Error(ex, $"The following unexpected error occurred during global exception handling:\n{ex2}\n\nThe original exception is included below.");
 
                     context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 }

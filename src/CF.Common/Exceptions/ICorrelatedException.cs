@@ -4,6 +4,6 @@ namespace CF.Common.Exceptions
 {
     public interface ICorrelatedException
     {
-        Guid? CorrelationGuid { get; }
+        string CorrelationId { get; }
     }
 }

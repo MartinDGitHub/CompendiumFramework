@@ -15,7 +15,7 @@ namespace CF.Common.DI
             this.Container.Register<IScopedMessageRecorder, ScopedMessageRecorder>(Lifetime.Scoped);
 
             // Register the correlation ID to the scope of the operation.
-            this.Container.Register<IScopedCorrelationGuidProvider, ScopedCorrelationGuidProvider>(Lifetime.Scoped);
+            this.Container.Register<IScopedCorrelationIdProvider, ScopedCorrelationIdProvider>(Lifetime.Scoped);
 
             this.RegisterPolicies();
         }

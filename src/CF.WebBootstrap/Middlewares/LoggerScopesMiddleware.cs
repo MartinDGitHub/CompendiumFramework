@@ -9,18 +9,18 @@ namespace CF.WebBootstrap.Middlewares
 {
     internal class LoggerScopesMiddleware : IMiddleware
     {
-        private IScopedCorrelationGuidProvider _scopedCorrelationGuidProvider;
+        private IScopedCorrelationIdProvider _scopedCorrelationIdProvider;
         private readonly ILogger _logger;
 
-        public LoggerScopesMiddleware(IScopedCorrelationGuidProvider scopedCorrelationGuidProvider, ILogger<LoggerScopesMiddleware> logger)
+        public LoggerScopesMiddleware(IScopedCorrelationIdProvider scopedCorrelationGuidProvider, ILogger<LoggerScopesMiddleware> logger)
         {
             this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            this._scopedCorrelationGuidProvider = scopedCorrelationGuidProvider ?? throw new ArgumentNullException(nameof(scopedCorrelationGuidProvider));
+            this._scopedCorrelationIdProvider = scopedCorrelationGuidProvider ?? throw new ArgumentNullException(nameof(scopedCorrelationGuidProvider));
         }
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            var correlationGuidScopeProperty = new CorrelationGuidScopeProperty(this._scopedCorrelationGuidProvider.CorrelationGuid);
+            var correlationGuidScopeProperty = new CorrelationIdScopeProperty(this._scopedCorrelationIdProvider.CorrelationId);
             using (this._logger.BeginScope(correlationGuidScopeProperty))
             {
                 await next(context);

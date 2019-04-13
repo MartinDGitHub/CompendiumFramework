@@ -6,11 +6,11 @@ using System.Collections.Generic;
 
 namespace CF.Common.Exceptions
 {
-    public class AuthorizationPolicyException : Exception, IConsumerFriendlyMessagesException, ICorrelatedException 
+    public class AuthorizationPolicyException : Exception, IValidationMessagesException, ICorrelatedException 
     {
-        public IEnumerable<IMessage> ConsumerFriendlyMessages { get; }
+        public IEnumerable<IMessage> ValidationMessages { get; }
 
-        public Guid? CorrelationGuid { get; }
+        public string CorrelationId { get; }
 
         public IEnumerable<string> UnauthorizedReasons { get; }
 
@@ -18,7 +18,7 @@ namespace CF.Common.Exceptions
         {
         }
 
-        public AuthorizationPolicyException(PolicyResult policyResult, Guid? correlationGuid) : base(GetErrorMessage(policyResult, correlationGuid))
+        public AuthorizationPolicyException(PolicyResult policyResult, string correlationId) : base(GetErrorMessage(policyResult, correlationId))
         {
             if (policyResult == null)
             {
@@ -27,17 +27,17 @@ namespace CF.Common.Exceptions
 
             this.UnauthorizedReasons = new List<string>(policyResult.UnauthorizedReasons ?? new string[] { });
 
-            this.ConsumerFriendlyMessages = new IMessage[]
+            this.ValidationMessages = new IMessage[]
             {
                 new Message { Severity = MessageSeverity.Error, Text = policyResult.ConsumerFriendlyMessage ?? string.Empty }
             };
 
-            this.CorrelationGuid = correlationGuid;
+            this.CorrelationId = correlationId;
         }
 
-        private static string GetErrorMessage(PolicyResult policyResult, Guid? correlationGuid)
+        private static string GetErrorMessage(PolicyResult policyResult, string correlationId)
         {
-            return $"Message [{policyResult.ConsumerFriendlyMessage}]\nCorrelation GUID [{correlationGuid}]\nPolicy [{policyResult.Policy.GetType().FullName}] did not authorize for the following reasons:\n[\n[{string.Join("],\n[", policyResult.UnauthorizedReasons)}]\n]";
+            return $"Message [{policyResult.ConsumerFriendlyMessage}]\nPolicy [{policyResult.Policy.GetType().FullName}] did not authorize for the following reasons:\n[\n[{string.Join("],\n[", policyResult.UnauthorizedReasons)}]\n]";
         }
     }
 }
