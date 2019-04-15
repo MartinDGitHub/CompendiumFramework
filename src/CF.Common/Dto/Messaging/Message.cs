@@ -1,7 +1,7 @@
 ﻿using CF.Common.Messaging;
 using System;
 
-namespace CF.Common.Dto.Messages
+namespace CF.Common.Dto.Messaging
 {
     public class Message : IMessage
     {

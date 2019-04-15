@@ -1,6 +1,7 @@
-﻿using CF.Common.Dto.Messages;
+﻿using CF.Common.Dto.Messaging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CF.Common.Messaging
 {
@@ -9,6 +10,13 @@ namespace CF.Common.Messaging
         // Use a list to preserve recording order.
         private List<IMessage> _messages = new List<IMessage>();
         public IEnumerable<IMessage> Messages => this._messages;
+
+        public bool HasErrors => this._messages.Any(x => x.Severity == MessageSeverity.Error);
+            
+        public void Clear()
+        {
+            this._messages.Clear();
+        }
 
         public void Record(MessageSeverity severity, string text)
         {

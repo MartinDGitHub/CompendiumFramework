@@ -1,5 +1,4 @@
-﻿using CF.Common.Dto.Messages;
-using System;
+﻿using System;
 
 namespace CF.Common.Messaging
 {

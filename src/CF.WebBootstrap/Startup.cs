@@ -56,6 +56,9 @@ namespace CF.WebBootstrap
 
             // Add custom authorization and the authentication that authorization depends on.
             services.AddCustomAuthorization();
+
+            // Add a local (in-memory) cache provider.
+            services.AddLazyCache();
         }
 
 
@@ -71,23 +74,24 @@ namespace CF.WebBootstrap
             // Register logging enrichment middleware for subsequent middlewares that log.
             app.UseMiddleware<LoggerScopesMiddleware>(container);
 
-            // Globally handle any exceptions raised by subsequent middlewares. This should come after scoped and logging middleware
-            // so that it can inject scoped dependencies and log.
-            app.UseMiddleware<GlobalExceptionHandlerMiddleware>(container);
-
             // Wire up a custom IoC/DI container integrated with MVC and the native .NET Core container.
             app.UseCustomContainer(env);
 
+            // For local development, permit
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
-            else
-            {
-                // Indicate to browsers that all interactions must be over HTTPS.
-                app.UseHsts();
-            }
+
+            // Globally handle any exceptions raised by subsequent middlewares. This should come after:
+            //  1) scoped middleware to ensure injected dependencies are properly scoped;
+            //  2) logging middleware to ensure scope properties are setup;
+            //  3) developer exception/error page middlewares to permit them to display errors for local development.
+            app.UseMiddleware<GlobalExceptionHandlerMiddleware>(container);
+
+            // Indicate to browsers that all interactions must be over HTTPS.
+            app.UseHsts();
 
             // Redirect HTTP to HTTPS prior to processing requests.
             app.UseHttpsRedirection();

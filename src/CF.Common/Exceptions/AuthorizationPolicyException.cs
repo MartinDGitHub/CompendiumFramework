@@ -1,5 +1,5 @@
 ﻿using CF.Common.Authorization.Policies;
-using CF.Common.Dto.Messages;
+using CF.Common.Dto.Messaging;
 using CF.Common.Messaging;
 using System;
 using System.Collections.Generic;

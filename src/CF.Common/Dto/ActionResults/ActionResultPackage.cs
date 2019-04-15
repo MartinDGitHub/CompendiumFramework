@@ -1,4 +1,4 @@
-﻿using CF.Common.Dto.Messages;
+﻿using CF.Common.Dto.Messaging;
 using System.Collections.Generic;
 
 namespace CF.Common.Dto.ActionResults

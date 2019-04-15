@@ -1,7 +1,9 @@
 ﻿using CF.Application.Repositories;
+using CF.Common.Caching;
 using CF.Common.Correlation;
 using CF.Common.DI;
 using CF.Common.Logging;
+using CF.Infrastructure.Caching;
 using CF.Infrastructure.Correlation;
 using CF.Infrastructure.Logging;
 
@@ -18,6 +20,9 @@ namespace CF.Infrastructure.DI
             // Register the container itself for the duration of the application lifetime.
             this.Container.RegisterInstance(this.Container);
             this.Container.RegisterInstance((IServiceLocatorContainer)this.Container);
+
+            // Register a local (in-memory), application-level cache as a singleton.
+            this.Container.Register<ILocalCache, LocalCache>(Lifetime.Singleton);
 
             // Only one non-generic logger should be registered per application lifetime.
             this.Container.Register<ILogger, Logger>(Lifetime.Singleton);
