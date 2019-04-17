@@ -2,6 +2,7 @@
 using CF.Common.Utility;
 using System;
 using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 
 namespace CF.Common.Codes
 {
@@ -12,6 +13,14 @@ namespace CF.Common.Codes
         private static readonly ConcurrentDictionary<Type, CodeCollection<TCode, TId>> _codesByType = new ConcurrentDictionary<Type, CodeCollection<TCode, TId>>();
 
         public static ICodeCollection<TCode, TId> Codes => _codesByType[typeof(TCode)];
+
+        static CodeBase()
+        {
+            // This static constructor is required to ensure that derived code types are initialized
+            // in advance of accessing the static codes collection and potentially other static members
+            // on the base type.
+            RuntimeHelpers.RunClassConstructor(typeof(TCode).TypeHandle);
+        }
 
         public TId Id { get; }
 

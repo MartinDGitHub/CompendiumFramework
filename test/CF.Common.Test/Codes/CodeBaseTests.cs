@@ -25,6 +25,16 @@ namespace CF.Common.Test.Codes
         }
 
         [Fact]
+        public void Codes_AccessBeforeStaticInitialization_Returned()
+        {
+            // Act
+            var actualResult = MockCode.Codes["1"];
+
+            // Assert
+            Assert.Equal(actualResult, MockCode.One);
+        }
+
+        [Fact]
         public void Enumerable_EnumerateCodes_AllReturned()
         {
             // Arrange

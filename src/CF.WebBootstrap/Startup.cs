@@ -38,7 +38,6 @@ namespace CF.WebBootstrap
                 config.Filters.Add(new AuthorizeFilter(policy));
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(config =>
             {
