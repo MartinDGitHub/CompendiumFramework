@@ -25,7 +25,7 @@ namespace CF.Common.Test.Codes
         }
 
         [Fact]
-        public void Codes_AccessBeforeStaticInitialization_Returned()
+        public void StaticCodesIndexer_EarlyAccessCode_ReturnsCode()
         {
             // Act
             var actualResult = MockCode.Codes["1"];

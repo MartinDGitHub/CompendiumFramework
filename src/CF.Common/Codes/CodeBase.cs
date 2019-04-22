@@ -8,7 +8,7 @@ namespace CF.Common.Codes
 {
     public abstract class CodeBase<TCode, TId> : IValueCode, IIdCode<TId>
         where TCode : CodeBase<TCode, TId>
-        where TId : struct, IComparable
+        where TId : Enum
     {
         private static readonly ConcurrentDictionary<Type, CodeCollection<TCode, TId>> _codesByType = new ConcurrentDictionary<Type, CodeCollection<TCode, TId>>();
 
@@ -28,13 +28,6 @@ namespace CF.Common.Codes
 
         protected CodeBase(TId id, string value)
         {
-            // The only way to positively ensure that ID is an enum is by this check.
-            // There is no generic constraint check to fully enforce this rule.
-            if (!typeof(TId).IsEnum)
-            {
-                throw new ArgumentException($"The ID is of type [{typeof(TId).FullName}] - an enum type is expected.");
-            }
-
             this.Id = id;
             this.Value = value.EnsureArgumentNotNullOrWhitespace(nameof(value));
 

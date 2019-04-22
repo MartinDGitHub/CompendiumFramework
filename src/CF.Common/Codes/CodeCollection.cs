@@ -6,7 +6,7 @@ namespace CF.Common.Codes
 {
     internal class CodeCollection<TCode, TId> : ICodeCollection<TCode, TId>
         where TCode : CodeBase<TCode, TId>
-        where TId : struct, IComparable
+        where TId : Enum
     {
         private readonly HashSet<TCode> _codes = new HashSet<TCode>();
         private readonly Dictionary<TId, TCode> _codeById = new Dictionary<TId, TCode>();

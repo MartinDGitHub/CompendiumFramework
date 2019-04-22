@@ -145,7 +145,7 @@ namespace CF.WebBootstrap.Middlewares
 
                 if (rethrow)
                 {
-                    throw ex;
+                    throw;
                 }
             }
         }
