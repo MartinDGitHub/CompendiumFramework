@@ -1,6 +1,6 @@
 using CF.Common.Logging;
-using CF.WebBootstrap.Extensions.ConfigurationRoot;
-using CF.WebBootstrap.Extensions.WebHostBuilder;
+using CF.Web.AspNetCore.Extensions.ConfigurationRoot;
+using CF.Web.AspNetCore.Extensions.WebHostBuilder;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;

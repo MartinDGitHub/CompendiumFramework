@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CF.Domain", "CF.Domain\CF.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CF.Common", "CF.Common\CF.Common.csproj", "{4A7CD4A5-ED68-4A3E-9FF9-7443B7E268EE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CF.WebBootstrap", "CF.WebBootstrap\CF.WebBootstrap.csproj", "{454CBF9A-7BAF-4423-A5E9-5CB94C77DF07}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CF.Web.AspNetCore", "CF.Web.AspNetCore\CF.Web.AspNetCore.csproj", "{454CBF9A-7BAF-4423-A5E9-5CB94C77DF07}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CF.Domain.Test", "..\test\CF.Domain.Test\CF.Domain.Test.csproj", "{6FB3CC1A-AF23-4764-B9C6-708095892A38}"
 EndProject

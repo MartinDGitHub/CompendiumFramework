@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <IsPackable>false</IsPackable>
@@ -26,7 +25,7 @@
     <ProjectReference Include="..\CF.Application\CF.Application.csproj" />
     <ProjectReference Include="..\CF.Common\CF.Common.csproj" />
     <ProjectReference Include="..\CF.Domain\CF.Domain.csproj" />
-    <ProjectReference Include="..\CF.WebBootstrap\CF.WebBootstrap.csproj" />
+    <ProjectReference Include="..\CF.Web.AspNetCore\CF.Web.AspNetCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>
