@@ -26,6 +26,12 @@ namespace Web.Controllers
         }
 
         [HttpGet]
+        public IActionResult Test()
+        {
+            return View();
+        }
+
+        [HttpGet]
         public IActionResult Error(string correlationId)
         {
             ViewData["RequestId"] = Activity.Current?.Id ?? HttpContext.TraceIdentifier;

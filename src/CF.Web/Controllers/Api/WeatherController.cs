@@ -1,5 +1,5 @@
 ﻿using CF.Application.Authorization.Policies.Access;
-using Microsoft.AspNetCore.Authorization;
+using CF.Web.AspNetCore.Controllers.Api;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
