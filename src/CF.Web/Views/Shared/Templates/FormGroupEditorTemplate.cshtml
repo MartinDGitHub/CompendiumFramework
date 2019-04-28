@@ -1,0 +1,11 @@
+﻿@using CF.Web.Models.Shared
+@model FormGroupEditorTemplateModel
+    <div class="@Model.ColClass">
+        <div class="form-group row">
+            <label asp-for-expr="Model" class="@Model.LabelColClass col-form-label"></label>
+            <div class="@Model.ControlColClass">
+                <input asp-for-expr="Model" class="form-control" is-read-only="@Model.IsReadOnly" is-disabled="@Model.IsDisabled" />
+                <span asp-validation-for-expr="Model" class="text-danger"></span>
+            </div>
+        </div>
+    </div>

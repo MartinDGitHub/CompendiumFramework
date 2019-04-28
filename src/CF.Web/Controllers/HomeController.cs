@@ -1,6 +1,7 @@
 using CF.Application.Authorization.Policies.Access;
 using CF.Common.Authorization.Policies;
 using CF.Common.Config;
+using CF.Web.Models.Home;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -28,7 +29,7 @@ namespace Web.Controllers
         [HttpGet]
         public IActionResult Test()
         {
-            return View();
+            return View(new TestViewModel());
         }
 
         [HttpGet]

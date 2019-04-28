@@ -1,5 +1,4 @@
-﻿using CF.Web.AspNetCore.Models.Shared;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
@@ -10,15 +9,20 @@ using System.Threading.Tasks;
 
 namespace CF.Web.AspNetCore.TagHelpers
 {
-    [HtmlTargetElement("editor", Attributes = AspForAttributeName, TagStructure = TagStructure.WithoutEndTag)]
-    public class EditorTagHelper : TagHelper
+    [HtmlTargetElement("template", Attributes = AspForAttributeName, TagStructure = TagStructure.WithoutEndTag)]
+    public class TemplateTagHelper : TagHelper
     {
-        private const string AspForAttributeName = "asp-for";
-        private const string TemplateViewPath = "~/Views/Shared/EditorTemplates/";
-        private const string TemplateSuffix = "EditorTemplate.cshtml";
+        private class DefaultForModel : IModelExpressionWrapper
+        {
+            public ModelExpression ModelExpression { get; set; }
+        }
 
-        private readonly ICompositeViewEngine _viewEngine;
-        private readonly IViewBufferScope _viewBufferScope;
+        protected const string AspForAttributeName = "asp-for";
+        protected const string TemplateViewPath = "~/Views/Shared/Templates/";
+        protected const string TemplateSuffix = "Template.cshtml";
+
+        protected readonly ICompositeViewEngine _viewEngine;
+        protected readonly IViewBufferScope _viewBufferScope;
 
         [HtmlAttributeNotBound]
         [ViewContext]
@@ -27,11 +31,14 @@ namespace CF.Web.AspNetCore.TagHelpers
         [HtmlAttributeName(AspForAttributeName)]
         public ModelExpression For { get; set; }
 
-        public string Name { get; set; }
+        public virtual string Name { get; set; }
 
         public ViewDataDictionary ViewData { get; set; }
 
-        public EditorTagHelper(ICompositeViewEngine viewEngine, IViewBufferScope viewBufferScope)
+        [HtmlAttributeNotBound]
+        protected virtual IModelExpressionWrapper TemplateModel { get; set; }
+
+        public TemplateTagHelper(ICompositeViewEngine viewEngine, IViewBufferScope viewBufferScope)
         {
             this._viewEngine = viewEngine ?? throw new ArgumentNullException(nameof(viewEngine));
             this._viewBufferScope = viewBufferScope ?? throw new ArgumentNullException(nameof(viewBufferScope));
@@ -49,6 +56,16 @@ namespace CF.Web.AspNetCore.TagHelpers
                 throw new ArgumentNullException(nameof(output));
             }
 
+            if (this.For == null)
+            {
+                throw new InvalidOperationException("No for model epxression was provided.");
+            }
+
+            if (string.IsNullOrWhiteSpace(this.Name))
+            {
+                throw new InvalidOperationException("No template name was provided.");
+            }
+
             // Suppress "editor" tag rendering.
             output.TagName = null;
 
@@ -60,8 +77,16 @@ namespace CF.Web.AspNetCore.TagHelpers
             var viewBuffer = new ViewBuffer(this._viewBufferScope, viewEngineResult.ViewName, ViewBuffer.PartialViewPageSize);
             using (var writer = new ViewBufferTextWriter(viewBuffer, Encoding.UTF8))
             {
-                var baseViewData = ViewData ?? ViewContext.ViewData;
-                var newViewData = new ViewDataDictionary<object>(baseViewData, new EditorTagHelperViewModel { For = this.For });
+                if (this.TemplateModel == null)
+                {
+                    this.TemplateModel = new DefaultForModel { ModelExpression = this.For };
+                }
+                else if (this.TemplateModel.ModelExpression == null)
+                {
+                    this.TemplateModel.ModelExpression = this.For;
+                }
+                var baseViewData = this.ViewData ?? ViewContext.ViewData;
+                var newViewData = new ViewDataDictionary<object>(baseViewData, this.TemplateModel);
                 var partialViewContext = new ViewContext(ViewContext, viewEngineResult.View, newViewData, writer);
 
                 using (viewEngineResult.View as IDisposable)
