@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace CF.Web.AspNetCore.TagHelpers
+namespace CF.Web.AspNetCore.TagHelpers.TemplateTagHelpers
 {
     internal static class TemplateTagHelperUtility
     {

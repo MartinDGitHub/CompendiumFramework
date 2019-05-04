@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
-namespace CF.Web.AspNetCore.TagHelpers
+namespace CF.Web.AspNetCore.TagHelpers.TemplateTagHelpers
 {
     public interface ITemplateTagHelper
     {

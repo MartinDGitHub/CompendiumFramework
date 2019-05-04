@@ -3,17 +3,17 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using System;
 
-namespace CF.Web.AspNetCore.TagHelpers
+namespace CF.Web.AspNetCore.TagHelpers.TemplateTagHelpers
 {
-    [HtmlTargetElement("input", Attributes = AspForExprAttributeName, TagStructure = TagStructure.WithoutEndTag)]
-    public class SelectTemplateTagHelper : SelectTagHelper, ITemplateTagHelper
+    [HtmlTargetElement("textarea", Attributes = AspForExprAttributeName)]
+    public class TextAreaTemplateTagHelper : TextAreaTagHelper, ITemplateTagHelper
     {
         private const string AspForExprAttributeName = "asp-for-expr";
 
         [HtmlAttributeName(AspForExprAttributeName)]
         public IModelExpressionWrapper ModelExpressionWrapper { get; set; }
 
-        public SelectTemplateTagHelper(IHtmlGenerator generator) : base(generator)
+        public TextAreaTemplateTagHelper(IHtmlGenerator generator) : base(generator)
         {
         }
 

@@ -7,7 +7,7 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CF.Web.AspNetCore.TagHelpers
+namespace CF.Web.AspNetCore.TagHelpers.TemplateTagHelpers
 {
     [HtmlTargetElement("template", Attributes = AspForAttributeName, TagStructure = TagStructure.WithoutEndTag)]
     public class TemplateTagHelper : TagHelper

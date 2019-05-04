@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using System.Threading.Tasks;
 
-namespace CF.Web.AspNetCore.TagHelpers
+namespace CF.Web.AspNetCore.TagHelpers.TemplateTagHelpers
 {
     [HtmlTargetElement("form-group-editor", Attributes = AspForAttributeName, TagStructure = TagStructure.WithoutEndTag)]
     public class FormGroupEditorTemplateTagHelper : TemplateTagHelper

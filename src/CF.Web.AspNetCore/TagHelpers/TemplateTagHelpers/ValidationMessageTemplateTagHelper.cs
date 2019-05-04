@@ -4,17 +4,17 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using System;
 using System.Threading.Tasks;
 
-namespace CF.Web.AspNetCore.TagHelpers
+namespace CF.Web.AspNetCore.TagHelpers.TemplateTagHelpers
 {
-    [HtmlTargetElement("label", Attributes = AspForExprAttributeName)]
-    public class LabelTemplateTagHelper : LabelTagHelper, ITemplateTagHelper
+    [HtmlTargetElement("span", Attributes = AspValidationForExprAttributeName)]
+    public class ValidationMessageTemplateTagHelper : ValidationMessageTagHelper, ITemplateTagHelper
     {
-        private const string AspForExprAttributeName = "asp-for-expr";
+        private const string AspValidationForExprAttributeName = "asp-validation-for-expr";
 
-        [HtmlAttributeName(AspForExprAttributeName)]
+        [HtmlAttributeName(AspValidationForExprAttributeName)]
         public IModelExpressionWrapper ModelExpressionWrapper { get; set; }
 
-        public LabelTemplateTagHelper(IHtmlGenerator generator) : base(generator)
+        public ValidationMessageTemplateTagHelper(IHtmlGenerator generator) : base(generator)
         {
         }
 
