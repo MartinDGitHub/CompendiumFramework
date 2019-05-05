@@ -16,18 +16,19 @@
     },
     {
       "library": "jquery-validate@1.19.0",
-      "destination": "wwwroot/lib/jquery-validate/",
-      "files": [
-        "jquery.validate.min.js",
-        "additional-methods.js",
-        "additional-methods.min.js",
-        "jquery.validate.js"
-      ]
+      "destination": "wwwroot/lib/jquery-validate/"
+    },
+    {
+      "library": "twitter-bootstrap@4.3.1",
+      "destination": "wwwroot/lib/twitter-bootstrap/"
+    },
+    {
+      "library": "jquery.dirtyforms@2.0.0",
+      "destination": "wwwroot/lib/jquery.dirtyforms/"
+    },
+    {
+      "library": "datatables@1.10.19",
+      "destination": "wwwroot/lib/datatables/"
     }
-  ,
-{
-  "library": "twitter-bootstrap@4.3.1",
-  "destination": "wwwroot/lib/twitter-bootstrap/"
-}
-]
+  ]
 }

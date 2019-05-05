@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CF.Web.Controllers.Api
 {
-    public class WeatherController : ApiBaseController
+    public class WeatherController : ApiControllerBase
     {
         private readonly IAdminAccessPolicy _adminAccessPolicy;
 

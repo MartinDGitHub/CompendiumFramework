@@ -1,22 +1,30 @@
 ﻿@using CF.Web.Models.Home
 @model TestViewModel
-    <section class="container-fluid">
-        <form asp-controller="Home" asp-action="Test">
-            <div class="form-row">
-                <form-group-editor asp-for="Flag" />
-                <form-group-editor asp-for="Text" />
-                <form-group-editor asp-for="Today" />
-            </div>
-            <div class="form-row">
-                <form-group-editor asp-for="HomePhone" />
-                <form-group-editor asp-for="BusinessPhone" />
-                <form-group-editor asp-for="Timestamp" />
-            </div>
-        </form>
-    </section>
+<section class="container-fluid">
+    <form asp-controller="Home" asp-action="Test" method="post">
+        <div class="form-row">
+            <form-group-editor asp-for="Flag" />
+            <form-group-editor asp-for="Text" />
+            <form-group-editor asp-for="Today" />
+        </div>
+        <div class="form-row">
+            <form-group-editor asp-for="HomePhone" />
+            <form-group-editor asp-for="BusinessPhone" />
+            <form-group-editor asp-for="Timestamp" />
+        </div>
+    </form>
+</section>
 @section Stylesheets  {
 
 }
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(function () {
+            $("form").dirtyForms({
+                dialog: { title: "Warning!" },
+                message: "Unsaved changes have been detected - leaving will discard these changes."
+            });
+        });
+    </script>
 }
