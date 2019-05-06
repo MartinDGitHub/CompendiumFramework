@@ -1,6 +1,5 @@
 ﻿using CF.Common.Messaging;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,14 +9,16 @@ namespace CF.Web.AspNetCore.Controllers
     public abstract class WebControllerBase : Controller
     {
         protected readonly IScopedMessageRecorder _scopedMessageRecorder;
+        protected readonly IScopedCookieMessageRecorder _scopedCookieMessageRecorder;
 
         protected bool IsErrorState => !this.ModelState.IsValid || this._scopedMessageRecorder.HasErrors;
 
         protected bool HasMessages => this.IsErrorState || this._scopedMessageRecorder.Messages.Any();
 
-        protected WebControllerBase(IScopedMessageRecorder scopedMessageRecorder)
+        protected WebControllerBase(IScopedMessageRecorder scopedMessageRecorder, IScopedCookieMessageRecorder scopedCookieMessageRecorder)
         {
             this._scopedMessageRecorder = scopedMessageRecorder ?? throw new ArgumentNullException(nameof(scopedMessageRecorder));
+            this._scopedCookieMessageRecorder = scopedCookieMessageRecorder ?? throw new ArgumentNullException(nameof(scopedCookieMessageRecorder));
         }
 
         protected async Task<IActionResult> TryPostRedirectGetAsync(Func<Task> postOperationAsync, Func<Task<IActionResult>> redirectAsync, Func<Task<IActionResult>> showMessagesAsync)
@@ -55,7 +56,7 @@ namespace CF.Web.AspNetCore.Controllers
         protected async Task<IActionResult> TryPostRedirectGetAsync<TResult>(Func<Task<TResult>> postOperationAsync, Func<TResult, ActionResult> redirect, Func<TResult, Task<IActionResult>> showMessages)
         {
             return await this.TryPostRedirectGetAsync<TResult>(
-                async () => await postOperationAsync(),
+                postOperationAsync,
                 async result => await Task.FromResult(redirect(result)),
                 async result => await showMessages(result));
         }
@@ -63,7 +64,7 @@ namespace CF.Web.AspNetCore.Controllers
         protected async Task<IActionResult> TryPostRedirectGetAsync<TResult>(Func<Task<TResult>> postOperationAsync, Func<TResult, Task<IActionResult>> redirectAsync, Func<TResult, IActionResult> showMessages)
         {
             return await this.TryPostRedirectGetAsync<TResult>(
-                async () => await postOperationAsync(),
+                postOperationAsync,
                 async result => await redirectAsync(result),
                 result => Task.FromResult(showMessages(result)));
         }
@@ -71,7 +72,7 @@ namespace CF.Web.AspNetCore.Controllers
         protected async Task<IActionResult> TryPostRedirectGetAsync<TResult>(Func<Task<TResult>> postOperationAsync, Func<TResult, IActionResult> redirect, Func<TResult, IActionResult> showMessages)
         {
             return await this.TryPostRedirectGetAsync<TResult>(
-                async () => await postOperationAsync(),
+                postOperationAsync,
                 result => Task.FromResult(redirect(result)),
                 result => Task.FromResult(showMessages(result)));
         }
@@ -99,9 +100,37 @@ namespace CF.Web.AspNetCore.Controllers
             }
             else
             {
-                this.HttpContext.Response.Cookies.Append("cf-messages", JsonConvert.SerializeObject(new { Foo = "Foo!" }));
-
                 return await redirectAsync(result);
+            }
+        }
+
+        protected async Task<IActionResult> PostRedirectGetAsync(Func<Task> postOperationAsync, string redirectUrl, Func<IActionResult> onErrorHandlerAsync)
+        {
+            return await this.PostRedirectGetAsync(postOperationAsync, redirectUrl, () => Task.FromResult(onErrorHandlerAsync()));
+
+        }
+
+        protected async Task<IActionResult> PostRedirectGetAsync(Func<Task> postOperationAsync, string redirectUrl, Func<Task<IActionResult>> onErrorHandlerAsync)
+        {
+            await postOperationAsync();
+
+            if (this.IsErrorState)
+            {
+                return await onErrorHandlerAsync();
+            }
+            else
+            {
+                if (this._scopedMessageRecorder.Messages.Any())
+                {
+                    foreach (var message in this._scopedMessageRecorder.Messages)
+                    {
+                        this._scopedCookieMessageRecorder.Record(message);
+                    }
+
+                    this._scopedCookieMessageRecorder.TargetUrl = redirectUrl;
+                }
+
+                return Redirect(redirectUrl);
             }
         }
     }

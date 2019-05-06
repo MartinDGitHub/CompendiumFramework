@@ -2,7 +2,7 @@
 
 namespace CF.Web.AspNetCore.Filters
 {
-    public interface IApiActionResultPackageActionFilterHandler : IActionFilter
+    public interface IWebActionResultCookieMessageActionFilterHandler : IActionFilter
     {
     }
 }

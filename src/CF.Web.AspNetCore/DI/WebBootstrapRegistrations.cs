@@ -55,12 +55,13 @@ namespace CF.Web.AspNetCore.DI
             // Register a claims principal provider which will rely on the HTTP context accessor.
             this.Container.Register<IClaimsPrincipalProvider, HttpClaimsPrincipalProvider>(Lifetime.Scoped);
 
-            // Register custom filter processors.
-            // These processors must be registered so that they can be resolved by the IServiceLocatorContainer, avoiding
+            // Register custom filter handlers.
+            // These handlers must be registered so that they can be resolved by the IServiceLocatorContainer, avoiding
             // the failure of ASP.NET Core to resolve action filter dependencies, and throwing the follow exception:
             //      System.ArgumentException: Cannot instantiate implementation type '...' for service type '...'.
             //      at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.Populate(IEnumerable`1 descriptors)
             this.Container.Register<IApiActionResultPackageActionFilterHandler, ApiActionResultPackageActionFilterHandler>();
+            this.Container.Register<IWebActionResultCookieMessageActionFilterHandler, WebActionResultCookieMessageActionFilterHandler>();
 
             // Register configuration per request to ensure that any configuration changes are discovered 
             // and to keep authorization consistent throughout a request.

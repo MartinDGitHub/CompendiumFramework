@@ -74,8 +74,7 @@ namespace CF.Web.AspNetCore.Middlewares
                             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
                             var consumerFriendlyMessagesException = ex as IValidationMessagesException;
-                            resultPackage.ValidationMessages = consumerFriendlyMessagesException?.ValidationMessages
-                                .Select(x => new Message { Timestamp = x.Timestamp, Severity = x.Severity, Text = x.Text }) ?? new Message[] { };
+                            resultPackage.ValidationMessages = consumerFriendlyMessagesException?.ValidationMessages.Select(x => new Message(x)) ?? new Message[] { };
                         }
                         else
                         {

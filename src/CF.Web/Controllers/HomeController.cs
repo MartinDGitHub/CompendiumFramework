@@ -15,7 +15,7 @@ namespace Web.Controllers
     {
         private ILogger<HomeController> _logger;
 
-        public HomeController(IScopedMessageRecorder scopedMessageRecorder, ILogger<HomeController> logger) : base(scopedMessageRecorder)
+        public HomeController(IScopedMessageRecorder scopedMessageRecorder, IScopedCookieMessageRecorder scopedCookieMessageRecorder, ILogger<HomeController> logger) : base(scopedMessageRecorder, scopedCookieMessageRecorder)
         {
             this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -37,11 +37,7 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Test(TestViewModel model)
         {
-            return await TryPostRedirectGetAsync(
-                () => Task.CompletedTask,
-                () => Redirect(Url.Action(nameof(Test).ToLower())),
-                () => View(model)
-                );
+            return await PostRedirectGetAsync(() => Task.CompletedTask, Url.Action(nameof(Test).ToLower()), () => View(model));
         }
 
         [HttpGet]

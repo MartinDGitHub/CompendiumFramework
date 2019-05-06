@@ -52,7 +52,7 @@ namespace CF.Web.AspNetCore.Filters
                 {
                     Success = !this._messageRecorder.HasErrors,
                     CorrelationId = this._scopedCorrelationGuidProvider.CorrelationId,
-                    ValidationMessages = this._messageRecorder.Messages.Select(x => new Message { Timestamp = x.Timestamp, Severity = x.Severity, Text = x.Text }) ?? new Message[] { },
+                    ValidationMessages = this._messageRecorder.Messages.Select(x => new Message(x)) ?? new Message[] { },
                 };
 
                 // If error severity messages were recorded, consider this to have been bad request. Return a 404
@@ -99,6 +99,11 @@ namespace CF.Web.AspNetCore.Filters
                     context.Result = objectResult;
                 }
             }
+        }
+
+        public void OnActionExecuting(ActionExecutingContext context)
+        {
+            // Do nothing before the action execution.
         }
     }
 }

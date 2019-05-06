@@ -13,6 +13,7 @@ namespace CF.Common.DI
         {
             // Messages are recorded to the scope of an operation.
             this.Container.Register<IScopedMessageRecorder, ScopedMessageRecorder>(Lifetime.Scoped);
+            this.Container.Register<IScopedCookieMessageRecorder, ScopedCookieMessageRecorder>(Lifetime.Scoped);
 
             this.RegisterPolicies();
         }
