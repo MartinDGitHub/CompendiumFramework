@@ -1,5 +1,6 @@
 ﻿using CF.Common.Messaging;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -92,12 +93,14 @@ namespace CF.Web.AspNetCore.Controllers
         {
             var result = await postOperationAsync();
 
-            if (this.HasMessages)
+            if (this.IsErrorState)
             {
                 return await showMessagesAsync(result);
             }
             else
             {
+                this.HttpContext.Response.Cookies.Append("cf-messages", JsonConvert.SerializeObject(new { Foo = "Foo!" }));
+
                 return await redirectAsync(result);
             }
         }

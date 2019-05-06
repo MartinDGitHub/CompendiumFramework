@@ -17,7 +17,7 @@ namespace CF.Web.Controllers.Api
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<string>>> GetWeatherItems()
+        public async Task<IEnumerable<string>> GetWeatherItems()
         {
             (await this._adminAccessPolicy.AuthorizeAsync()).EnsureAuthorized();
 

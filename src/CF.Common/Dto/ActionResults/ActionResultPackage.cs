@@ -23,7 +23,7 @@ namespace CF.Common.Dto.ActionResults
         /// <summary>
         /// Get a consumer-friendly message for when an unexpected error occurred.
         /// </summary>
-        public IEnumerable<Message> UnexpectedErrorMessage { get; set; }
+        public Message UnexpectedErrorMessage { get; set; }
 
         /// <summary>
         /// Gets the correlation ID for associating log messages to an action result, etc.

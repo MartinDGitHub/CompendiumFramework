@@ -6,9 +6,23 @@
     ]
   },
   {
-    "outputFileName": "wwwroot/js/site.min.js",
+    "outputFileName": "wwwroot/js/common.min.js",
     "inputFiles": [
-      "wwwroot/js/site.js"
+      "wwwroot/js/common.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/dist/cf-common.min.js",
+    "inputFiles": [
+      "wwwroot/lib/jquery/jquery.min.js",
+      "wwwroot/lib/twitter-bootstrap/js/bootstrap.bundle.min.js",
+      "wwwroot/lib/js-cookie/js.cookie.min.js",
+      "wwwroot/js/common.min.js"
     ],
     "minify": {
       "enabled": true,

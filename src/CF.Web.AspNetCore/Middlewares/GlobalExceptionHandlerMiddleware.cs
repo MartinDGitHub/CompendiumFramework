@@ -63,10 +63,11 @@ namespace CF.Web.AspNetCore.Middlewares
                     {
                         context.Response.ContentType = "application/json";
 
-                        var resultPackage = new ActionResultPackage<object>();
-
-                        resultPackage.Success = false;
-                        resultPackage.CorrelationId = correlationId;
+                        var resultPackage = new ActionResultPackage<object>
+                        {
+                            Success = false,
+                            CorrelationId = correlationId,
+                        };
 
                         if (ex is ValidationMessagesException)
                         {
@@ -80,10 +81,8 @@ namespace CF.Web.AspNetCore.Middlewares
                         {
                             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-                            resultPackage.ValidationMessages = new Message[] 
-                            {
-                                new Message { Severity = MessageSeverity.Error, Text = $"An unexpected error has occurred. Please contact your system administrator with the following code {resultPackage.CorrelationId}." }
-                            };
+                            resultPackage.UnexpectedErrorMessage =
+                                new Message { Severity = MessageSeverity.Error, Text = $"An unexpected error has occurred. Please contact your system administrator with the following code {resultPackage.CorrelationId}." };
 
                             this._logger.Error(ex, $"An unexpected error occurred. Correlation GUID [{resultPackage.CorrelationId}].");
                         }
@@ -114,7 +113,7 @@ namespace CF.Web.AspNetCore.Middlewares
                             }
                             else
                             {
-                                // If the response hasn't started yet, re-execute to the error page where the they're
+                                // If the response hasn't started yet, re-execute to the error page where the
                                 // messages can be extracted and displayed. Disable any caching that would
                                 // interfere with displaying the new error message.
                                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;

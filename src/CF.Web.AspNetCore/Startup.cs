@@ -2,6 +2,7 @@
 using CF.Web.AspNetCore.Authentication;
 using CF.Web.AspNetCore.Extensions.ApplicationBuilder;
 using CF.Web.AspNetCore.Extensions.ServiceCollection;
+using CF.Web.AspNetCore.Filters;
 using CF.Web.AspNetCore.Middlewares;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -35,7 +36,12 @@ namespace CF.WebBootstrap
                 .AddAuthenticationSchemes(Constants.DefaultAuthenticationScheme)
                 .RequireAuthenticatedUser()
                 .Build();
+
+                // Add framework filters.
                 config.Filters.Add(new AuthorizeFilter(policy));
+
+                // Add custom filters.
+                config.Filters.Add<ApiActionResultPackageActionFilter>();
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             // In production, the React files will be served from this directory
