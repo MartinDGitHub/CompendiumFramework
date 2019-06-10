@@ -6,7 +6,7 @@ namespace CF.Web.AspNetCore.Config
 {
     class RootConfig : IRootConfig
     {
-        public RootConfig(IOptionsSnapshot<Root> options)
+        public RootConfig(IOptionsMonitor<Root> options)
         {
         }
     }

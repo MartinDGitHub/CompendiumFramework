@@ -1,8 +1,7 @@
 ﻿using CF.Common.DI;
+using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 
 namespace CF.Infrastructure.DI
 {
@@ -30,10 +29,18 @@ namespace CF.Infrastructure.DI
         public IContainer RegisterContainer(TContainerImpl containerImpl)
         {
             // Only Simple Injector is supported right now.
+            /*
             var simpleInjectorContainer = containerImpl as SimpleInjector.Container;
             if (simpleInjectorContainer == null)
             {
                 throw new Exception($"A container of type [{typeof(TContainerImpl).FullName}] was provided. Only [{typeof(SimpleInjector.Container).FullName}] is supported.");
+            }
+            */
+
+            var aspDotNetCoreContainer = containerImpl as IServiceCollection;
+            if (containerImpl == null)
+            {
+                throw new Exception($"A container of type [{typeof(TContainerImpl).FullName}] was provided. Only [{typeof(IServiceCollection).FullName}] is supported.");
             }
 
             // Use double-checked locking for thread safety to enforce that only one 
@@ -44,7 +51,8 @@ namespace CF.Infrastructure.DI
                 {
                     if (_container == null)
                     {
-                        _container = new Container(simpleInjectorContainer);
+                        /* _container = new Container(simpleInjectorContainer); */
+                        _container = new Container(aspDotNetCoreContainer);
                         _containerImpl = containerImpl;
                     }
                 }

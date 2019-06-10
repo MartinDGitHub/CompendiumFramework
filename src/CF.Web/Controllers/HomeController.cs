@@ -1,10 +1,10 @@
 using CF.Application.Authorization.Policies.Access;
+using CF.Common.Logging;
 using CF.Common.Messaging;
 using CF.Web.AspNetCore.Controllers;
 using CF.Web.Models.Home;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -37,7 +37,13 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Test(TestViewModel model)
         {
-            return await PostRedirectGetAsync(() => Task.CompletedTask, Url.Action(nameof(Test).ToLower()), () => View(model));
+            return await PostRedirectGetAsync(
+                model, 
+                () => {
+                    this._scopedMessageRecorder.Record(MessageSeverity.Success, "Success!");
+                    return Task.CompletedTask;
+                    }, 
+                Url.Action(nameof(Test).ToLower()));
         }
 
         [HttpGet]

@@ -1,9 +1,8 @@
-﻿using CF.Common.Correlation;
-using CF.Common.Messaging;
+﻿using CF.Common.Messaging;
 
 namespace CF.Common.DI
 {
-    internal class CommonRegistrations :  RegistrationsBase, IRegistrations
+    internal class CommonRegistrations : RegistrationsBase, IRegistrations
     {
         public CommonRegistrations(IContainer container) : base(container)
         {

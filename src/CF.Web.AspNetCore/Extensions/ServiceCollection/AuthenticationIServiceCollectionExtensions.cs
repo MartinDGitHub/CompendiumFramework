@@ -9,10 +9,6 @@ namespace CF.Web.AspNetCore.Extensions.ServiceCollection
         {
             // Only one default authentication scheme can be added.
             services.AddAuthentication(Constants.DefaultAuthenticationScheme);
-
-            // Ensure the HTTP Context providing the claims principal is available for injecting into
-            // authorization policies.
-            services.AddHttpContextAccessor();
         }
     }
 }

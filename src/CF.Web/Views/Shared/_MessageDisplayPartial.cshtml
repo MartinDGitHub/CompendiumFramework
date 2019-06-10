@@ -1,0 +1,36 @@
+﻿@using CF.Common.Messaging
+@inject IScopedMessageRecorder ScopedMessageRecorder
+
+<div class="container-fluid">
+</div>
+@foreach (var message in ScopedMessageRecorder.Messages)
+{
+    <div class="row">
+        <div class="col">
+
+        </div>
+    </div>
+}
+<script>
+    CF.Messaging = CF.Messaging || {};
+    CF.Messaging.severityValueByName = {};
+@foreach (var messageSeverity in Enum.GetValues(typeof(MessageSeverity)))
+{
+    <text>CF.Messaging.severityValueByName["@messageSeverity"] = @((int)messageSeverity);</text>
+
+}
+    $(function () {
+        const MESSAGES_COOKIE_NAME = 'cf-messages';
+        let messagesCookieRawValue = null;
+        if (Cookies && (messagesCookieRawValue = Cookies.get(MESSAGES_COOKIE_NAME))) {
+            debugger;
+            var messages = JSON.parse(messagesCookieRawValue);
+            if (messages && messages.TargetUrl && messages.TargetUrl.toLowerCase() === window.location.pathname.toLowerCase()) {
+                // Act on the messages.
+
+                // Delete the cookie so that it isn't re-sent.
+                Cookies.remove(MESSAGES_COOKIE_NAME);
+            }
+        }
+    });
+</script>

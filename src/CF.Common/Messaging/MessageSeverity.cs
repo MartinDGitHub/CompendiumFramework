@@ -3,6 +3,7 @@
     public enum MessageSeverity
     {
         None,
+        Success,
         Info,
         Warning,
         Error,

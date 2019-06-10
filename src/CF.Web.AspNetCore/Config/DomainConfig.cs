@@ -9,9 +9,9 @@ namespace CF.Web.AspNetCore.Config
     {
         public string Name { get; private set; }
 
-        public DomainConfig(IOptionsSnapshot<Root> options)
+        public DomainConfig(IOptionsMonitor<Root> options)
         {
-            var domainOptions = options.Value?.Domain ?? throw new Exception($"Options for [{nameof(Options.Domain)}] were not loaded.");
+            var domainOptions = options.CurrentValue?.Domain ?? throw new Exception($"Options for [{nameof(Options.Domain)}] were not loaded.");
 
             if (string.IsNullOrWhiteSpace(domainOptions.Name))
             {

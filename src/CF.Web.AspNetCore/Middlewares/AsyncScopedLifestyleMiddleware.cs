@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿
+using Microsoft.AspNetCore.Http;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 using System;

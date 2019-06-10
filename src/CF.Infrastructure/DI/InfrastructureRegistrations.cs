@@ -19,10 +19,10 @@ namespace CF.Infrastructure.DI
         {
             // Register the container itself for the duration of the application lifetime.
             this.Container.RegisterInstance(this.Container);
-            this.Container.RegisterInstance((IServiceLocatorContainer)this.Container);
+            this.Container.Register<IServiceLocatorContainer, ServiceLocatorContainer>(Lifetime.Singleton);
 
-            // Register a local (in-memory), application-level cache as a singleton.
-            this.Container.Register<ILocalCache, LocalCache>(Lifetime.Singleton);
+            // Register a local (in-memory), application-level cache as transient, as IAppCache is also transient.
+            this.Container.Register<ILocalCache, LocalCache>(Lifetime.Transient);
 
             // Only one non-generic logger should be registered per application lifetime.
             this.Container.Register<ILogger, Logger>(Lifetime.Singleton);
