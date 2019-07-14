@@ -10,15 +10,13 @@ namespace CF.Application.Authorization.Policies.Access
 {
     internal class UserAccessPolicy : AccessPolicyBase, IUserAccessPolicy
     {
-        private readonly static IEnumerable<RoleClaimRequirement> _roleClaimRequirements = new []
+        public override IEnumerable<RoleClaimRequirement> Requirements { get; } = new[]
         {
             new RoleClaimRequirement(UserRoleName),
             // Include higher access groups that include lower access groups.
             // Important! An authorize mode of any must be used when evaluating.
             new RoleClaimRequirement(AdminRoleName),
         };
-
-        protected override IEnumerable<RoleClaimRequirement> RoleClaimRequirements => _roleClaimRequirements;
 
         protected override IEnumerable<WindowsRoleRequirement> WindowsRoleRequirements { get; }
 

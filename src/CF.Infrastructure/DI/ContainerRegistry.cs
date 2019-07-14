@@ -28,15 +28,6 @@ namespace CF.Infrastructure.DI
         /// <returns>An implementation-agnostic container for performing registrations, etc.</returns>
         public IContainer RegisterContainer(TContainerImpl containerImpl)
         {
-            // Only Simple Injector is supported right now.
-            /*
-            var simpleInjectorContainer = containerImpl as SimpleInjector.Container;
-            if (simpleInjectorContainer == null)
-            {
-                throw new Exception($"A container of type [{typeof(TContainerImpl).FullName}] was provided. Only [{typeof(SimpleInjector.Container).FullName}] is supported.");
-            }
-            */
-
             var aspDotNetCoreContainer = containerImpl as IServiceCollection;
             if (containerImpl == null)
             {
@@ -51,7 +42,6 @@ namespace CF.Infrastructure.DI
                 {
                     if (_container == null)
                     {
-                        /* _container = new Container(simpleInjectorContainer); */
                         _container = new Container(aspDotNetCoreContainer);
                         _containerImpl = containerImpl;
                     }

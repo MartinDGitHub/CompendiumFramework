@@ -33,7 +33,7 @@ namespace CF.Web.AspNetCore.Authorization
                 // NOTE: adding authentication schemes here can oddly break the lookup for IsInRole on a Windows claims principal...
                 .AddAuthenticationSchemes(Constants.AuthenticationSchemes)
                 .RequireAuthenticatedUser()
-                .AddRequirements(new PolicyRequirement(policyType));
+                .AddRequirements(new StandalonePolicyRequirement(policyType));
 
             return Task.FromResult(policy.Build());
         }

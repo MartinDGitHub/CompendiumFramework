@@ -12,7 +12,7 @@ namespace CF.Common.Authorization.Policies
     /// <summary>
     /// A base policy for access authorization that checks for access based on either role claims or Windows roles.
     /// </summary>
-    public abstract class AccessPolicyBase : IPolicy
+    public abstract class AccessPolicyBase : IPolicy<RoleClaimRequirement>
     {
         private readonly IDomainConfig _domainConfig;
         private readonly IClaimsPrincipalProvider _claimsPrincipalProvider;
@@ -33,7 +33,7 @@ namespace CF.Common.Authorization.Policies
             All, // Most secure, default.
         }
 
-        protected abstract IEnumerable<RoleClaimRequirement> RoleClaimRequirements { get; }
+        public abstract IEnumerable<RoleClaimRequirement> Requirements { get; }
 
         protected abstract IEnumerable<WindowsRoleRequirement> WindowsRoleRequirements { get; }
 
@@ -55,7 +55,7 @@ namespace CF.Common.Authorization.Policies
         {
             // First try the generic route of checking for standard role claims.
             var unmetReasons = new List<string>();
-            var tasks = this.RoleClaimRequirements.Select(async x => await this._roleClaimRequirementHandler.HandleRequirementAsync(x));
+            var tasks = this.Requirements.Select(async x => await this._roleClaimRequirementHandler.HandleRequirementAsync(x));
             var taskResults = await Task.WhenAll(tasks);
             unmetReasons.AddRange(taskResults.Where(x => !x.IsMet).Select(x => x.UnmetMessage));
             var isAuthorized = IsAuthorized(taskResults);

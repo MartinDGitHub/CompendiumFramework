@@ -24,11 +24,9 @@ namespace CF.Common.DI
         /// </remarks>
         protected void RegisterPolicies()
         {
-            this.RegisterDerivedInterfaceImplementations<IPolicy>(this.Container, Lifetime.Scoped);
-            this.RegisterDerivedInterfaceImplementations(typeof(IRequirementHandler<>), this.Container, Lifetime.Scoped);
-            this.RegisterDerivedInterfaceImplementations(typeof(IRequirementHandler<,>), this.Container, Lifetime.Scoped);
-            //this.Container.Register(typeof(IRequirementHandler<>), this.GetType().Assembly, Lifetime.Scoped);
-            //this.Container.Register(typeof(IRequirementHandler<,>), this.GetType().Assembly, Lifetime.Scoped);
+            this.Container.RegisterAsImplementedInterfaces<IPolicy>(this.GetType().Assembly, Lifetime.Scoped);
+            this.Container.Register(typeof(IRequirementHandler<>), this.GetType().Assembly, Lifetime.Scoped);
+            this.Container.Register(typeof(IRequirementHandler<,>), this.GetType().Assembly, Lifetime.Scoped);
         }
 
         protected void RegisterDerivedInterfaceImplementations<TInterface>(IContainer container, Lifetime lifetime) where TInterface : class

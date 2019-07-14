@@ -10,12 +10,10 @@ namespace CF.Application.Authorization.Policies.Access
 {
     internal class AdminAccessPolicy : AccessPolicyBase, IAdminAccessPolicy
     {
-        private readonly static IEnumerable<RoleClaimRequirement> _roleClaimRequirements = new [] 
+        public override IEnumerable<RoleClaimRequirement> Requirements { get; } = new[]
         {
             new RoleClaimRequirement(AdminRoleName)
         };
-
-        protected override IEnumerable<RoleClaimRequirement> RoleClaimRequirements => _roleClaimRequirements;
 
         protected override IEnumerable<WindowsRoleRequirement> WindowsRoleRequirements { get; }
 

@@ -9,22 +9,21 @@ namespace CF.Common.Utility
 {
     public static class ReflectionHelper
     {
-        public static HashSet<Type> GetLeafInterfaceTypes<TInterface>(Assembly assembly, Regex namespaceFilter = null) where TInterface : class
+        public static HashSet<Type> GetLeafInterfaceTypes<TAssignableToType>(Assembly assembly, Regex namespaceFilter = null) where TAssignableToType : class
         {
-            return ReflectionHelper.GetLeafInterfaceTypes(typeof(TInterface), assembly, namespaceFilter);
+            return ReflectionHelper.GetLeafInterfaceTypes(typeof(TAssignableToType), assembly, namespaceFilter);
         }
 
-        public static HashSet<Type> GetLeafInterfaceTypes(Type interfaceType, Assembly assembly, Regex namespaceFilter = null)
+        public static HashSet<Type> GetLeafInterfaceTypes(Type assignableToType, Assembly assembly, Regex namespaceFilter = null)
         {
-            return ReflectionHelper.GetLeafInterfaceTypes(interfaceType, assembly.GetTypes(), namespaceFilter);
+            return ReflectionHelper.GetLeafInterfaceTypes(assignableToType, assembly.GetTypes(), namespaceFilter);
         }
 
         /// <summary>
-        /// Gets all leaf interface types that derive from the specified interface within the specified
-        /// assembly and match the optional namespace filter. If the specified interface is a leaf interface, 
-        /// it is returned.
+        /// Gets all leaf interface types that are assignable to (derive from) the specified interface within the specified
+        /// assembly and match the optional namespace filter. If the specified interface is a leaf interface, it is returned.
         /// </summary>
-        public static HashSet<Type> GetLeafInterfaceTypes(Type interfaceType, IEnumerable<Type> candidateTypes, Regex namespaceFilter = null)
+        public static HashSet<Type> GetLeafInterfaceTypes(Type assignableToType, IEnumerable<Type> candidateTypes, Regex namespaceFilter = null)
         {
             // Get all candidate interfaces from the specified assembly.
             var candidateInterfaces = candidateTypes
@@ -32,7 +31,7 @@ namespace CF.Common.Utility
                 // Reduce to interfaces.
                 x.IsInterface &&
                 // Reduce the interface type itself and interfaces that have the specified interface type as an ancestor.
-                (x == interfaceType || x.GetInterfaces().Contains(interfaceType)) &&
+                (x == assignableToType || x.GetInterfaces().Contains(assignableToType)) &&
                 // Reduce to types that match the namespace filter (if supplied).
                 (namespaceFilter == null || namespaceFilter.IsMatch(x.Namespace)));
 

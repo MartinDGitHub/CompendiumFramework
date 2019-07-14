@@ -1,11 +1,8 @@
 ﻿using CF.Infrastructure.DI;
 using CF.Web.AspNetCore.Authentication;
-using CF.Web.AspNetCore.DI;
-using CF.Web.AspNetCore.Extensions.ApplicationBuilder;
 using CF.Web.AspNetCore.Extensions.ServiceCollection;
 using CF.Web.AspNetCore.Filters;
 using CF.Web.AspNetCore.Middlewares;
-using LazyCache;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,8 +12,6 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
-//using SimpleInjector;
 using System;
 
 namespace CF.WebBootstrap
@@ -61,10 +56,9 @@ namespace CF.WebBootstrap
             // Bootstrap configuration before adding custom services configuration that may rely on configuration.
             services.AddCustomConfig(configuration);
 
-            //services.AddScoped<LoggerScopesMiddleware>();
-            //services.AddScoped<GlobalExceptionHandlerMiddleware>();
-
-            services.BuildServiceProvider();
+            // Ensure the service provider is available for rare cases where 
+            // we need to manually resolve instances from the DI container.
+            services.AddSingleton<IServiceProvider>(services.BuildServiceProvider(validateScopes: true));
 
             // Add a custom IoC/DI container and perform the custom registrations to set up the container.
             services.AddCustomContainer();
@@ -82,34 +76,6 @@ namespace CF.WebBootstrap
 
         public static void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider, IConfiguration configuration)
         {
-            var containerRegistry = new ContainerRegistry<IServiceCollection>();
-            /*
-            // Use Simple Injector to register custom middleware to ensure it is present for verification
-            // and to use the Simple Injector container.
-            var containerRegistry = new ContainerRegistry<Container>();
-            var container = containerRegistry.ContainerImpl;
-
-            // Register middleware that creates a request scope for subsequent middlewares that depend on request-scoped instances.
-            app.UseMiddleware<AsyncScopedLifestyleMiddleware>(container);
-
-            // Register logging enrichment middleware for subsequent middlewares that log.
-            app.UseMiddleware<LoggerScopesMiddleware>(container);
-
-            container.Register(() => serviceProvider.GetService<IConfiguration>());
-            container.Register(() => serviceProvider.GetService<IHostingEnvironment>());
-            container.Register(() => serviceProvider.GetService<IAppCache>());
-            container.Register(() => serviceProvider.GetService<IHttpContextAccessor>());
-            */
-
-            // Register middleware that creates a request scope for subsequent middlewares that depend on request-scoped instances.
-            //app.UseMiddleware(typeof(AsyncScopedLifestyleMiddleware));
-
-            //var webBootstrapRegistrations = new WebBootstrapRegistrations(containerRegistry.Container);
-            //webBootstrapRegistrations.RegisterConfigurationSections(configuration);
-
-            // Wire up a custom IoC/DI container integrated with MVC and the native .NET Core container.
-            app.UseCustomContainer(env);
-
             // Register logging enrichment middleware for subsequent middlewares that log.
             app.UseMiddleware<LoggerScopesMiddleware>();
 
@@ -118,13 +84,17 @@ namespace CF.WebBootstrap
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
+
+                // Validate the the container registrations in development mode. This assumes there are no
+                // runtime registrations that would change the contents of the container in other environments.
+                var containerRegistry = new ContainerRegistry<IServiceCollection>();
+                containerRegistry.Container.EnsureValid(serviceProvider);
             }
 
             // Globally handle any exceptions raised by subsequent middlewares. This should come after:
             //  1) scoped middleware to ensure injected dependencies are properly scoped;
             //  2) logging middleware to ensure scope properties are setup;
             //  3) developer exception/error page middlewares to permit them to display errors for local development.
-            //app.UseMiddleware<GlobalExceptionHandlerMiddleware>(container);
             app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
             // Indicate to browsers that all interactions must be over HTTPS.
@@ -151,6 +121,7 @@ namespace CF.WebBootstrap
 
             });
 
+            // Use React as the SPA.
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
