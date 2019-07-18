@@ -125,6 +125,22 @@ namespace CF.Common.DI
         void RegisterAsImplementedInterfaces<TAssignableToType>(Lifetime lifetime) where TAssignableToType : class;
 
         /// <summary>
+        /// Registers all implementation types in the implementation assembly which are assignable to the specified type, for all implemented interface type dependencies, 
+        /// where the implementation type fulfills the predicate condition, using the specified lifetime.
+        /// </summary><remarks>
+        /// Open generic types are supported as the assignable to type.
+        /// </remarks>
+        void RegisterAsImplementedInterfaces(Type assignableToType, Assembly implementationAssembly, Predicate<Type> implementationTypePredicate, Lifetime lifetime);
+
+        /// <summary>
+        /// Registers all implementation types in the implementation assembly which are assignable to the specified type, for all implemented interface type dependencies, 
+        /// where the implementation type fulfills the predicate condition, using the specified lifetime.
+        /// </summary><remarks>
+        /// Open generic types are supported as the assignable to type.
+        /// </remarks>
+        void RegisterAsImplementedInterfaces<TAssignableToType>(Assembly implementationAssembly, Predicate<Type> implementationTypePredicate, Lifetime lifetime) where TAssignableToType : class;
+
+        /// <summary>
         /// Performs checking to ensure the registrations are valid, throwing an exception if errors are found.
         /// </summary><remarks>
         /// <para>

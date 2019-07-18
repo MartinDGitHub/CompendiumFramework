@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace CF.Web.AspNetCore.Controllers
 {
+    [Route("[controller]")]
     public abstract class WebControllerBase : Controller
     {
         protected readonly IScopedMessageRecorder _scopedMessageRecorder;

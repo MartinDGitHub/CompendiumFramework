@@ -17,15 +17,17 @@ namespace CF.Common.DI
         }
 
         /// <summary>
-        /// Register policies and their requirement handlers. Authorization concerns should be stable throughout 
-        /// an operation so register as scoped to the operation.
-        /// </summary><remarks>
-        /// Note: this relies on each policy having a unique interface that ultimately derives from the root policy interfaces.
-        /// </remarks>
+        /// Register policies and their requirement handlers.
+        /// </summary>
         protected void RegisterPolicies()
         {
-            this.Container.RegisterAsImplementedInterfaces<IPolicy>(this.GetType().Assembly, Lifetime.Scoped);
-            this.Container.Register(typeof(IRequirementHandler<>), this.GetType().Assembly, Lifetime.Scoped);
+            // Standalone policies are registered as transient as .NET Core transient registrations depend on them.
+            this.Container.RegisterAsImplementedInterfaces<IPolicy>(this.GetType().Assembly, type => typeof(IStandalonePolicy).IsAssignableFrom(type), Lifetime.Transient);
+            this.Container.Register(typeof(IRequirementHandler<>), this.GetType().Assembly, Lifetime.Transient);
+
+            // Non-standalone policies are scoped to the request. This helps ensure the policy is consistent throughout
+            // the lifetime of the request.
+            this.Container.RegisterAsImplementedInterfaces<IPolicy>(this.GetType().Assembly, type => !typeof(IStandalonePolicy).IsAssignableFrom(type), Lifetime.Scoped);
             this.Container.Register(typeof(IRequirementHandler<,>), this.GetType().Assembly, Lifetime.Scoped);
         }
 

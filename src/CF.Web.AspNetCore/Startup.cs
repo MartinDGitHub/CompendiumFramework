@@ -79,14 +79,16 @@ namespace CF.WebBootstrap
             // Register logging enrichment middleware for subsequent middlewares that log.
             app.UseMiddleware<LoggerScopesMiddleware>();
 
-            // For local development, permit
             if (env.IsDevelopment())
             {
+                // These should come before the global exception handler to catch and handle exceptions
+                // rethrown from it in a development environment.
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
 
                 // Validate the the container registrations in development mode. This assumes there are no
                 // runtime registrations that would change the contents of the container in other environments.
+                // NOTE: this operation can be expensive. Consider running it as an integration test.
                 var containerRegistry = new ContainerRegistry<IServiceCollection>();
                 containerRegistry.Container.EnsureValid(serviceProvider);
             }
@@ -113,15 +115,14 @@ namespace CF.WebBootstrap
             app.UseAuthentication();
 
             // Use the MVC pattern for routing requests to actions.
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller}/{action=Index}/{id?}");
+            // We use attribute routing instead of conventional routing for the following reasons:
+            // 1) Makes routing deliberate and declarative.
+            // 2) Consistency of routing specification across Web API and MVC actions.
+            // 3) Permits deriving from Controller in the CF.Web.AspNetCore project.
+            app.UseMvc();
 
-            });
-
-            // Use React as the SPA.
+            // Use React as the SPA. This should come after MVC, so that controller action routing
+            // takes precedence.
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";

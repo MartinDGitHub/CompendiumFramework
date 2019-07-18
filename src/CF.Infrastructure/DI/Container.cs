@@ -150,12 +150,7 @@ namespace CF.Infrastructure.DI
 
         public void RegisterAsImplementedInterfaces(Type assignableToType, Assembly implementationAssembly, Lifetime lifetime)
         {
-            this._serviceCollection.Scan(scan => scan
-                .FromAssemblies(implementationAssembly)
-                .AddClasses(classes => classes.AssignableTo(assignableToType))
-                .AsImplementedInterfaces()
-                .WithLifetime(ServiceLifetimeByLifetime[lifetime])
-            );
+            this.RegisterAsImplementedInterfaces(assignableToType, implementationAssembly, implementationTypePredicate: null, lifetime);
         }
 
         public void RegisterAsImplementedInterfaces<TAssignableToType>(Assembly implementationAssembly, Lifetime lifetime) where TAssignableToType : class
@@ -172,7 +167,27 @@ namespace CF.Infrastructure.DI
         {
             this.RegisterAsImplementedInterfaces(typeof(TAssignableToType), Assembly.GetCallingAssembly(), lifetime);
         }
-        
+
+        public void RegisterAsImplementedInterfaces(Type assignableToType, Assembly implementationAssembly, Predicate<Type> implementationTypePredicate, Lifetime lifetime)
+        {
+            this._serviceCollection.Scan(scan => scan
+                .FromAssemblies(implementationAssembly)
+                .AddClasses(classes => classes
+                    // Limit to implementation types assignable to the specified service type.
+                    .AssignableTo(assignableToType)
+                    // If an implementation type predicate is provided, filter implementaiton types by it also.
+                    .Where(type => implementationTypePredicate == null || implementationTypePredicate(type)))
+                .AsImplementedInterfaces()
+                .WithLifetime(ServiceLifetimeByLifetime[lifetime])
+            );
+        }
+
+        public void RegisterAsImplementedInterfaces<TAssignableToType>(Assembly implementationAssembly, Predicate<Type> implementationTypePredicate, Lifetime lifetime) 
+            where TAssignableToType : class
+        {
+            this.RegisterAsImplementedInterfaces(typeof(TAssignableToType), implementationAssembly, implementationTypePredicate, lifetime);
+        }
+
         public void EnsureValid(IServiceProvider serviceProvider)
         {
             // Map between Microsoft lifetimes and Simple Injector lifestyles.
@@ -242,153 +257,7 @@ namespace CF.Infrastructure.DI
                             }
                         }
                     }
-
-                    /*
-                    // Register implementation factories.
-                    if (serviceGroup.Any(x => x.ImplementationFactory != null))
-                    {
-                        // There should only ever be one implementation factory registered to a service type, as it
-                        // in principle is responsible for producing implementations.
-                        var serviceDescriptor = serviceGroup.Single(x => x.ImplementationFactory != null);
-                        container.Register(serviceDescriptor.ServiceType, () => serviceDescriptor.ImplementationFactory(serviceScope.ServiceProvider));
-                    }
-
-                    // Register implementation instances.
-                    if (serviceGroup.Any(x => x.ImplementationInstance != null))
-                    {
-                        var serviceDescriptors = serviceGroup.Where(x => x.ImplementationInstance != null);
-
-                        // Ensure a single implementation instance can be resolved for a plain service type dependency.
-                        // If there are multiple implementation instances registered, assume .NET Core will resolve the last one.
-                        var lastServiceDescriptor = serviceDescriptors.Last();
-                        container.RegisterInstance(lastServiceDescriptor.ServiceType, lastServiceDescriptor.ImplementationInstance);
-
-                        // Ensure one or more implementation instances can be resolved as a collection.
-                        foreach (var serviceDescriptor in serviceDescriptors)
-                        {
-                            container.Collection.AppendInstance(serviceDescriptor.ServiceType, serviceDescriptor.ImplementationInstance);
-                        }
-                    }
-
-                    // Register implementation types.
-                    if (serviceGroup.Any(x => x.ImplementationType != null))
-                    {
-                        var serviceDescriptors = serviceGroup.Where(x => x.ImplementationType != null);
-
-                        // Ensure a single implementation type can be resolved for a plain service type dependency.
-                        // If there are multiple implementation types registered, assume .NET Core will resolve the last one.
-                        var lastServiceDescriptor = serviceDescriptors.Last();
-                        container.Register(lastServiceDescriptor.ServiceType, lastServiceDescriptor.ImplementationType, LifestyleByServiceLifetime[lastServiceDescriptor.Lifetime]);
-
-                        // Ensure one or more implementation instances can be resolved as a collection.
-                        foreach (var serviceDescriptor in serviceDescriptors)
-                        {
-                            if (serviceDescriptor.ImplementationType.IsGenericTypeDefinition)
-                            {
-                               // container.RegisterConditional(serviceDescriptor.ServiceType, serviceDescriptor.ImplementationType, LifestyleByServiceLifetime[serviceDescriptor.Lifetime], x => true);
-                            }
-                            else
-                            {
-                                container.Collection.Append(serviceDescriptor.ServiceType, serviceDescriptor.ImplementationType, LifestyleByServiceLifetime[serviceDescriptor.Lifetime]);
-                            }
-                        }
-                    }
-                    */
                 }
-
-                /*
-                var serviceDescriptorsByServiceType = new Dictionary<Type, List<ServiceDescriptor>>();
-                foreach (var serviceDescriptor in this._serviceCollection)
-                {
-                    if (!serviceDescriptorsByServiceType.ContainsKey(serviceDescriptor.ServiceType))
-                    {
-                        serviceDescriptorsByServiceType[serviceDescriptor.ServiceType] = new List<ServiceDescriptor>();
-                    }
-                    serviceDescriptorsByServiceType[serviceDescriptor.ServiceType].Add(serviceDescriptor);
-                }
-
-                foreach (var serviceDescriptor in serviceDescriptorsByServiceType.Where(x => x.Value.Count() == 1).Select(x => x.Value.First()))
-                {
-                    if (serviceDescriptor.ImplementationType == null && serviceDescriptor.ImplementationFactory != null)
-                    {
-                        container.Register(serviceDescriptor.ServiceType, () => serviceDescriptor.ImplementationFactory(serviceScope.ServiceProvider));
-                    }
-                    else if (serviceDescriptor.ImplementationType == null && serviceDescriptor.ImplementationInstance != null)
-                    {
-                        container.RegisterInstance(serviceDescriptor.ServiceType, serviceDescriptor.ImplementationInstance);
-                        container.Collection.AppendInstance(serviceDescriptor.ServiceType, serviceDescriptor.ImplementationInstance);
-                    }
-                    else
-                    {
-                        if (serviceDescriptor.ServiceType.IsGenericTypeDefinition)
-                        {
-                            container.RegisterConditional(serviceDescriptor.ServiceType, serviceDescriptor.ImplementationType, LifestyleByServiceLifetime[serviceDescriptor.Lifetime], x => true);
-                        }
-                        else
-                        {
-                            container.Register(serviceDescriptor.ServiceType, serviceDescriptor.ImplementationType, LifestyleByServiceLifetime[serviceDescriptor.Lifetime]);
-                            container.Collection.Append(serviceDescriptor.ServiceType, serviceDescriptor.ImplementationType, LifestyleByServiceLifetime[serviceDescriptor.Lifetime]);
-                        }
-                    }
-                }
-
-                MethodInfo appendImplementationFactoryMethodInfo = null;
-
-                foreach (var kvp in serviceDescriptorsByServiceType.Where(x => x.Value.Count() > 1))
-                {
-                    {
-                        // This assumes ASP.NET Core will resolve the last registration if there are multiple
-                        // and the dependency is singular TService, not an IEnumerable<TService>.
-                        var serviceDescriptor = kvp.Value.Last(x => x.ImplementationType != null);
-                        if (serviceDescriptor.ServiceType.IsGenericTypeDefinition)
-                        {
-                            container.RegisterConditional(serviceDescriptor.ServiceType, serviceDescriptor.ImplementationType, LifestyleByServiceLifetime[serviceDescriptor.Lifetime], x => true);
-                        }
-                        else
-                        {
-                            container.Register(serviceDescriptor.ServiceType, serviceDescriptor.ImplementationType, LifestyleByServiceLifetime[serviceDescriptor.Lifetime]);
-                        }
-                    }
-
-
-                    foreach (var serviceDescriptor in kvp.Value)
-                    {
-
-                        if (serviceDescriptor.ImplementationType == null && serviceDescriptor.ImplementationFactory != null)
-                        {
-                            if (appendImplementationFactoryMethodInfo == null)
-                            {
-                                appendImplementationFactoryMethodInfo = typeof(ContainerCollectionRegistrator).GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                                    .Where(x =>
-                                        x.Name == nameof(ContainerCollectionRegistrator.Append) && x.IsGenericMethod && x.ContainsGenericParameters &&
-                                        x.GetParameters().Count() == 2 && x.GetParameters()[0].Name == "instanceCreator" && x.GetParameters()[1].Name == "lifestyle")
-                                    .Single();
-                            }
-                            var genericMethodInfo = appendImplementationFactoryMethodInfo.MakeGenericMethod(serviceDescriptor.ServiceType);
-
-                            var lambda = Expression.Lambda(
-                                Expression.GetFuncType(serviceDescriptor.ServiceType),
-                                Expression.Convert(
-                                    Expression.Invoke(
-                                        Expression.Constant(serviceDescriptor.ImplementationFactory),
-                                        Expression.Constant(serviceProvider, typeof(IServiceProvider))),
-                                    serviceDescriptor.ServiceType),
-                                null)
-                                .Compile();
-
-                            //genericMethodInfo.Invoke(container.Collection, new object[] { lambda, LifestyleByServiceLifetime[serviceDescriptor.Lifetime] });
-                        }
-                        else if (serviceDescriptor.ImplementationType == null && serviceDescriptor.ImplementationInstance != null)
-                        {
-                            container.Collection.AppendInstance(serviceDescriptor.ServiceType, serviceDescriptor.ImplementationInstance);
-                        }
-                        else
-                        {
-                            container.Collection.Append(serviceDescriptor.ServiceType, serviceDescriptor.ImplementationType, LifestyleByServiceLifetime[serviceDescriptor.Lifetime]);
-                        }
-                    }
-                }
-                */
 
                 // Compensate for Microsoft populating the service collection with the following service -> implementation types
                 // which have constructor dependencies on service types that Microsoft does not populate the container with. 
@@ -415,7 +284,8 @@ namespace CF.Infrastructure.DI
                 }
                 catch (DiagnosticVerificationException ex)
                 {
-                    // Process diagnostic errors into categories we can inspect for troubleshooting.
+                    // Separate the errors we can do something about from those we cannot, due to not having full
+                    // control over the ASP.NET Core framework.
 
                     // The Microsoft ASP.NET Core registrations have a large number of lifestyle mismatches
                     // e.g.  IModelMetadataProvider: DefaultModelMetadataProvider (Singleton) depends on ICompositeMetadataDetailsProvider (Transient).
@@ -429,7 +299,7 @@ namespace CF.Infrastructure.DI
                         x.Relationship.ImplementationType.Namespace.StartsWith($"{FrameworkConstants.RootNamespace}."));
 
                     // The Microsoft ASP.NET Core registrations may include transient lifetimes which are disposable.
-                    // Simple Injector doesn't like these; we have no control over them, so ignore them.
+                    // Simple Injector doesn't like these - on reasonable grounds; we have no control over them, so ignore them.
                     var frameworkDisposableTransientComponentDiagnosticResults =
                         ex.Errors
                         .Where(x => x.DiagnosticType == DiagnosticType.DisposableTransientComponent)
@@ -438,10 +308,13 @@ namespace CF.Infrastructure.DI
                         x.ServiceType.Namespace.StartsWith($"{FrameworkConstants.RootNamespace}.") ||
                         x.Registration.Registration.ImplementationType.Namespace.StartsWith($"{FrameworkConstants.RootNamespace}."));
 
-                    // Get all of the results we can ostensibly act on.
+                    // Treat all other diagnostic types as actionable until we discover new problems
+                    // with the ASP.NET Core registrations.
                     var diagnosticResults = ex.Errors
                         .Where(x => 
-                        x.Severity == DiagnosticSeverity.Warning && 
+                        // Anything more severe than information counts to fail the verification.
+                        x.Severity != DiagnosticSeverity.Information && 
+                        // Exclude the diagnostic types addressed above.
                         x.DiagnosticType != DiagnosticType.LifestyleMismatch &&
                         x.DiagnosticType != DiagnosticType.DisposableTransientComponent)
                     .Union(frameworkLifestyleMismatchDiagnosticResults)

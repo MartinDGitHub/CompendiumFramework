@@ -27,7 +27,7 @@ namespace Web.Controllers
             return View();
         }
 
-        [HttpGet]
+        [HttpGet("[controller]/[action]")]
         public async Task<IActionResult> Test()
         {
             return View(new TestViewModel());
