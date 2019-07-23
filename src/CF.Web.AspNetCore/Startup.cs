@@ -41,8 +41,19 @@ namespace CF.WebBootstrap
 
                 // Add custom filters.
                 config.Filters.Add<ApiActionResultPackageActionFilter>();
-                config.Filters.Add<WebActionResultCookieMessageActionFilter>();
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                config.Filters.Add<RedirectMessageActionFilter>();
+            })
+            // The cookie-based temp data provider is used to round-trip messages using the post-redirect-get (PRG) pattern.
+            .AddCookieTempDataProvider(x =>
+            {
+                // Protect the cookie against client-side access.
+                x.Cookie.HttpOnly = true;
+                // Mark as essential to system function so that the cookie is used regardless of the cookie
+                // policy being accepted.
+                x.Cookie.IsEssential = true;
+            })
+            // Support a specific compaitibility level so that upgrades are be deliberate.
+            .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(config =>
@@ -109,6 +120,7 @@ namespace CF.WebBootstrap
             app.UseStaticFiles();
 
             // Enable cookies (with consent) for authentication.
+            // NOTE: cookies that are not marked as essential will not be set without consent.
             app.UseCookiePolicy();
 
             // Secure the application with authentication, and by extension, authorization.

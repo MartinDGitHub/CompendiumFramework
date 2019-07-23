@@ -12,10 +12,10 @@ namespace CF.Web.AspNetCore.Middlewares
         private IScopedCorrelationIdProvider _scopedCorrelationIdProvider;
         private readonly ILogger _logger;
 
-        public LoggerScopesMiddleware(IScopedCorrelationIdProvider scopedCorrelationGuidProvider, ILogger<LoggerScopesMiddleware> logger)
+        public LoggerScopesMiddleware(IScopedCorrelationIdProvider scopedCorrelationIdProvider, ILogger<LoggerScopesMiddleware> logger)
         {
             this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            this._scopedCorrelationIdProvider = scopedCorrelationGuidProvider ?? throw new ArgumentNullException(nameof(scopedCorrelationGuidProvider));
+            this._scopedCorrelationIdProvider = scopedCorrelationIdProvider ?? throw new ArgumentNullException(nameof(scopedCorrelationIdProvider));
         }
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)

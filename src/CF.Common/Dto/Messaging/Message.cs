@@ -5,7 +5,9 @@ namespace CF.Common.Dto.Messaging
 {
     public class Message : IMessage
     {
-        public DateTimeOffset Timestamp { get; set; } = DateTimeOffset.Now;
+        public string CorrelationId { get; set; }
+
+        public DateTimeOffset Timestamp { get; set; } = DateTimeOffset.UtcNow;
 
         public MessageSeverity Severity { get; set; }
 
@@ -28,6 +30,11 @@ namespace CF.Common.Dto.Messaging
             this.Timestamp = message.Timestamp;
             this.Severity = message.Severity;
             this.Text = message.Text;
+        }
+
+        public override string ToString()
+        {
+            return $"[[{this.CorrelationId}][{this.Timestamp.ToString("o")}][{this.Severity}][{this.Text}]]";
         }
     }
 }

@@ -15,7 +15,10 @@ namespace Web.Controllers
     {
         private ILogger<HomeController> _logger;
 
-        public HomeController(IScopedMessageRecorder scopedMessageRecorder, IScopedCookieMessageRecorder scopedCookieMessageRecorder, ILogger<HomeController> logger) : base(scopedMessageRecorder, scopedCookieMessageRecorder)
+        public HomeController(
+            IScopedMessageRecorder scopedMessageRecorder, IScopedRedirectMessageRecorder scopedRedirectMessageRecorder, 
+            ILogger<HomeController> logger) 
+            : base(scopedMessageRecorder, scopedRedirectMessageRecorder)
         {
             this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -27,8 +30,8 @@ namespace Web.Controllers
             return View();
         }
 
-        [HttpGet("[controller]/[action]")]
-        public async Task<IActionResult> Test()
+        [HttpGet]
+        public async Task<IActionResult> Test(int? testId, string testValue)
         {
             return View(new TestViewModel());
         }
@@ -43,7 +46,7 @@ namespace Web.Controllers
                     this._scopedMessageRecorder.Record(MessageSeverity.Success, "Success!");
                     return Task.CompletedTask;
                     }, 
-                Url.Action(nameof(Test).ToLower()));
+                Url.Action(nameof(Test).ToLower(), new { testId = 42, testValue = @"\&/&?=" }));
         }
 
         [HttpGet]

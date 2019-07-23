@@ -6,20 +6,21 @@ using System.Threading.Tasks;
 
 namespace CF.Web.AspNetCore.Controllers
 {
-    [Route("[controller]")]
+    // Set up the default routing.
+    [Route("[controller]/[action]/{id?}")]
     public abstract class WebControllerBase : Controller
     {
         protected readonly IScopedMessageRecorder _scopedMessageRecorder;
-        protected readonly IScopedCookieMessageRecorder _scopedCookieMessageRecorder;
+        protected readonly IScopedRedirectMessageRecorder _scopedRedirectMessageRecorder;
 
         protected bool IsErrorState => !this.ModelState.IsValid || this._scopedMessageRecorder.HasErrors;
 
         protected bool HasMessages => this.IsErrorState || this._scopedMessageRecorder.Messages.Any();
 
-        protected WebControllerBase(IScopedMessageRecorder scopedMessageRecorder, IScopedCookieMessageRecorder scopedCookieMessageRecorder)
+        protected WebControllerBase(IScopedMessageRecorder scopedMessageRecorder, IScopedRedirectMessageRecorder scopedRedirectMessageRecorder)
         {
             this._scopedMessageRecorder = scopedMessageRecorder ?? throw new ArgumentNullException(nameof(scopedMessageRecorder));
-            this._scopedCookieMessageRecorder = scopedCookieMessageRecorder ?? throw new ArgumentNullException(nameof(scopedCookieMessageRecorder));
+            this._scopedRedirectMessageRecorder = scopedRedirectMessageRecorder ?? throw new ArgumentNullException(nameof(scopedRedirectMessageRecorder));
         }
         
         protected async Task<IActionResult> PostRedirectGetAsync<TModel>(TModel model, Func<Task> postOperationAsync, string redirectUrl)
@@ -49,10 +50,8 @@ namespace CF.Web.AspNetCore.Controllers
                     {
                         foreach (var message in this._scopedMessageRecorder.Messages)
                         {
-                            this._scopedCookieMessageRecorder.Record(message);
+                            this._scopedRedirectMessageRecorder.RecordOutbound(message);
                         }
-
-                        this._scopedCookieMessageRecorder.TargetUrl = redirectUrl;
                     }
 
                     return Redirect(redirectUrl);

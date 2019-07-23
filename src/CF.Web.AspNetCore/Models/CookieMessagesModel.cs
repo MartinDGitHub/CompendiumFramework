@@ -5,22 +5,26 @@ using System.Text;
 
 namespace CF.Web.AspNetCore.Models
 {
-    public class CookieMessagesModel
+    public class RedirectMessagesModel
     {
         /// <summary>
-        /// Gets the URL that the messages are for.
+        /// Gets the redirect target URL path and query that the messages are intended for.
         /// </summary>
-        public string TargetUrl { get; set; }
+        public string TargetPathAndQuery { get; set; }
 
         /// <summary>
-        /// Gets when the cookie expires in UTC.
+        /// Gets the referrer path and query that the messages are intended to come from.
+        /// </summary>
+        public string ReferrerPathAndQuery { get; set; }
+
+        /// <summary>
+        /// Gets when the messages expires.
         /// </summary>
         public DateTimeOffset Expires { get; set; }
 
         /// <summary>
         /// Gets the messages.
         /// </summary>
-
         public IEnumerable<Message> Messages { get; set; }
     }
 }
