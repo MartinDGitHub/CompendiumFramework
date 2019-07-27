@@ -1,32 +1,49 @@
 ﻿@using CF.Common.Messaging
 @inject IScopedMessageRecorder ScopedMessageRecorder
 @inject IScopedRedirectMessageRecorder RedirectMessageRecorder
-<div class="container-fluid">
-</div>
-@foreach (var message in RedirectMessageRecorder.InboundMessages)
+@{
+    IDictionary<MessageSeverity, string> alertClassByMessageSeverity = new Dictionary<MessageSeverity, string>
 {
-    <span>Result Messages:</span>
-    <div class="row">
-        <div class="col">
-            @message.Text;
-        </div>
-    </div>
+        { MessageSeverity.Error, "alert-danger" },
+        { MessageSeverity.Info, "alert-primary" },
+        { MessageSeverity.None, "alert-secondary" },
+        { MessageSeverity.Success, "alert-success" },
+        { MessageSeverity.Warning, "alert-warning" },
+    };
 }
-@foreach (var message in ScopedMessageRecorder.Messages)
+@if (RedirectMessageRecorder.InboundMessages.Any() || ScopedMessageRecorder.Messages.Any())
 {
-    <span>Operation Messages:</span>
-    <div class="row">
-        <div class="col">
-            @message.Text;
+    <div class="container-fluid">
+        <div class="card">
+            <h3 class="card-title">Messages</h3>
+            @if (RedirectMessageRecorder.InboundMessages.Any())
+            {
+                <h4 class="card-subtitle">Result Messages</h4>
+                @foreach (var message in RedirectMessageRecorder.InboundMessages)
+                {
+                    <div class="alert @(alertClassByMessageSeverity[message.Severity])">@message.Text</div>
+                }
+
+            }
+            @if (ScopedMessageRecorder.Messages.Any())
+            {
+                <h4 class="card-subtitle">Messages</h4>
+                @foreach (var message in ScopedMessageRecorder.Messages)
+                {
+                    <div class="alert @(alertClassByMessageSeverity[message.Severity])">@message.Text</div>
+                }
+            }
         </div>
     </div>
 }
 <script>
-    CF.Messaging = CF.Messaging || {};
-    CF.Messaging.severityValueByName = {};
-@foreach (var messageSeverity in Enum.GetValues(typeof(MessageSeverity)))
-{
-    <text>CF.Messaging.severityValueByName["@messageSeverity"] = @((int)messageSeverity);</text>
+    (function () {
+        const namespace = CF.Common.ensureNamespaceExists("CF.Messaging");
+        namespace.severityValueByName = {};
+    @foreach (var messageSeverity in Enum.GetValues(typeof(MessageSeverity)))
+    {
+        <text>namespace.severityValueByName["@messageSeverity"] = @((int)messageSeverity);</text>
 
-}
+    }
+    })();
 </script>

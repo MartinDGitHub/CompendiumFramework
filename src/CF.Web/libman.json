@@ -33,6 +33,10 @@
     {
       "library": "js-cookie@2.2.0",
       "destination": "wwwroot/lib/js-cookie/"
+    },
+    {
+      "library": "lodash.js@4.17.15",
+      "destination": "wwwroot/lib/lodash.js/"
     }
   ]
 }

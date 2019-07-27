@@ -22,6 +22,7 @@
       "wwwroot/lib/jquery/jquery.min.js",
       "wwwroot/lib/twitter-bootstrap/js/bootstrap.bundle.min.js",
       "wwwroot/lib/js-cookie/js.cookie.min.js",
+      "wwwroot/lib/lodash.js/lodash.min.js",
       "wwwroot/js/common.min.js"
     ],
     "minify": {
