@@ -27,7 +27,7 @@ namespace CF.Web.AspNetCore.Filters
         // processing in the application need be accounted for.
         private static readonly TimeSpan DefaultExpiresTimeSpan = TimeSpan.FromMinutes(1);
 
-        private readonly static IDictionary<Type, Func<IActionResult, string>> RedirectTypes = new Dictionary<Type, Func<IActionResult, string>>
+        private readonly static IDictionary<Type, Func<IActionResult, string>> UrlFuncByRedirectType = new Dictionary<Type, Func<IActionResult, string>>
         {
             { typeof(LocalRedirectResult), x => ((LocalRedirectResult)x).Url },
             { typeof(RedirectResult), x =>  ((RedirectResult)x).Url },
@@ -76,12 +76,12 @@ namespace CF.Web.AspNetCore.Filters
                 this._redirectMessageRecorder.OutboundMessages.Any())
             {
                 // Only relay messages via cookies if a redirect is occurring.
-                if (RedirectTypes.ContainsKey(context.Result.GetType()))
+                if (UrlFuncByRedirectType.ContainsKey(context.Result.GetType()))
                 {
                     // Ensure that only the encoded path and query are specified so that a different scheme
                     // or host will not break the detection.
                     string targetUrlPathAndQuery;
-                    var redirectUrl = RedirectTypes[context.Result.GetType()](context.Result);
+                    var redirectUrl = UrlFuncByRedirectType[context.Result.GetType()](context.Result);
                     if (Uri.IsWellFormedUriString(redirectUrl, UriKind.Absolute))
                     {
                         targetUrlPathAndQuery = new Uri(redirectUrl, UriKind.Absolute).PathAndQuery;

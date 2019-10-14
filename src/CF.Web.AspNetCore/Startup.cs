@@ -85,7 +85,7 @@ namespace CF.WebBootstrap
         }
 
 
-        public static void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider, IConfiguration configuration)
+        public static void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
         {
             // Register logging enrichment middleware for subsequent middlewares that log.
             app.UseMiddleware<LoggerScopesMiddleware>();
@@ -141,6 +141,11 @@ namespace CF.WebBootstrap
 
                 if (env.IsDevelopment())
                 {
+                    // NOTE: 
+                    // The following error may occur when running under IIS if the application pool has insufficient permissions. Running locally as Local System 
+                    // will resolve this due to the elevated permissions of that account. IMPORTANT: always run the application pool under minimum permissions in 
+                    // deployed environments, especially production.
+                    // Error: EPERM: operation not permitted, mkdir 'C:\Windows\system32\config\systemprofile\AppData\Roaming\npm'
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
