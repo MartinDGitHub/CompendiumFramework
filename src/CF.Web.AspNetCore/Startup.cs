@@ -141,12 +141,17 @@ namespace CF.WebBootstrap
 
                 if (env.IsDevelopment())
                 {
+                    // To optimize change-build-run cycles in local development, proxy to the SPA when running under IIS Express.
+                    // This assumes that the SPA has been started manually by:
+                    // 1) opening the ClientApp folder in a command prompt
+                    // 2) running the NPM development server: > npm start
+                    // otherwise, the following error will occur:
+                    // HttpRequestException: Failed to proxy the request to http://localhost:3000/, because the request to the proxy target failed. Check that the proxy target server is running and accepting requests to http://localhost:3000/.
+                    //
                     // NOTE: 
-                    // The following error may occur when running under IIS if the application pool has insufficient permissions. Running locally as Local System 
-                    // will resolve this due to the elevated permissions of that account. IMPORTANT: always run the application pool under minimum permissions in 
-                    // deployed environments, especially production.
-                    // Error: EPERM: operation not permitted, mkdir 'C:\Windows\system32\config\systemprofile\AppData\Roaming\npm'
-                    spa.UseReactDevelopmentServer(npmScript: "start");
+                    // This does not work when running under IIS, due to the proxying not handling the application root (e.g. https://localhost/CF.Web/) when proxying.
+                    // When running under IIS, run the NPM development server, and access the URL directly.
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
                 }
             });
         }
