@@ -31,26 +31,26 @@ namespace CF.Common.DI
             this.Container.Register(typeof(IRequirementHandler<,>), this.GetType().Assembly, Lifetime.Scoped);
         }
 
-        protected void RegisterDerivedInterfaceImplementations<TInterface>(IContainer container, Lifetime lifetime) where TInterface : class
+        public static void RegisterDerivedInterfaceImplementations<TInterface>(IContainer container, Lifetime lifetime) where TInterface : class
         {
-            this.RegisterDerivedInterfaceImplementations(typeof(TInterface), container, lifetime);
+            RegisterDerivedInterfaceImplementations(typeof(TInterface), container, lifetime);
         }
 
-        protected void RegisterDerivedInterfaceImplementations(Type interfaceType, IContainer container, Lifetime lifetime)
+        protected static void RegisterDerivedInterfaceImplementations(Type interfaceType, IContainer container, Lifetime lifetime)
         {
             // Assume that leaf interface types will be either in the same assembly as the ancestor interface type
             // or in this assembly.
-            var interfaceTypes = ReflectionHelper.GetLeafInterfaceTypes(interfaceType, interfaceType.Assembly.GetTypes().Concat(this.GetType().Assembly.GetTypes()));
+            var interfaceTypes = ReflectionHelper.GetLeafInterfaceTypes(interfaceType, interfaceType.Assembly.GetTypes().Concat(typeof(RegistrationsBase).Assembly.GetTypes()));
             // Only register implementation types in the assembly the derived registrations class is in.
-            var implementationTypes = ReflectionHelper.GetImplementationTypes(this.GetType().Assembly, interfaceTypes);
+            var implementationTypes = ReflectionHelper.GetImplementationTypes(typeof(RegistrationsBase).Assembly, interfaceTypes);
 
-            this.RegisterInterfaceImplementations(container, interfaceTypes, implementationTypes, lifetime);
+            RegisterInterfaceImplementations(container, interfaceTypes, implementationTypes, lifetime);
         }
 
         /// <summary>
         /// Gets implementations that match exactly one of the interfaces provided.
         /// </summary>
-        protected IEnumerable<(Type InterfaceType, Type ImplementationType)> GetInterfaceImplementations(HashSet<Type> interfaceTypes, IEnumerable<Type> implementationTypes)
+        protected static IEnumerable<(Type InterfaceType, Type ImplementationType)> GetInterfaceImplementations(HashSet<Type> interfaceTypes, IEnumerable<Type> implementationTypes)
         {
             var interfaceImplementations = implementationTypes.Select(implementationType =>
             {
@@ -79,12 +79,17 @@ namespace CF.Common.DI
         /// <summary>
         /// Registers registers implementations to interfaces.
         /// </summary>
-        protected void RegisterInterfaceImplementations(IContainer container, HashSet<Type> interfaceTypes, IEnumerable<Type> implementationTypes, Lifetime lifetime)
+        protected static void RegisterInterfaceImplementations(IContainer container, HashSet<Type> interfaceTypes, IEnumerable<Type> implementationTypes, Lifetime lifetime)
         {
-            var interfaceImplementations = this.GetInterfaceImplementations(interfaceTypes, implementationTypes);
-            foreach (var interfaceImplementation in interfaceImplementations)
+            if (container == null)
             {
-                container.Register(interfaceImplementation.InterfaceType, interfaceImplementation.ImplementationType, lifetime);
+                throw new ArgumentNullException(nameof(container));
+            }
+
+            var interfaceImplementations = GetInterfaceImplementations(interfaceTypes, implementationTypes);
+            foreach (var (InterfaceType, ImplementationType) in interfaceImplementations)
+            {
+                container.Register(InterfaceType, ImplementationType, lifetime);
             }
         }
     }

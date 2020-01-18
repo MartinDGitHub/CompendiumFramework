@@ -1,5 +1,5 @@
 ﻿using CF.Infrastructure.DI;
-using CF.Web.AspNetCore.Authentication;
+using CF.Web.AspNetCore.Config.Sections;
 using CF.Web.AspNetCore.Extensions.ServiceCollection;
 using CF.Web.AspNetCore.Filters;
 using CF.Web.AspNetCore.Middlewares;
@@ -9,17 +9,31 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System;
+using System.Text.Json;
+using AuthenticationConstants = CF.Web.AspNetCore.Authentication.Constants;
+using CorsConstants = CF.Web.AspNetCore.Cors.Constants;
 
 namespace CF.WebBootstrap
 {
     public static class Startup
     {
+        // Called before configure to set up the DI container.
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
+            // Read configuration for the purpose of this method. Configuration for DI injection via Options happens next.
+            // Although inconvenient, this is in accordance with Microsoft guidance:
+            //  https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-3.0
+            //  "Don't use IOptions<TOptions> or IOptionsMonitor<TOptions> in Startup.ConfigureServices. An inconsistent options state may exist due to the ordering of service registrations."
+            Root rootConfig = new Root();
+            configuration.Bind(rootConfig);
+
+            // Bootstrap configuration before adding custom services configuration that may rely on configuration.
+            services.AddCustomConfig(configuration);
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -27,12 +41,29 @@ namespace CF.WebBootstrap
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            // Configure the CORS policy.
+            // NOTE: these must be applied explicity on an opt-in basis at the controller or action level using the EnableCors attribute.
+            // i.e. [EnableCors(Cors.Constants.Policies.Api)]
+            services.AddCors(options =>
+            {
+                foreach (var policy in CorsConstants.Policies.All)
+                {
+                    if (rootConfig.Cors.OriginsByPolicy.ContainsKey(policy))
+                    {
+                        options.AddPolicy(policy, builder =>
+                        {
+                            builder.WithOrigins(rootConfig.Cors.OriginsByPolicy[policy] ?? Array.Empty<string>());
+                        });
+                    }
+                }
+            });
+
             // Use MVC for presentation and Web API.
             services.AddMvc(config =>
             {
                 // By default, only permit authenticated users to access controller actions.
                 var policy = new AuthorizationPolicyBuilder()
-                .AddAuthenticationSchemes(Constants.DefaultAuthenticationScheme)
+                .AddAuthenticationSchemes(AuthenticationConstants.DefaultAuthenticationScheme)
                 .RequireAuthenticatedUser()
                 .Build();
 
@@ -53,7 +84,23 @@ namespace CF.WebBootstrap
                 x.Cookie.IsEssential = true;
             })
             // Support a specific compaitibility level so that upgrades are be deliberate.
-            .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+
+            // Support ordinary MVC controllers with views and Razor pages.
+            services.AddControllersWithViews()
+                // Configure native JSON behavior to be lenient (more-compatible) and somewhat align with JSON.NET.
+                .AddJsonOptions(options =>
+                {
+                    // Deserialize case-insensitive similar to JSON.NET so that JavaScript camelCase property values
+                    // can be set on C# class PascalCase properties.
+                    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                    // Ignore comments, similar to JSON.NET.
+                    options.JsonSerializerOptions.ReadCommentHandling = JsonCommentHandling.Skip;
+                });
+            services.AddRazorPages();
+
+            // Support health checks.
+            services.AddHealthChecks();
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(config =>
@@ -63,9 +110,6 @@ namespace CF.WebBootstrap
 
             // Use extended API versioning.
             services.AddApiVersioning();
-
-            // Bootstrap configuration before adding custom services configuration that may rely on configuration.
-            services.AddCustomConfig(configuration);
 
             // Ensure the service provider is available for rare cases where 
             // we need to manually resolve instances from the DI container.
@@ -84,8 +128,8 @@ namespace CF.WebBootstrap
             services.AddLazyCache();
         }
 
-
-        public static void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
+        // Called after ConfigureServices to apply configuration.
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             // Register logging enrichment middleware for subsequent middlewares that log.
             app.UseMiddleware<LoggerScopesMiddleware>();
@@ -123,15 +167,27 @@ namespace CF.WebBootstrap
             // NOTE: cookies that are not marked as essential will not be set without consent.
             app.UseCookiePolicy();
 
-            // Secure the application with authentication, and by extension, authorization.
-            app.UseAuthentication();
-
             // Use the MVC pattern for routing requests to actions.
             // We use attribute routing instead of conventional routing for the following reasons:
             // 1) Makes routing deliberate and declarative.
             // 2) Consistency of routing specification across Web API and MVC actions.
             // 3) Permits deriving from Controller in the CF.Web.AspNetCore project.
-            app.UseMvc();
+            // NOTE: this must come before CORS and auth "Use"ings.
+            app.UseRouting();
+
+            // CORS is applied on an opt-in basis through the EnableCors attribute. Otherwise, we would app.UseCors here.
+
+            // Secure the application with authentication and authorization.
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            // Map endpoints.
+            // NOTE: this must come after CORS and auth "Use"ings.
+            app.UseEndpoints(endpoints => {
+                endpoints.MapControllers();
+                endpoints.MapRazorPages();
+                endpoints.MapHealthChecks("/health");
+            });
 
             // Use React as the SPA. This should come after MVC, so that controller action routing
             // takes precedence.
@@ -151,6 +207,8 @@ namespace CF.WebBootstrap
                     // NOTE: 
                     // This does not work when running under IIS, due to the proxying not handling the application root (e.g. https://localhost/CF.Web/) when proxying.
                     // When running under IIS, run the NPM development server, and access the URL directly.
+                    //
+                    // There is a pull request to address this in version 3.3: https://github.com/facebook/create-react-app/pull/7259
                     spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
                 }
             });

@@ -1,4 +1,5 @@
-﻿using CF.Web.AspNetCore.Config.Options;
+﻿using CF.Web.AspNetCore.Config;
+using CF.Web.AspNetCore.Config.Sections;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

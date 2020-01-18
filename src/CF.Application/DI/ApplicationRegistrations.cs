@@ -15,10 +15,10 @@ namespace CF.Application.DI
             this.RegisterPolicies();
 
             // Resolve repositories per request to ensure that authentication dependencies are not stale.
-            this.RegisterDerivedInterfaceImplementations<IRepository>(this.Container, Lifetime.Scoped);
+            RegisterDerivedInterfaceImplementations<IRepository>(this.Container, Lifetime.Scoped);
 
             // Resolve services per request to ensure that dependencies are not stale.
-            this.RegisterDerivedInterfaceImplementations<IService>(this.Container, Lifetime.Scoped);
+            RegisterDerivedInterfaceImplementations<IService>(this.Container, Lifetime.Scoped);
         }
     }
 }

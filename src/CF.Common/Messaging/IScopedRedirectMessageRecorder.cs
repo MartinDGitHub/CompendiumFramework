@@ -9,7 +9,7 @@ namespace CF.Common.Messaging
         /// Gets and sets the URL inbound messages originated from. This will be null
         /// for requests without a referer header.
         /// </summary>
-        string ReferrerUrl { get; set; }
+        Uri RefererUri { get; set; }
 
         /// <summary>
         /// Gets messages inbound for the current request.

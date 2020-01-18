@@ -16,12 +16,12 @@ namespace CF.Web.Controllers.Api
             this._adminAccessPolicy = adminAccessPolicy ?? throw new ArgumentNullException(nameof(adminAccessPolicy));
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         public async Task<IEnumerable<string>> GetWeatherItems()
         {
-            (await this._adminAccessPolicy.AuthorizeAsync()).EnsureAuthorized();
+            (await this._adminAccessPolicy.AuthorizeAsync().ConfigureAwait(false)).EnsureAuthorized();
 
-            return await Task.FromResult(new string[] { "1 C", "20 C", "42 C" });
+            return await Task.FromResult(new string[] { "1 C", "20 C", "42 C" }).ConfigureAwait(false);
         }
     }
 }

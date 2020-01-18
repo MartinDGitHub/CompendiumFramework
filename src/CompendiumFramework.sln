@@ -17,7 +17,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CF.Web.AspNetCore", "CF.Web
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CF.Domain.Test", "..\test\CF.Domain.Test\CF.Domain.Test.csproj", "{6FB3CC1A-AF23-4764-B9C6-708095892A38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CF.Common.Test", "..\test\CF.Common.Test\CF.Common.Test.csproj", "{66286E43-9E2A-4CDF-99F6-F49526811E30}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CF.Common.Test", "..\test\CF.Common.Test\CF.Common.Test.csproj", "{66286E43-9E2A-4CDF-99F6-F49526811E30}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{359D6C78-E627-4797-B86C-8E92D32FE14D}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

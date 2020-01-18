@@ -23,7 +23,7 @@ namespace CF.Application.Authorization.Policies.Weather
         {
             var temperatureRange = this._weatherStatisticsService.GetNormalTemperatureRange(DateTime.Now);
             var requirement = new TemperatureRangeRequirement(temperatureRange);
-            var result = await this._handler.HandleRequirementAsync(context, requirement);
+            var result = await this._handler.HandleRequirementAsync(context, requirement).ConfigureAwait(false);
             var isAuthorized = result.IsMet;
             var unauthorizedReason = isAuthorized ? null : "The temperature is not within the normal range.";
 

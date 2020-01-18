@@ -10,27 +10,33 @@ namespace CF.Web.AspNetCore.Controllers
     [Route("[controller]/[action]/{id?}")]
     public abstract class WebControllerBase : Controller
     {
-        protected readonly IScopedMessageRecorder _scopedMessageRecorder;
-        protected readonly IScopedRedirectMessageRecorder _scopedRedirectMessageRecorder;
+        protected IScopedMessageRecorder ScopedMessageRecorder { get; }
 
-        protected bool IsErrorState => !this.ModelState.IsValid || this._scopedMessageRecorder.HasErrors;
+        protected IScopedRedirectMessageRecorder ScopedRedirectMessageRecorder { get; }
 
-        protected bool HasMessages => this.IsErrorState || this._scopedMessageRecorder.Messages.Any();
+        protected bool IsErrorState => !this.ModelState.IsValid || this.ScopedMessageRecorder.HasErrors;
+
+        protected bool HasMessages => this.IsErrorState || this.ScopedMessageRecorder.Messages.Any();
 
         protected WebControllerBase(IScopedMessageRecorder scopedMessageRecorder, IScopedRedirectMessageRecorder scopedRedirectMessageRecorder)
         {
-            this._scopedMessageRecorder = scopedMessageRecorder ?? throw new ArgumentNullException(nameof(scopedMessageRecorder));
-            this._scopedRedirectMessageRecorder = scopedRedirectMessageRecorder ?? throw new ArgumentNullException(nameof(scopedRedirectMessageRecorder));
+            this.ScopedMessageRecorder = scopedMessageRecorder ?? throw new ArgumentNullException(nameof(scopedMessageRecorder));
+            this.ScopedRedirectMessageRecorder = scopedRedirectMessageRecorder ?? throw new ArgumentNullException(nameof(scopedRedirectMessageRecorder));
         }
         
-        protected async Task<IActionResult> PostRedirectGetAsync<TModel>(TModel model, Func<Task> postOperationAsync, string redirectUrl)
+        protected async Task<IActionResult> PostRedirectGetAsync<TModel>(TModel model, Func<Task> postOperationAsync, Uri redirectUrl)
         {
-            return await this.PostRedirectGetAsync(model, postOperationAsync, redirectUrl, null);
+            return await this.PostRedirectGetAsync(model, postOperationAsync, redirectUrl, null).ConfigureAwait(false);
 
         }
 
-        protected async Task<IActionResult> PostRedirectGetAsync<TModel>(TModel model, Func<Task> postOperationAsync, string redirectUrl, string viewName)
+        protected async Task<IActionResult> PostRedirectGetAsync<TModel>(TModel model, Func<Task> postOperationAsync, Uri redirectUrl, string viewName)
         {
+            if (postOperationAsync == null)
+            {
+                throw new ArgumentNullException(nameof(postOperationAsync));
+            }
+
             if (this.ModelState.IsValid)
             {
                 // Model state must only be preserved when it is invalid, so that the page 
@@ -39,22 +45,22 @@ namespace CF.Web.AspNetCore.Controllers
                 this.ModelState.Clear();
 
                 // Perform the operation.
-                await postOperationAsync();
+                await postOperationAsync().ConfigureAwait(false);
 
                 // If the operation did not incur any errors, perform the Get part of the PRG pattern.
                 // Messages unrelated to an error that prevented success of the operation will be relayed
                 // via cookies.
                 if (!this.IsErrorState)
                 {
-                    if (this._scopedMessageRecorder.Messages.Any())
+                    if (this.ScopedMessageRecorder.Messages.Any())
                     {
-                        foreach (var message in this._scopedMessageRecorder.Messages)
+                        foreach (var message in this.ScopedMessageRecorder.Messages)
                         {
-                            this._scopedRedirectMessageRecorder.RecordOutbound(message);
+                            this.ScopedRedirectMessageRecorder.RecordOutbound(message);
                         }
                     }
 
-                    return Redirect(redirectUrl);
+                    return Redirect(redirectUrl.ToString());
                 }
             }
 

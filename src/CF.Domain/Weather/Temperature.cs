@@ -1,9 +1,10 @@
-﻿using System;
+﻿using CF.Common.Utility;
+using System;
 using System.Collections.Generic;
 
 namespace CF.Domain.Weather
 {
-    public struct Temperature
+    public struct Temperature : IEquatable<Temperature>
     {
         private static IDictionary<TemperatureScale, IDictionary<TemperatureScale, Func<int, int>>> ToScaleConvertFuncByFromScale =
             new Dictionary<TemperatureScale, IDictionary<TemperatureScale, Func<int, int>>>
@@ -47,6 +48,26 @@ namespace CF.Domain.Weather
             this.Degrees = value;
         }
 
+        public bool Equals(Temperature other)
+        {
+            return other.Scale == this.Scale && other.Degrees == this.Degrees;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is Temperature))
+            {
+                return false;
+            }
+
+            return this.Equals((Temperature)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCodeCalculator.Calculate(this.Scale, this.Degrees);
+        }
+
         public override string ToString()
         {
             return $"{this.Degrees} {TemperatureConstants.ScaleAbbrByScale[this.Scale]}";
@@ -67,6 +88,16 @@ namespace CF.Domain.Weather
             }
 
             return new Temperature(convertFuncByToScale[toScale](fromTemperature.Degrees), toScale);
+        }
+
+        public static bool operator ==(Temperature left, Temperature right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Temperature left, Temperature right)
+        {
+            return !(left == right);
         }
     }
 }

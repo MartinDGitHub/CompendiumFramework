@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Buffers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,8 +22,11 @@ namespace CF.Web.AspNetCore.TagHelpers.TemplateTagHelpers
         protected const string TemplateViewPath = "~/Views/Shared/Templates/";
         protected const string TemplateSuffix = "Template.cshtml";
 
-        protected readonly ICompositeViewEngine _viewEngine;
-        protected readonly IViewBufferScope _viewBufferScope;
+        [HtmlAttributeNotBound]
+        protected ICompositeViewEngine ViewEngine { get; }
+
+        [HtmlAttributeNotBound]
+        protected IViewBufferScope ViewBufferScope { get; }
 
         [HtmlAttributeNotBound]
         [ViewContext]
@@ -33,15 +37,15 @@ namespace CF.Web.AspNetCore.TagHelpers.TemplateTagHelpers
 
         public virtual string Name { get; set; }
 
-        public ViewDataDictionary ViewData { get; set; }
+        public ViewDataDictionary ViewData { get; }
 
         [HtmlAttributeNotBound]
         protected virtual IModelExpressionWrapper TemplateModel { get; set; }
 
         public TemplateTagHelper(ICompositeViewEngine viewEngine, IViewBufferScope viewBufferScope)
         {
-            this._viewEngine = viewEngine ?? throw new ArgumentNullException(nameof(viewEngine));
-            this._viewBufferScope = viewBufferScope ?? throw new ArgumentNullException(nameof(viewBufferScope));
+            this.ViewEngine = viewEngine ?? throw new ArgumentNullException(nameof(viewEngine));
+            this.ViewBufferScope = viewBufferScope ?? throw new ArgumentNullException(nameof(viewBufferScope));
         }
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -70,32 +74,30 @@ namespace CF.Web.AspNetCore.TagHelpers.TemplateTagHelpers
             output.TagName = null;
 
             var editorViewPath = $"{(this.Name.StartsWith(TemplateViewPath) ? string.Empty: TemplateViewPath)}{Name}{(this.Name.EndsWith(TemplateSuffix) ? string.Empty : TemplateSuffix)}";
-            var viewEngineResult = _viewEngine.GetView(this.ViewContext.ExecutingFilePath, editorViewPath, isMainPage: false);
+            var viewEngineResult = this.ViewEngine.GetView(this.ViewContext.ExecutingFilePath, editorViewPath, isMainPage: false);
 
             viewEngineResult.EnsureSuccessful(new string[] { editorViewPath });
 
-            var viewBuffer = new ViewBuffer(this._viewBufferScope, viewEngineResult.ViewName, ViewBuffer.PartialViewPageSize);
-            using (var writer = new ViewBufferTextWriter(viewBuffer, Encoding.UTF8))
+            if (this.TemplateModel == null)
             {
-                if (this.TemplateModel == null)
-                {
-                    this.TemplateModel = new DefaultForModel { ModelExpression = this.For };
-                }
-                else if (this.TemplateModel.ModelExpression == null)
-                {
-                    this.TemplateModel.ModelExpression = this.For;
-                }
-                var baseViewData = this.ViewData ?? ViewContext.ViewData;
-                var newViewData = new ViewDataDictionary<object>(baseViewData, this.TemplateModel);
-                var partialViewContext = new ViewContext(ViewContext, viewEngineResult.View, newViewData, writer);
-
-                using (viewEngineResult.View as IDisposable)
-                {
-                    await viewEngineResult.View.RenderAsync(partialViewContext);
-                }
-
-                output.Content.SetHtmlContent(viewBuffer);
+                this.TemplateModel = new DefaultForModel { ModelExpression = this.For };
             }
+            else if (this.TemplateModel.ModelExpression == null)
+            {
+                this.TemplateModel.ModelExpression = this.For;
+            }
+            var baseViewData = this.ViewData ?? ViewContext.ViewData;
+            var newViewData = new ViewDataDictionary<object>(baseViewData, this.TemplateModel);
+            
+            using var writer = new StringWriter();
+            var partialViewContext = new ViewContext(ViewContext, viewEngineResult.View, newViewData, writer);
+
+            using (viewEngineResult.View as IDisposable)
+            {
+                await viewEngineResult.View.RenderAsync(partialViewContext).ConfigureAwait(false);
+            }
+
+            output.Content.SetHtmlContent(writer.ToString());
         }
     }
 }

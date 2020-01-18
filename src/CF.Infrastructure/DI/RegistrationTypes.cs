@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CF.Common.Constants;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -7,13 +9,12 @@ namespace CF.Infrastructure.DI
 {
     public static class RegistrationTypes
     {
-        // Compendium Framework assemblies are prefixed with "CF."
-        private const string AssembliesToScanMask = @"CF.*.dll";
+        private static readonly string AssembliesToScanMask = $"{FrameworkConstants.RootNamespace}.*.dll";
 
         /// <summary>
         /// Gets the types that are candidates for registration in the registry.
         /// </summary>
-        public static Type[] CFTypes { get; }
+        public static IEnumerable<Type> CFTypes { get; }
 
         static RegistrationTypes()
         {

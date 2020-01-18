@@ -31,7 +31,7 @@ namespace CF.Common.Authorization.Policies
         {
             this.Policy = policy ?? throw new ArgumentNullException(nameof(policy));
             this.IsAuthorized = isAuthorized;
-            this.UnauthorizedReasons = unauthorizedReasons ?? new string[] { };
+            this.UnauthorizedReasons = unauthorizedReasons ?? Array.Empty<string>();
             this.ConsumerFriendlyMessage = consumerFriendlyMessage ?? "Unauthorized.";
         }
 
@@ -53,44 +53,57 @@ namespace CF.Common.Authorization.Policies
 
         public override bool Equals(object obj)
         {
-            var otherPolicyResult = obj as PolicyResult;
-
             return
                 // Avoid using operators which cause operator overload issues.
-                !object.ReferenceEquals(otherPolicyResult, null) && 
-                string.Equals(otherPolicyResult.GetType().FullName, this.Policy.GetType().FullName, StringComparison.OrdinalIgnoreCase) && 
-                this.IsAuthorized == otherPolicyResult.IsAuthorized;
+                !(obj as PolicyResult is null) && 
+                string.Equals(obj.GetType().FullName, this.Policy.GetType().FullName, StringComparison.OrdinalIgnoreCase) && 
+                this.IsAuthorized == ((PolicyResult)obj).IsAuthorized;
         }
 
         public static bool operator true(PolicyResult policyResultOperand)
         {
+            if (policyResultOperand == null)
+            {
+                throw new ArgumentNullException(nameof(policyResultOperand));
+            }
+
             return policyResultOperand.IsAuthorized;
         }
 
         public static bool operator false(PolicyResult policyResultOperand)
         {
+            if (policyResultOperand == null)
+            {
+                throw new ArgumentNullException(nameof(policyResultOperand));
+            }
+
             return !policyResultOperand.IsAuthorized;
         }
 
         public static bool operator !(PolicyResult policyResultOperand)
         {
-            return !policyResultOperand.IsAuthorized;
-        }
-
-        public static bool operator ==(PolicyResult policyResult1, PolicyResult policyResult2)
-        {
-            // Avoid using operators which cause operator overload issues.
-            if (object.ReferenceEquals(policyResult1, null))
+            if (policyResultOperand == null)
             {
-                return object.ReferenceEquals(policyResult2, null);
+                throw new ArgumentNullException(nameof(policyResultOperand));
             }
 
-            return policyResult1.Equals(policyResult2);
+            return !policyResultOperand.IsAuthorized;
+        }
+        
+        public static bool operator ==(PolicyResult left, PolicyResult right)
+        {
+            // Avoid using operators which cause operator overload issues.
+            if (left is null)
+            {
+                return left is null;
+            }
+
+            return left.Equals(right);
         }
 
-        public static bool operator !=(PolicyResult policyResult1, PolicyResult policyResult2) => !(policyResult1 == policyResult2);
+        public static bool operator !=(PolicyResult left, PolicyResult right) => !(left == right);
 
-        public static bool operator==(bool boolOperand, PolicyResult policyResult)
+        public static bool operator ==(bool boolOperand, PolicyResult policyResult)
         {
             if (policyResult == null)
             {
@@ -100,7 +113,7 @@ namespace CF.Common.Authorization.Policies
             return boolOperand == policyResult.IsAuthorized;
         }
 
-        public static bool operator!=(bool boolOperand, PolicyResult policyResultOperand)
+        public static bool operator !=(bool boolOperand, PolicyResult policyResultOperand)
         {
             if (policyResultOperand == null)
             {
@@ -129,6 +142,5 @@ namespace CF.Common.Authorization.Policies
 
             return boolOperand != policyResultOperand.IsAuthorized;
         }
-
     }
 }

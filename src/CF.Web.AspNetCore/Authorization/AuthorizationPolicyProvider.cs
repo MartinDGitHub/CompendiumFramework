@@ -19,6 +19,11 @@ namespace CF.Web.AspNetCore.Authorization
         // The default policy requires an authenticated user.
         public Task<AuthorizationPolicy> GetDefaultPolicyAsync() => Task.FromResult(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
 
+        public Task<AuthorizationPolicy> GetFallbackPolicyAsync()
+        {
+            return this.GetDefaultPolicyAsync();
+        }
+
         public Task<AuthorizationPolicy> GetPolicyAsync(string policyName)
         {
             policyName.EnsureArgumentNotNullOrWhitespace(nameof(policyName));

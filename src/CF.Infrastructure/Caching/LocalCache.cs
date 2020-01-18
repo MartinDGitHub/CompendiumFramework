@@ -36,7 +36,7 @@ namespace CF.Infrastructure.Caching
                 SlidingExpiration = options.SlidingExpiry,
             };
 
-            return await this._appCache.GetOrAddAsync(key, addItemFunc, entryOptions);
+            return await this._appCache.GetOrAddAsync(key, addItemFunc, entryOptions).ConfigureAwait(false);
         }
 
         public void Remove(string key)

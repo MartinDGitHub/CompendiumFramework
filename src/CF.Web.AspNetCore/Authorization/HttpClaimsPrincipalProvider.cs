@@ -7,7 +7,7 @@ namespace CF.Web.AspNetCore.Authorization
 {
     internal class HttpClaimsPrincipalProvider : IClaimsPrincipalProvider
     {
-        private IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ClaimsPrincipal User =>
             // Always go after the current claims principal on the HTTP context instead of 

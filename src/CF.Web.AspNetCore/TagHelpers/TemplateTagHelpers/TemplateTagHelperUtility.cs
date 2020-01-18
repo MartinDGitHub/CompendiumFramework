@@ -13,7 +13,7 @@ namespace CF.Web.AspNetCore.TagHelpers.TemplateTagHelpers
         public static async Task ProcessAsync(ITemplateTagHelper forEditorTagHelper, Func<Task> processAsync)
         {
             Init(forEditorTagHelper);
-            await processAsync();
+            await processAsync().ConfigureAwait(false);
         }
 
         private static void Init(ITemplateTagHelper templateTagHelper)

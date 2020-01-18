@@ -7,6 +7,7 @@ using CF.Common.Messaging;
 using CF.Web.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using System;
@@ -18,12 +19,12 @@ namespace CF.Web.AspNetCore.Middlewares
 {
     internal class GlobalExceptionHandlerMiddleware : IMiddleware
     {
-        private readonly IHostingEnvironment _env;
+        private readonly IWebHostEnvironment _env;
         private readonly IScopedCorrelationIdProvider _scopedCorrelationGuidProvider;
         private readonly IScopedMessageRecorder _messageRecorder;
         private readonly ILogger _logger;
 
-        public GlobalExceptionHandlerMiddleware(IHostingEnvironment env, IScopedCorrelationIdProvider scopedCorrelationGuidProvider, IScopedMessageRecorder messageRecorder, ILogger<GlobalExceptionHandlerMiddleware> logger)
+        public GlobalExceptionHandlerMiddleware(IWebHostEnvironment env, IScopedCorrelationIdProvider scopedCorrelationGuidProvider, IScopedMessageRecorder messageRecorder, ILogger<GlobalExceptionHandlerMiddleware> logger)
         {
             this._env = env ?? throw new ArgumentNullException(nameof(env));
             this._scopedCorrelationGuidProvider = scopedCorrelationGuidProvider ?? throw new ArgumentNullException(nameof(scopedCorrelationGuidProvider));
@@ -35,7 +36,7 @@ namespace CF.Web.AspNetCore.Middlewares
         {
             try
             {
-                await next(context);
+                await next(context).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -48,15 +49,14 @@ namespace CF.Web.AspNetCore.Middlewares
                     // Resolve the correlation ID, using the explicit correlation ID provided by the exception over
                     // the implicit, ambient one, when the explicit ID is available.
                     string correlationId;
-                    var correlatedException = ex as ICorrelatedException;
-                    if (correlatedException != null && !string.IsNullOrWhiteSpace(correlatedException.CorrelationId))
+                    if (ex is ICorrelatedException correlatedException && !string.IsNullOrWhiteSpace(correlatedException.CorrelationId))
                     {
                         correlationId = correlatedException.CorrelationId;
                     }
                     else
                     {
                         // Use the ambient correlation ID for the request if an explicit ID wasn't found.
-                        correlationId  = this._scopedCorrelationGuidProvider.CorrelationId;
+                        correlationId = this._scopedCorrelationGuidProvider.CorrelationId;
                     }
 
                     if (context.Request.IsAjaxRequest() || context.Request.IsApiRequest())
@@ -74,7 +74,7 @@ namespace CF.Web.AspNetCore.Middlewares
                             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
                             var consumerFriendlyMessagesException = ex as IValidationMessagesException;
-                            resultPackage.ValidationMessages = consumerFriendlyMessagesException?.ValidationMessages.Select(x => new Message(x)) ?? new Message[] { };
+                            resultPackage.ValidationMessages = consumerFriendlyMessagesException?.ValidationMessages.Select(x => new Message(x)) ?? Array.Empty<Message>();
                         }
                         else
                         {
@@ -86,7 +86,7 @@ namespace CF.Web.AspNetCore.Middlewares
                             this._logger.Error(ex, $"An unexpected error occurred. Correlation GUID [{resultPackage.CorrelationId}].");
                         }
 
-                        await context.Response.WriteAsync(JsonConvert.SerializeObject(resultPackage));
+                        await context.Response.WriteAsync(JsonConvert.SerializeObject(resultPackage)).ConfigureAwait(false);
                     }
                     else
                     {
@@ -128,7 +128,7 @@ namespace CF.Web.AspNetCore.Middlewares
                                 context.Request.Path = "/Home/Error";
 
                                 // Re-execute to the new path.
-                                await next(context);
+                                await next(context).ConfigureAwait(false);
                             }
                         }
                     }
@@ -139,6 +139,11 @@ namespace CF.Web.AspNetCore.Middlewares
                     this._logger.Error(ex, $"The following unexpected error occurred during global exception handling:\n{ex2}\n\nThe original exception is included below.");
 
                     context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+                    if (rethrow)
+                    {
+                        throw;
+                    }
                 }
 
                 if (rethrow)

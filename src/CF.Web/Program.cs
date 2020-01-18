@@ -38,11 +38,13 @@ namespace CF.Web
             try
             {
                 logger.Information("Running the web host.");
-                BuildWebHost(args).Run();
+                CreateWebHostBuilder(args).Build().Run();
             }
             catch (Exception ex)
             {
                 logger.Critical(ex, "Web host terminated unexpectedly.");
+
+                throw;
             }
             finally
             {
@@ -51,11 +53,10 @@ namespace CF.Web
             }
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
                 // Bootstrap custom logging.
                 .UseCustomLogging()
-                .Build();
+                .UseStartup<Startup>();
     }
 }

@@ -11,9 +11,9 @@ namespace CF.Infrastructure.DI.Verification
     {
         private readonly HashSet<Type> _serviceTypes;
 
-        public GreediestConstructorBehavior(IServiceCollection serviceCollection)
+        public GreediestConstructorBehavior(HashSet<Type> serviceTypes)
         {
-            this._serviceTypes = new HashSet<Type>(serviceCollection.Select(x => x.ServiceType));
+            this._serviceTypes = serviceTypes;
         }
 
         public ConstructorInfo GetConstructor(Type implementationType)
@@ -21,11 +21,11 @@ namespace CF.Infrastructure.DI.Verification
             // The .NET Core container will choose the constructor with the most matching parameters
             // if there are multiple constructors. Attempt to replicate that here. In case multiple 
             // constructors qualify, the first will be used.
-            var constructors = implementationType.GetConstructors();
+            var constructors = implementationType.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
             // This is broken out into multiple statements for clarity and troubleshooting in case
             // we start choosing a constructor that .NET Core wouldn't.
-            if (constructors.Count() > 1)
+            if (constructors.Length > 1)
             {
                 var constructor = constructors.Aggregate((maxMatchedParametersConstructor, x) =>
                 {
@@ -38,7 +38,7 @@ namespace CF.Infrastructure.DI.Verification
                     var xMatchedParameters = x.GetParameters().Where(this.MatchParameter).ToArray();
 
                     // Retain the earliest match if the constructors have the same number of resolvable parameters.
-                    return (maxMatchedParameters.Count() >= xMatchedParameters.Count())
+                    return (maxMatchedParameters.Length >= xMatchedParameters.Length)
                     ? maxMatchedParametersConstructor
                     : x;
                 });

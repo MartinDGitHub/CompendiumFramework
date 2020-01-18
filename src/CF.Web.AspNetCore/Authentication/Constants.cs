@@ -9,6 +9,6 @@ namespace CF.Web.AspNetCore.Authentication
             IISDefaults.AuthenticationScheme,
         };
 
-        public static readonly string DefaultAuthenticationScheme = IISDefaults.AuthenticationScheme;
+        public const string DefaultAuthenticationScheme = IISDefaults.AuthenticationScheme;
     }
 }

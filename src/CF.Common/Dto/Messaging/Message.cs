@@ -1,5 +1,6 @@
 ﻿using CF.Common.Messaging;
 using System;
+using System.Globalization;
 
 namespace CF.Common.Dto.Messaging
 {
@@ -34,7 +35,7 @@ namespace CF.Common.Dto.Messaging
 
         public override string ToString()
         {
-            return $"[[{this.CorrelationId}][{this.Timestamp.ToString("o")}][{this.Severity}][{this.Text}]]";
+            return $"[[{this.CorrelationId}][{this.Timestamp.ToString("o", CultureInfo.InvariantCulture)}][{this.Severity}][{this.Text}]]";
         }
     }
 }

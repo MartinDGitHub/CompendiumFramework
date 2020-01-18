@@ -11,7 +11,7 @@ namespace CF.Web.AspNetCore.TagHelpers.TemplateTagHelpers
     {
         private const string AspForExprAttributeName = "asp-for-expr";
 
-        protected readonly IHtmlGenerator _generator;
+        protected IHtmlGenerator HtmlGenerator { get; }
 
         [HtmlAttributeName(AspForExprAttributeName)]
         public IModelExpressionWrapper ModelExpressionWrapper { get; set; }
@@ -25,7 +25,7 @@ namespace CF.Web.AspNetCore.TagHelpers.TemplateTagHelpers
 
         public LabelTemplateTagHelper(IHtmlGenerator generator) : base(generator)
         {
-            this._generator = generator ?? throw new ArgumentNullException(nameof(generator));
+            this.HtmlGenerator = generator ?? throw new ArgumentNullException(nameof(generator));
         }
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -40,14 +40,14 @@ namespace CF.Web.AspNetCore.TagHelpers.TemplateTagHelpers
                 throw new ArgumentNullException(nameof(output));
             }
 
-            await TemplateTagHelperUtility.ProcessAsync(this, () => base.ProcessAsync(context, output));
+            await TemplateTagHelperUtility.ProcessAsync(this, () => base.ProcessAsync(context, output)).ConfigureAwait(false);
 
             // If there are classes that are specific to an input type, some extra work must
             // be performed to artificially create an input tag helper to resolve the type of
             // input from the model metadata.
             if (!string.IsNullOrWhiteSpace(this.InputTypeClasses))
             {
-                var inputTagHelper = new InputTagHelper(this._generator);
+                var inputTagHelper = new InputTagHelper(this.HtmlGenerator);
                 inputTagHelper.For = this.For;
                 inputTagHelper.ViewContext = this.ViewContext;
                 var inputTagHelperOutput = new TagHelperOutput("input", new TagHelperAttributeList(), (_, __) => Task.FromResult((TagHelperContent)new DefaultTagHelperContent()));

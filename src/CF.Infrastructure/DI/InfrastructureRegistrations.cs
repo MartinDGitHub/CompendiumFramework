@@ -29,7 +29,7 @@ namespace CF.Infrastructure.DI
             this.Container.Register(typeof(ILogger<>), typeof(Logger<>), Lifetime.Singleton);
 
             // Resolve repositories per request to ensure that authentication dependencies are not stale.
-            this.RegisterDerivedInterfaceImplementations<IRepository>(this.Container, Lifetime.Scoped);
+            RegisterDerivedInterfaceImplementations<IRepository>(this.Container, Lifetime.Scoped);
 
             // Resolve one correlation ID provider per request to relate log entries created during the request.
             this.Container.Register<IScopedCorrelationIdProvider, ScopedCorrelationIdProvider>(Lifetime.Scoped);

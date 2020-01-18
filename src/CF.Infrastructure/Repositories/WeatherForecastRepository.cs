@@ -6,6 +6,7 @@ using System.Linq;
 using CF.Common.Messaging;
 using System.Threading.Tasks;
 using CF.Common.Logging;
+using CF.Application.Services;
 
 namespace CF.Infrastructure.Repositories
 {
@@ -36,7 +37,7 @@ namespace CF.Infrastructure.Repositories
                 DateFormatted = DateTime.Now.AddDays(index).ToString("d"),
                 TemperatureC = rng.Next(-20, 55),
                 Summary = Summaries[rng.Next(Summaries.Length)]
-            }));
+            })).ConfigureAwait(false);
         }
     }
 }

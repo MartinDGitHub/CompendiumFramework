@@ -6,23 +6,23 @@ namespace CF.Common.Messaging
 {
     internal class ScopedRedirectMessageRecorder : IScopedRedirectMessageRecorder
     {
-        private IScopedCorrelationIdProvider _scopedCorrelationIdProvider { get; }
+        private readonly IScopedMessageRecorder _inboundMessageRecorder;
 
-        private IScopedMessageRecorder _inboundMessageRecorder;
+        private readonly IScopedMessageRecorder _outboundMessageRecorder;
 
-        private IScopedMessageRecorder _outboundMessageRecorder;
-
-        public string ReferrerUrl { get; set; }
+        public Uri RefererUri { get; set; }
 
         public IEnumerable<IMessage> InboundMessages => this._inboundMessageRecorder.Messages;
 
         public IEnumerable<IMessage> OutboundMessages => this._outboundMessageRecorder.Messages;
 
-        public bool HasErrors => throw new NotImplementedException();
-
         public ScopedRedirectMessageRecorder(IScopedCorrelationIdProvider scopedCorrelationIdProvider)
         {
-            this._scopedCorrelationIdProvider = scopedCorrelationIdProvider ?? throw new ArgumentNullException(nameof(scopedCorrelationIdProvider));
+            if (scopedCorrelationIdProvider == null)
+            {
+                throw new ArgumentNullException(nameof(scopedCorrelationIdProvider));
+            }
+
             this._inboundMessageRecorder = new ScopedMessageRecorder(scopedCorrelationIdProvider);
             this._outboundMessageRecorder = new ScopedMessageRecorder(scopedCorrelationIdProvider);
         }
@@ -45,21 +45,6 @@ namespace CF.Common.Messaging
         public void RecordOutbound(IMessage message)
         {
             this._outboundMessageRecorder.Record(message);
-        }
-
-        public void Clear()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Record(MessageSeverity severity, string text)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Record(IMessage message)
-        {
-            throw new NotImplementedException();
         }
     }
 }

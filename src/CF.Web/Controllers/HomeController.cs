@@ -5,8 +5,11 @@ using CF.Web.AspNetCore.Controllers;
 using CF.Web.Models.Home;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace Web.Controllers
@@ -17,7 +20,7 @@ namespace Web.Controllers
 
         public HomeController(
             IScopedMessageRecorder scopedMessageRecorder, IScopedRedirectMessageRecorder scopedRedirectMessageRecorder, 
-            ILogger<HomeController> logger) 
+            ILogger<HomeController> logger, IOptions<MemoryCacheOptions> memoryCacheOptions) 
             : base(scopedMessageRecorder, scopedRedirectMessageRecorder)
         {
             this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -33,7 +36,7 @@ namespace Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Test(int? testId, string testValue)
         {
-            return View(new TestViewModel());
+            return await Task.FromResult(View(new TestViewModel())).ConfigureAwait(false);
         }
 
         [HttpPost]
@@ -43,10 +46,11 @@ namespace Web.Controllers
             return await PostRedirectGetAsync(
                 model, 
                 () => {
-                    this._scopedMessageRecorder.Record(MessageSeverity.Success, "Success!");
+                    this.ScopedMessageRecorder.Record(MessageSeverity.Success, "Success!");
                     return Task.CompletedTask;
                     }, 
-                Url.Action(nameof(Test).ToLower(), new { testId = 42, testValue = @"\&/&?=" }));
+                new Uri(Url.Action(nameof(Test), new { testId = 42, testValue = @"\&/&?=" })))
+                .ConfigureAwait(false);
         }
 
         [HttpGet]

@@ -18,13 +18,13 @@ namespace CF.Web.AspNetCore.Filters
 {
     public class ApiActionResultPackageActionFilter : IActionFilter
     {
-        private readonly IHostingEnvironment _env;
+        private readonly IWebHostEnvironment _env;
         private readonly IScopedCorrelationIdProvider _scopedCorrelationGuidProvider;
         private readonly IScopedMessageRecorder _messageRecorder;
         private readonly ILogger _logger;
 
         public ApiActionResultPackageActionFilter(
-            IHostingEnvironment env,
+            IWebHostEnvironment env,
             IScopedCorrelationIdProvider scopedCorrelationGuidProvider,
             IScopedMessageRecorder messageRecorder, ILogger<ApiActionResultPackageActionFilter> logger)
         {
@@ -36,6 +36,11 @@ namespace CF.Web.AspNetCore.Filters
 
         public void OnActionExecuted(ActionExecutedContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             ControllerActionDescriptor controllerActionDescriptor;
             if (// Only API controller actions automatically return a uniform result package.
                 context.Controller is ApiControllerBase &&
@@ -52,7 +57,7 @@ namespace CF.Web.AspNetCore.Filters
                 {
                     Success = !this._messageRecorder.HasErrors,
                     CorrelationId = this._scopedCorrelationGuidProvider.CorrelationId,
-                    ValidationMessages = this._messageRecorder.Messages.Select(x => new Message(x)) ?? new Message[] { },
+                    ValidationMessages = this._messageRecorder.Messages.Select(x => new Message(x)) ?? Array.Empty<Message>(),
                 };
 
                 // If error severity messages were recorded, consider this to have been bad request. Return a 404

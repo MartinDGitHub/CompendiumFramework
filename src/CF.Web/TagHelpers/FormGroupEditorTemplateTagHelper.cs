@@ -1,6 +1,6 @@
 ﻿using CF.Web.Models.Shared;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Buffers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using System.Threading.Tasks;
 
@@ -38,7 +38,7 @@ namespace CF.Web.AspNetCore.TagHelpers.TemplateTagHelpers
                 ControlColClass = this.ControlColClass,
             };
 
-            await base.ProcessAsync(context, output);
+            await base.ProcessAsync(context, output).ConfigureAwait(false);
         }
     }
 }

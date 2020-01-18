@@ -12,7 +12,7 @@ namespace CF.Common.Codes
     {
         private static readonly ConcurrentDictionary<Type, CodeCollection<TCode, TId>> _codesByType = new ConcurrentDictionary<Type, CodeCollection<TCode, TId>>();
 
-        public static ICodeCollection<TCode, TId> Codes => _codesByType[typeof(TCode)];
+        public static readonly ICodeCollection<TCode, TId> Codes = _codesByType[typeof(TCode)];
 
         static CodeBase()
         {

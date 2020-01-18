@@ -28,12 +28,12 @@ namespace CF.Application.Services
 
         public async Task<IEnumerable<WeatherForecast>> GetWeatherForecastsAsync()
         {
-            (await this._warmTemperaturePolicy.AuthorizeAsync(new TemperatureRequirementContext(new Temperature(10)))).EnsureAuthorized();
+            (await this._warmTemperaturePolicy.AuthorizeAsync(new TemperatureRequirementContext(new Temperature(10))).ConfigureAwait(false)).EnsureAuthorized();
 
             this._logger.Information($"In [{nameof(WeatherForecastService)}].");
             this._messageRecorder.Record(MessageSeverity.Info, "Services checking in!");
 
-            return await this._weatherForecastRepository.ReadWeatherForecastsAsync();
+            return await this._weatherForecastRepository.ReadWeatherForecastsAsync().ConfigureAwait(false);
         }
     }
 }

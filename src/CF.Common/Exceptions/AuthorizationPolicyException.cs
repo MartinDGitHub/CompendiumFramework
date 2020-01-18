@@ -14,18 +14,30 @@ namespace CF.Common.Exceptions
 
         public IEnumerable<string> UnauthorizedReasons { get; }
 
+        public AuthorizationPolicyException()
+        {
+        }
+
+        public AuthorizationPolicyException(string message) : base(message)
+        {
+        }
+
+        public AuthorizationPolicyException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
         public AuthorizationPolicyException(PolicyResult policyResult) : this(policyResult, null)
         {
         }
 
-        public AuthorizationPolicyException(PolicyResult policyResult, string correlationId) : base(GetErrorMessage(policyResult, correlationId))
+        public AuthorizationPolicyException(PolicyResult policyResult, string correlationId) : base(GetErrorMessage(policyResult))
         {
             if (policyResult == null)
             {
                 throw new ArgumentNullException(nameof(policyResult));
             }
 
-            this.UnauthorizedReasons = new List<string>(policyResult.UnauthorizedReasons ?? new string[] { });
+            this.UnauthorizedReasons = new List<string>(policyResult.UnauthorizedReasons ?? Array.Empty<string>());
 
             this.ValidationMessages = new IMessage[]
             {
@@ -35,7 +47,7 @@ namespace CF.Common.Exceptions
             this.CorrelationId = correlationId;
         }
 
-        private static string GetErrorMessage(PolicyResult policyResult, string correlationId)
+        private static string GetErrorMessage(PolicyResult policyResult)
         {
             return $"Message [{policyResult.ConsumerFriendlyMessage}]\nPolicy [{policyResult.Policy.GetType().FullName}] did not authorize for the following reasons:\n[\n[{string.Join("],\n[", policyResult.UnauthorizedReasons)}]\n]";
         }

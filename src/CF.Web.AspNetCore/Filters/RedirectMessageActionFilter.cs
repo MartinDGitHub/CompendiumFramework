@@ -51,12 +51,12 @@ namespace CF.Web.AspNetCore.Filters
             },
         };
 
-        private readonly IHostingEnvironment _env;
+        private readonly IWebHostEnvironment _env;
         private readonly IScopedRedirectMessageRecorder _redirectMessageRecorder;
         private readonly ILogger _logger;
 
         public RedirectMessageActionFilter(
-            IHostingEnvironment env, IScopedRedirectMessageRecorder redirectMessageRecorder, ILogger<ApiActionResultPackageActionFilter> logger)
+            IWebHostEnvironment env, IScopedRedirectMessageRecorder redirectMessageRecorder, ILogger<ApiActionResultPackageActionFilter> logger)
         {
             this._env = env ?? throw new ArgumentNullException(nameof(env));
             this._redirectMessageRecorder = redirectMessageRecorder ?? throw new ArgumentNullException(nameof(redirectMessageRecorder));
@@ -65,6 +65,11 @@ namespace CF.Web.AspNetCore.Filters
 
         public void OnActionExecuted(ActionExecutedContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             var webController = context.Controller as WebControllerBase;
             if (// Only Web controller actions automatically return a uniform result package.
                 webController != null &&
@@ -100,7 +105,7 @@ namespace CF.Web.AspNetCore.Filters
                         TargetPathAndQuery = targetUrlPathAndQuery,
                         // Bind messages to their intended source to help ensure messages are pulled in from their intended context.
                         ReferrerPathAndQuery = (refererValue == StringValues.Empty) ? null : new Uri(refererValue, UriKind.Absolute).PathAndQuery,
-                        Messages = this._redirectMessageRecorder.OutboundMessages.Select(x => new Message(x)) ?? new Message[] { },
+                        Messages = this._redirectMessageRecorder.OutboundMessages.Select(x => new Message(x)) ?? Array.Empty<Message>(),
                     };
 
                     webController.TempData[RedirectMessagesTempDataKey] = JsonConvert.SerializeObject(redirectMessagesModel);
@@ -115,6 +120,11 @@ namespace CF.Web.AspNetCore.Filters
 
         public void OnActionExecuting(ActionExecutingContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             // Do nothing before the action execution.
             var webController = context.Controller as WebControllerBase;
             if (webController != null && (webController.TempData[RedirectMessagesTempDataKey] as string) != null)

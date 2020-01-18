@@ -30,7 +30,7 @@ namespace CF.Web.AspNetCore.TagHelpers.TemplateTagHelpers
                 throw new ArgumentNullException(nameof(output));
             }
 
-            await TemplateTagHelperUtility.ProcessAsync(this, () => base.ProcessAsync(context, output));
+            await TemplateTagHelperUtility.ProcessAsync(this, () => base.ProcessAsync(context, output)).ConfigureAwait(false);
         }
     }
 }

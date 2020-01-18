@@ -23,7 +23,7 @@ namespace CF.Web.AspNetCore.Middlewares
             var correlationGuidScopeProperty = new CorrelationIdScopeProperty(this._scopedCorrelationIdProvider.CorrelationId);
             using (this._logger.BeginScope(correlationGuidScopeProperty))
             {
-                await next(context);
+                await next(context).ConfigureAwait(false);
             }
         }
     }

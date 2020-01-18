@@ -55,16 +55,16 @@ namespace CF.Common.Authorization.Policies
         {
             // First try the generic route of checking for standard role claims.
             var unmetReasons = new List<string>();
-            var tasks = this.Requirements.Select(async x => await this._roleClaimRequirementHandler.HandleRequirementAsync(x));
-            var taskResults = await Task.WhenAll(tasks);
+            var tasks = this.Requirements.Select(async x => await this._roleClaimRequirementHandler.HandleRequirementAsync(x).ConfigureAwait(false));
+            var taskResults = await Task.WhenAll(tasks).ConfigureAwait(false);
             unmetReasons.AddRange(taskResults.Where(x => !x.IsMet).Select(x => x.UnmetMessage));
             var isAuthorized = IsAuthorized(taskResults);
             // If unable to authorize via standard role claims, fall back to checking for Windows
             // roles which are represented as group SIDs.
             if (!isAuthorized)
             {
-                tasks = this.WindowsRoleRequirements.Select(async x => await this._windowsRoleRequirementHandler.HandleRequirementAsync(x));
-                taskResults = await Task.WhenAll(tasks);
+                tasks = this.WindowsRoleRequirements.Select(async x => await this._windowsRoleRequirementHandler.HandleRequirementAsync(x).ConfigureAwait(false));
+                taskResults = await Task.WhenAll(tasks).ConfigureAwait(false);
                 unmetReasons.AddRange(taskResults.Where(x => !x.IsMet).Select(x => x.UnmetMessage));
                 isAuthorized = IsAuthorized(taskResults);
             }
@@ -75,15 +75,12 @@ namespace CF.Common.Authorization.Policies
 
             bool IsAuthorized(RequirementResult[] requirementResults)
             {
-                switch (this._authorizeMode)
+                return this._authorizeMode switch
                 {
-                    case AuthorizeMode.Any:
-                        return requirementResults.Any(x => x.IsMet);
-                    case AuthorizeMode.All:
-                        return requirementResults.All(x => x.IsMet);
-                    default:
-                        throw new InvalidOperationException($"The authorize mode of [{this._authorizeMode}] is unrecognized.");
-                }
+                    AuthorizeMode.Any => requirementResults.Any(x => x.IsMet),
+                    AuthorizeMode.All => requirementResults.All(x => x.IsMet),
+                    _ => throw new InvalidOperationException($"The authorize mode of [{this._authorizeMode}] is unrecognized."),
+                };
             }
         }
     }

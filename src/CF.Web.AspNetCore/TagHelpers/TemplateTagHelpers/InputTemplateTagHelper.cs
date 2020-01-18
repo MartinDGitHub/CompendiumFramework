@@ -12,7 +12,7 @@ namespace CF.Web.AspNetCore.TagHelpers.TemplateTagHelpers
     {
         private const string AspForExprAttributeName = "asp-for-expr";
 
-        protected readonly HtmlEncoder _htmlEncoder;
+        private readonly HtmlEncoder _htmlEncoder;
 
         // A regex to split a "." delimited input type class value into the following parts:
         // e.g. (match checkbox input types): checkbox.form-check-input
@@ -21,7 +21,7 @@ namespace CF.Web.AspNetCore.TagHelpers.TemplateTagHelpers
         // e.g. (match all non-checkbox input types): ^((?!checkbox).)*$.form-control
         // 1 = ^((?!checkbox).)*$
         // 2 = form-control
-        protected static Regex InputTypeClassValueSplitRegex = new Regex(@"(.*)\.(-*[_a-zA-Z]+[_a-zA-Z0-9-]*)", RegexOptions.Compiled);
+        private static Regex InputTypeClassValueSplitRegex = new Regex(@"(.*)\.(-*[_a-zA-Z]+[_a-zA-Z0-9-]*)", RegexOptions.Compiled);
 
         [HtmlAttributeName(AspForExprAttributeName)]
         public IModelExpressionWrapper ModelExpressionWrapper { get; set; }

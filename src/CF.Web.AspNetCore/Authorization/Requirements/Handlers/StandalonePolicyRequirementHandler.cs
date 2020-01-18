@@ -31,7 +31,7 @@ namespace CF.Web.AspNetCore.Authorization.Requirements.Handlers
                 throw new InvalidOperationException($"No standalone policy [{typeof(IStandalonePolicy).Name}] implementing [{requirement.StandalonePolicyType.FullName}] could be resolved - only one is permitted.");
             }
             
-            var policyResult = await policies.Single().AuthorizeAsync();
+            var policyResult = await policies.Single().AuthorizeAsync().ConfigureAwait(false);
             if (policyResult)
             {
                 context.Succeed(requirement);

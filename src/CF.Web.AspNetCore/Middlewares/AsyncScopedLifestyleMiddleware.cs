@@ -20,7 +20,7 @@ namespace CF.Web.AspNetCore.Middlewares
         {
             using (AsyncScopedLifestyle.BeginScope(this._container))
             {
-                await next(context);
+                await next(context).ConfigureAwait(false);
             }
         }
     }

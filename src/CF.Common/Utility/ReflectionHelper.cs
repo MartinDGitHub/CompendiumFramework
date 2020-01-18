@@ -16,6 +16,11 @@ namespace CF.Common.Utility
 
         public static HashSet<Type> GetLeafInterfaceTypes(Type assignableToType, Assembly assembly, Regex namespaceFilter = null)
         {
+            if (assembly == null)
+            {
+                throw new ArgumentNullException(nameof(assembly));
+            }
+
             return ReflectionHelper.GetLeafInterfaceTypes(assignableToType, assembly.GetTypes(), namespaceFilter);
         }
 
@@ -51,6 +56,11 @@ namespace CF.Common.Utility
 
         public static IEnumerable<Type> GetImplementationTypes(Assembly implementationAssembly, HashSet<Type> interfaceTypes, Regex namespaceFilter = null)
         {
+            if (implementationAssembly == null)
+            {
+                throw new ArgumentNullException(nameof(implementationAssembly));
+            }
+
             return ReflectionHelper.GetImplementationTypes(implementationAssembly.GetTypes(), interfaceTypes, namespaceFilter);
         }
 

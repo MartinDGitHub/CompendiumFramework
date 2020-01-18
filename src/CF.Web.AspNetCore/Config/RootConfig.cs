@@ -1,10 +1,10 @@
 ﻿using CF.Common.Config;
-using CF.Web.AspNetCore.Config.Options;
+using CF.Web.AspNetCore.Config.Sections;
 using Microsoft.Extensions.Options;
 
 namespace CF.Web.AspNetCore.Config
 {
-    class RootConfig : IRootConfig
+    internal class RootConfig : IRootConfig
     {
         public RootConfig(IOptionsMonitor<Root> options)
         {

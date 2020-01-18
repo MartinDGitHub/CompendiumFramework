@@ -40,7 +40,7 @@ namespace CF.Web.AspNetCore.DI
 
             // Register configuration per request to ensure that any configuration changes are discovered 
             // and to keep authorization consistent throughout a request.
-            this.RegisterDerivedInterfaceImplementations<IConfig>(this.Container, Lifetime.Scoped);
+            RegisterDerivedInterfaceImplementations<IConfig>(this.Container, Lifetime.Scoped);
         }
     }
 }

@@ -2,6 +2,7 @@ using CF.Application.Services;
 using CF.Common.Logging;
 using CF.Common.Messaging;
 using CF.Domain.Weather;
+using CF.Web.AspNetCore.Controllers.Api;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -9,10 +10,7 @@ using System.Threading.Tasks;
 
 namespace Web.Controllers
 {
-    [ApiVersion("1.0")]
-    [ApiController]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    public class SampleDataController : ControllerBase
+    public class SampleDataController : ApiControllerBase
     {
         private readonly IWeatherForecastService _weatherForecastService;
         private readonly IScopedMessageRecorder _messageRecorder;
@@ -30,7 +28,7 @@ namespace Web.Controllers
         {
             this._logger.Information($"In [{nameof(SampleDataController)}].");
 
-            return await this._weatherForecastService.GetWeatherForecastsAsync();
+            return await this._weatherForecastService.GetWeatherForecastsAsync().ConfigureAwait(false);
 
         }
     }
