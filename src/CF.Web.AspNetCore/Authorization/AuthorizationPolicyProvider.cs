@@ -36,7 +36,7 @@ namespace CF.Web.AspNetCore.Authorization
 
             var policy = new AuthorizationPolicyBuilder()
                 // NOTE: adding authentication schemes here can oddly break the lookup for IsInRole on a Windows claims principal...
-                .AddAuthenticationSchemes(Constants.AuthenticationSchemes)
+                .AddAuthenticationSchemes(AuthenticationConstants.AuthenticationSchemes)
                 .RequireAuthenticatedUser()
                 .AddRequirements(new StandalonePolicyRequirement(policyType));
 

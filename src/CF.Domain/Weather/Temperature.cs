@@ -6,7 +6,7 @@ namespace CF.Domain.Weather
 {
     public struct Temperature : IEquatable<Temperature>
     {
-        private static IDictionary<TemperatureScale, IDictionary<TemperatureScale, Func<int, int>>> ToScaleConvertFuncByFromScale =
+        private static readonly IDictionary<TemperatureScale, IDictionary<TemperatureScale, Func<int, int>>> ToScaleConvertFuncByFromScale =
             new Dictionary<TemperatureScale, IDictionary<TemperatureScale, Func<int, int>>>
             {
                 { TemperatureScale.Celsius, new Dictionary<TemperatureScale, Func<int, int>>
@@ -50,7 +50,7 @@ namespace CF.Domain.Weather
 
         public bool Equals(Temperature other)
         {
-            return other.Scale == this.Scale && other.Degrees == this.Degrees;
+            return this.Equals(other);
         }
 
         public override bool Equals(object obj)

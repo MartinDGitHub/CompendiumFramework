@@ -16,11 +16,11 @@ namespace Web.Controllers
 {
     public class HomeController : WebControllerBase
     {
-        private ILogger<HomeController> _logger;
+        private readonly ILogger<HomeController> _logger;
 
         public HomeController(
             IScopedMessageRecorder scopedMessageRecorder, IScopedRedirectMessageRecorder scopedRedirectMessageRecorder, 
-            ILogger<HomeController> logger, IOptions<MemoryCacheOptions> memoryCacheOptions) 
+            ILogger<HomeController> logger) 
             : base(scopedMessageRecorder, scopedRedirectMessageRecorder)
         {
             this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -34,7 +34,7 @@ namespace Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Test(int? testId, string testValue)
+        public async Task<IActionResult> Test()
         {
             return await Task.FromResult(View(new TestViewModel())).ConfigureAwait(false);
         }

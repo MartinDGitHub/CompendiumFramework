@@ -5,7 +5,7 @@ namespace CF.Common.Codes
 {
     public interface ICodeCollection<TCode, TId> : IEnumerable<TCode>
         where TCode : CodeBase<TCode, TId>
-        where TId : Enum
+        where TId : struct, Enum
     {
         TCode this[TId id] { get; }
 

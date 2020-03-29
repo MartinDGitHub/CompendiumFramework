@@ -8,7 +8,7 @@ namespace CF.Common.Codes
 {
     public abstract class CodeBase<TCode, TId> : IValueCode, IIdCode<TId>
         where TCode : CodeBase<TCode, TId>
-        where TId : Enum
+        where TId : struct, Enum
     {
         private static readonly ConcurrentDictionary<Type, CodeCollection<TCode, TId>> _codesByType = new ConcurrentDictionary<Type, CodeCollection<TCode, TId>>();
 
@@ -41,17 +41,15 @@ namespace CF.Common.Codes
 
         public override bool Equals(object obj)
         {
-            var otherCode = obj as TCode;
-
             // Avoid using operators which cause operator overload issues.
-            return !object.ReferenceEquals(otherCode, null) && Enum.Equals(this.Id, otherCode.Id);
+            return obj is TCode otherCode && Enum.Equals(this.Id, otherCode.Id);
         }
 
         public override int GetHashCode() => HashCodeCalculator.Calculate(this.Id);
 
         public override string ToString() => $"ID [{Enum.GetName(typeof(TId), this.Id)}]; Value [{this.Value}]";
 
-        public static implicit operator TId(CodeBase<TCode, TId> code) => code.Id;
+        public static implicit operator TId(CodeBase<TCode, TId> code) =>  code?.Id ?? default;
 
         public static implicit operator string(CodeBase<TCode, TId> code) => code?.Value;
 
@@ -62,9 +60,9 @@ namespace CF.Common.Codes
         public static bool operator ==(CodeBase<TCode, TId> code1, CodeBase<TCode, TId> code2)
         {
             // Avoid using operators which cause operator overload issues.
-            if (object.ReferenceEquals(code1, null))
+            if (code1 is null)
             {
-                return object.ReferenceEquals(code2, null);
+                return code2 is null;
             }
 
             return code1.Equals(code2);

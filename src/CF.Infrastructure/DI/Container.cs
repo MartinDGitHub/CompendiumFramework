@@ -19,7 +19,7 @@ namespace CF.Infrastructure.DI
 {
     internal class Container : IContainer
     {
-        private static IDictionary<Lifetime, ServiceLifetime> ServiceLifetimeByLifetime = new Dictionary<Lifetime, ServiceLifetime>
+        private static readonly IDictionary<Lifetime, ServiceLifetime> ServiceLifetimeByLifetime = new Dictionary<Lifetime, ServiceLifetime>
         {
             { Lifetime.Transient, ServiceLifetime.Transient },
             { Lifetime.Scoped, ServiceLifetime.Scoped },
@@ -282,8 +282,10 @@ namespace CF.Infrastructure.DI
                                     // When there are multiple service type parameters, each represents a new branch whose descendents will have
                                     // differering ancestors. Therefore, instantiate a new branch of service types for each parameter to avoid
                                     // false positives where sibling parameter dependencies are falsely identified ancestors.
-                                    var parameterServiceTypeAncestors = new List<Ancestor>(serviceTypeAncestors);
-                                    parameterServiceTypeAncestors.Add(new Ancestor { ServiceType = serviceType, ImplementationType = implementationType });
+                                    var parameterServiceTypeAncestors = new List<Ancestor>(serviceTypeAncestors)
+                                    {
+                                        new Ancestor { ServiceType = serviceType, ImplementationType = implementationType }
+                                    };
 
                                     // Check if this parameter service type is already an ancestor, indicating a circular dependency.
                                     // If detected, throw an exception including the ancestor service types and their implementation types for troubleshooting.

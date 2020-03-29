@@ -1,5 +1,6 @@
 ﻿using CF.Infrastructure.DI;
 using CF.Web.AspNetCore.Config.Sections;
+using CF.Web.AspNetCore.Cors;
 using CF.Web.AspNetCore.Extensions.ServiceCollection;
 using CF.Web.AspNetCore.Filters;
 using CF.Web.AspNetCore.Middlewares;
@@ -14,8 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Text.Json;
-using AuthenticationConstants = CF.Web.AspNetCore.Authentication.Constants;
-using CorsConstants = CF.Web.AspNetCore.Cors.Constants;
+using AuthenticationConstants = CF.Web.AspNetCore.Authentication.AuthenticationConstants;
 
 namespace CF.WebBootstrap
 {

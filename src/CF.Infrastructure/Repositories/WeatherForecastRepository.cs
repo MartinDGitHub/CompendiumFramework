@@ -7,12 +7,13 @@ using CF.Common.Messaging;
 using System.Threading.Tasks;
 using CF.Common.Logging;
 using CF.Application.Services;
+using System.Globalization;
 
 namespace CF.Infrastructure.Repositories
 {
     class WeatherForecastRepository : RepositoryBase, IWeatherForecastRepository
     {
-        private static string[] Summaries = new[]
+        private static readonly string[] Summaries = new[]
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
@@ -34,7 +35,7 @@ namespace CF.Infrastructure.Repositories
             var rng = new Random();
             return await Task.Run(() => Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
-                DateFormatted = DateTime.Now.AddDays(index).ToString("d"),
+                DateFormatted = DateTime.Now.AddDays(index).ToString("d", CultureInfo.InvariantCulture),
                 TemperatureC = rng.Next(-20, 55),
                 Summary = Summaries[rng.Next(Summaries.Length)]
             })).ConfigureAwait(false);

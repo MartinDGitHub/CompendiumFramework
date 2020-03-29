@@ -1,8 +1,9 @@
-﻿using System;
+﻿using CF.Common.Utility;
+using System;
 
 namespace CF.Domain.Weather
 {
-    public struct TemperatureRange
+    public struct TemperatureRange : IEquatable<TemperatureRange>
     {
         /// <summary>
         /// Gets the temperature scale that the range is for.
@@ -36,6 +37,36 @@ namespace CF.Domain.Weather
             var convertedTemperature = Temperature.Convert(temperature, this.Scale);
 
             return (convertedTemperature.Degrees >= this.Min.Degrees && convertedTemperature.Degrees < this.Max.Degrees);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is TemperatureRange))
+            {
+                return false;
+            }
+
+            return this.Equals((TemperatureRange)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCodeCalculator.Calculate(this.Scale, this.Min, this.Max);
+        }
+
+        public static bool operator ==(TemperatureRange left, TemperatureRange right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(TemperatureRange left, TemperatureRange right)
+        {
+            return !(left == right);
+        }
+
+        public bool Equals(TemperatureRange other)
+        {
+            return this.Equals(other);
         }
     }
 }

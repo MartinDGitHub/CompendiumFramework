@@ -4,6 +4,7 @@ using CF.Common.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace CF.Common.DI
 {
@@ -31,18 +32,23 @@ namespace CF.Common.DI
             this.Container.Register(typeof(IRequirementHandler<,>), this.GetType().Assembly, Lifetime.Scoped);
         }
 
-        public static void RegisterDerivedInterfaceImplementations<TInterface>(IContainer container, Lifetime lifetime) where TInterface : class
+        public void RegisterDerivedInterfaceImplementations<TInterface>(IContainer container, Lifetime lifetime) where TInterface : class
         {
-            RegisterDerivedInterfaceImplementations(typeof(TInterface), container, lifetime);
+            this.RegisterDerivedInterfaceImplementations(typeof(TInterface), container, lifetime);
         }
 
-        protected static void RegisterDerivedInterfaceImplementations(Type interfaceType, IContainer container, Lifetime lifetime)
+        protected void RegisterDerivedInterfaceImplementations(Type interfaceType, IContainer container, Lifetime lifetime)
         {
+            if (interfaceType == null)
+            {
+                throw new ArgumentNullException(nameof(interfaceType));
+            }    
+
             // Assume that leaf interface types will be either in the same assembly as the ancestor interface type
             // or in this assembly.
             var interfaceTypes = ReflectionHelper.GetLeafInterfaceTypes(interfaceType, interfaceType.Assembly.GetTypes().Concat(typeof(RegistrationsBase).Assembly.GetTypes()));
             // Only register implementation types in the assembly the derived registrations class is in.
-            var implementationTypes = ReflectionHelper.GetImplementationTypes(typeof(RegistrationsBase).Assembly, interfaceTypes);
+            var implementationTypes = ReflectionHelper.GetImplementationTypes(this.GetType().Assembly, interfaceTypes);
 
             RegisterInterfaceImplementations(container, interfaceTypes, implementationTypes, lifetime);
         }

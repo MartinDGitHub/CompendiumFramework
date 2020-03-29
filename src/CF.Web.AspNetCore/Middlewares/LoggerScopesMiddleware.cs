@@ -9,7 +9,7 @@ namespace CF.Web.AspNetCore.Middlewares
 {
     internal class LoggerScopesMiddleware : IMiddleware
     {
-        private IScopedCorrelationIdProvider _scopedCorrelationIdProvider;
+        private readonly IScopedCorrelationIdProvider _scopedCorrelationIdProvider;
         private readonly ILogger _logger;
 
         public LoggerScopesMiddleware(IScopedCorrelationIdProvider scopedCorrelationIdProvider, ILogger<LoggerScopesMiddleware> logger)

@@ -2,7 +2,7 @@
 
 namespace CF.Web.AspNetCore.Authentication
 {
-    internal static class Constants
+    internal static class AuthenticationConstants
     {
         public static readonly string[] AuthenticationSchemes = new string[]
         {

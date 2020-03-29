@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Buffers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -73,7 +74,7 @@ namespace CF.Web.AspNetCore.TagHelpers.TemplateTagHelpers
             // Suppress "editor" tag rendering.
             output.TagName = null;
 
-            var editorViewPath = $"{(this.Name.StartsWith(TemplateViewPath) ? string.Empty: TemplateViewPath)}{Name}{(this.Name.EndsWith(TemplateSuffix) ? string.Empty : TemplateSuffix)}";
+            var editorViewPath = $"{(this.Name.StartsWith(TemplateViewPath, true, CultureInfo.InvariantCulture) ? string.Empty: TemplateViewPath)}{Name}{(this.Name.EndsWith(TemplateSuffix, true, CultureInfo.InvariantCulture) ? string.Empty : TemplateSuffix)}";
             var viewEngineResult = this.ViewEngine.GetView(this.ViewContext.ExecutingFilePath, editorViewPath, isMainPage: false);
 
             viewEngineResult.EnsureSuccessful(new string[] { editorViewPath });

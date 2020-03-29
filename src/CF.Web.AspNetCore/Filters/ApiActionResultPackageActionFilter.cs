@@ -1,11 +1,9 @@
 ﻿using CF.Common.Correlation;
 using CF.Common.Dto.ActionResults;
 using CF.Common.Dto.Messaging;
-using CF.Common.Logging;
 using CF.Common.Messaging;
 using CF.Web.AspNetCore.Attributes;
 using CF.Web.AspNetCore.Controllers.Api;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -18,20 +16,15 @@ namespace CF.Web.AspNetCore.Filters
 {
     public class ApiActionResultPackageActionFilter : IActionFilter
     {
-        private readonly IWebHostEnvironment _env;
         private readonly IScopedCorrelationIdProvider _scopedCorrelationGuidProvider;
         private readonly IScopedMessageRecorder _messageRecorder;
-        private readonly ILogger _logger;
 
         public ApiActionResultPackageActionFilter(
-            IWebHostEnvironment env,
             IScopedCorrelationIdProvider scopedCorrelationGuidProvider,
-            IScopedMessageRecorder messageRecorder, ILogger<ApiActionResultPackageActionFilter> logger)
+            IScopedMessageRecorder messageRecorder)
         {
-            this._env = env ?? throw new ArgumentNullException  (nameof(env));
             this._scopedCorrelationGuidProvider = scopedCorrelationGuidProvider ?? throw new ArgumentNullException(nameof(scopedCorrelationGuidProvider));
             this._messageRecorder = messageRecorder ?? throw new ArgumentNullException(nameof(messageRecorder));
-            this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public void OnActionExecuted(ActionExecutedContext context)
@@ -41,7 +34,6 @@ namespace CF.Web.AspNetCore.Filters
                 throw new ArgumentNullException(nameof(context));
             }
 
-            ControllerActionDescriptor controllerActionDescriptor;
             if (// Only API controller actions automatically return a uniform result package.
                 context.Controller is ApiControllerBase &&
                 // If another filter canceled the action, do not produce a package.
@@ -50,7 +42,7 @@ namespace CF.Web.AspNetCore.Filters
                 context.Exception == null &&
                 // Check for an opt out on the controller or action.
                 Attribute.GetCustomAttribute(context.Controller.GetType(), typeof(ActionResultPackageOptOutAttribute)) == null &&
-                (controllerActionDescriptor = context.ActionDescriptor as ControllerActionDescriptor) != null &&
+                context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor &&
                 Attribute.GetCustomAttribute(controllerActionDescriptor.MethodInfo, typeof(ActionResultPackageOptOutAttribute)) == null)
             {
                 var resultPackage = new ActionResultPackage<object>
@@ -75,7 +67,7 @@ namespace CF.Web.AspNetCore.Filters
                     resultPackage.Data = objectResult.Value;
 
                     objectResult.Value = resultPackage;
-                    objectResult.StatusCode = overrideStatusCode.HasValue ? overrideStatusCode.Value : objectResult.StatusCode;
+                    objectResult.StatusCode = overrideStatusCode ?? objectResult.StatusCode;
                 }
                 else if (typeof(JsonResult).IsAssignableFrom(actionResultType))
                 {
@@ -84,14 +76,16 @@ namespace CF.Web.AspNetCore.Filters
                     resultPackage.Data = jsonResult.Value;
 
                     jsonResult.Value = resultPackage;
-                    jsonResult.StatusCode = overrideStatusCode.HasValue ? overrideStatusCode.Value : jsonResult.StatusCode;
+                    jsonResult.StatusCode = overrideStatusCode ?? jsonResult.StatusCode;
                 }
                 else if (typeof(EmptyResult).IsAssignableFrom(actionResultType))
                 {
                     var emptyResult = (EmptyResult)context.Result;
 
-                    var objectResult = new ObjectResult(null);
-                    objectResult.StatusCode = overrideStatusCode.HasValue ? overrideStatusCode.Value : (int)HttpStatusCode.OK;
+                    var objectResult = new ObjectResult(null)
+                    {
+                        StatusCode = overrideStatusCode ?? (int)HttpStatusCode.OK,
+                    };
                     context.Result = objectResult;
                 }
                 else if (typeof(ContentResult).IsAssignableFrom(actionResultType))
@@ -100,7 +94,7 @@ namespace CF.Web.AspNetCore.Filters
 
                     var objectResult = new ObjectResult(contentResult.Content);
                     objectResult.ContentTypes.Add(new MediaTypeHeaderValue(contentResult.ContentType));
-                    contentResult.StatusCode = overrideStatusCode.HasValue ? overrideStatusCode.Value : (int)HttpStatusCode.OK;
+                    contentResult.StatusCode = overrideStatusCode ?? (int)HttpStatusCode.OK;
                     context.Result = objectResult;
                 }
             }

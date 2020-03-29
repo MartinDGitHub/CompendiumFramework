@@ -6,13 +6,13 @@ namespace CF.Common.Codes
 {
     internal class CodeCollection<TCode, TId> : ICodeCollection<TCode, TId>
         where TCode : CodeBase<TCode, TId>
-        where TId : Enum
+        where TId : struct, Enum
     {
         private readonly HashSet<TCode> _codes = new HashSet<TCode>();
         private readonly Dictionary<TId, TCode> _codeById = new Dictionary<TId, TCode>();
         private readonly Dictionary<string, TCode> _codeByValue = new Dictionary<string, TCode>();
 
-        private object _lock = new object();
+        private readonly object _lock = new object();
 
         public TCode this[TId id] => this._codeById.ContainsKey(id) ? this._codeById[id] : null;
 

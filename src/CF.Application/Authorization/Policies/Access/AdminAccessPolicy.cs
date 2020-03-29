@@ -4,6 +4,7 @@ using CF.Common.Authorization.Requirements;
 using CF.Common.Authorization.Requirements.Claims;
 using CF.Common.Authorization.Requirements.Roles;
 using CF.Common.Config;
+using System;
 using System.Collections.Generic;
 
 namespace CF.Application.Authorization.Policies.Access
@@ -22,8 +23,13 @@ namespace CF.Application.Authorization.Policies.Access
             IClaimsPrincipalProvider claimsPrincipalProvider,
             IRequirementHandler<RoleClaimRequirement> roleClaimRequirementHandler,
             IRequirementHandler<WindowsRoleRequirement> windowsRoleRequirementHandler) 
-            : base(domainConfig, claimsPrincipalProvider, roleClaimRequirementHandler, windowsRoleRequirementHandler)
+            : base(claimsPrincipalProvider, roleClaimRequirementHandler, windowsRoleRequirementHandler)
         {
+            if (domainConfig == null)
+            {
+                throw new ArgumentNullException(nameof(domainConfig));
+            }
+
             this.WindowsRoleRequirements = new[] { new WindowsRoleRequirement(domainConfig.Name, AdminRoleName) };
         }
     }

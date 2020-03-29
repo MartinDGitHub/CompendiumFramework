@@ -5,6 +5,6 @@ namespace CF.Application.Services.Weather
 {
     public interface IWeatherStatisticsService : IService
     {
-        TemperatureRange GetNormalTemperatureRange(DateTime date);
+        TemperatureRange GetNormalTemperatureRange(DateTime asOfDate);
     }
 }

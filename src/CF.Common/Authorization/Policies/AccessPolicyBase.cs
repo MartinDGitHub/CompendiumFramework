@@ -14,7 +14,6 @@ namespace CF.Common.Authorization.Policies
     /// </summary>
     public abstract class AccessPolicyBase : IPolicy<RoleClaimRequirement>
     {
-        private readonly IDomainConfig _domainConfig;
         private readonly IClaimsPrincipalProvider _claimsPrincipalProvider;
         private readonly IRequirementHandler<RoleClaimRequirement> _roleClaimRequirementHandler;
         private readonly IRequirementHandler<WindowsRoleRequirement> _windowsRoleRequirementHandler;
@@ -38,13 +37,11 @@ namespace CF.Common.Authorization.Policies
         protected abstract IEnumerable<WindowsRoleRequirement> WindowsRoleRequirements { get; }
 
         protected AccessPolicyBase(
-            IDomainConfig domainConfig,
             IClaimsPrincipalProvider claimsPrincipalProvider,
             IRequirementHandler<RoleClaimRequirement> roleClaimRequirementHandler,
             IRequirementHandler<WindowsRoleRequirement> windowsRoleRequirementHandler,
             AuthorizeMode authorizeMode = AuthorizeMode.All)
         {
-            this._domainConfig = domainConfig ?? throw new ArgumentNullException(nameof(domainConfig));
             this._claimsPrincipalProvider = claimsPrincipalProvider ?? throw new ArgumentNullException(nameof(claimsPrincipalProvider));
             this._roleClaimRequirementHandler = roleClaimRequirementHandler ?? throw new ArgumentNullException(nameof(roleClaimRequirementHandler));
             this._windowsRoleRequirementHandler = windowsRoleRequirementHandler ?? throw new ArgumentNullException(nameof(windowsRoleRequirementHandler));
@@ -73,15 +70,12 @@ namespace CF.Common.Authorization.Policies
 
             return new PolicyResult(this, isAuthorized, (new string[] { unauthorizedReason }).Concat(unmetReasons));
 
-            bool IsAuthorized(RequirementResult[] requirementResults)
+            bool IsAuthorized(RequirementResult[] requirementResults) => this._authorizeMode switch
             {
-                return this._authorizeMode switch
-                {
-                    AuthorizeMode.Any => requirementResults.Any(x => x.IsMet),
-                    AuthorizeMode.All => requirementResults.All(x => x.IsMet),
-                    _ => throw new InvalidOperationException($"The authorize mode of [{this._authorizeMode}] is unrecognized."),
-                };
-            }
+                AuthorizeMode.Any => requirementResults.Any(x => x.IsMet),
+                AuthorizeMode.All => requirementResults.All(x => x.IsMet),
+                _ => throw new InvalidOperationException($"The authorize mode of [{this._authorizeMode}] is unrecognized."),
+            };
         }
     }
 }

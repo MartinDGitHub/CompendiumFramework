@@ -1,6 +1,6 @@
 ﻿namespace CF.Web.AspNetCore.Cors
 {
-    public static class Constants
+    public static class CorsConstants
     {
         internal static class Policies
         {

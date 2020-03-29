@@ -3,7 +3,6 @@ using CF.Common.Logging;
 using CF.Common.Messaging;
 using CF.Web.AspNetCore.Controllers;
 using CF.Web.AspNetCore.Models;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -12,6 +11,7 @@ using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace CF.Web.AspNetCore.Filters
@@ -23,7 +23,7 @@ namespace CF.Web.AspNetCore.Filters
         // Set an expiry for the messages to help prevent stale messages from being shown.
         // A short duration should be sufficient here, as it simply needs to last for the 
         // time it takes the response to complete, reach the browser which will redirect,
-        // and the consequent request to reach this middleware again. Ostensibly, no lengthy
+        // and the consequent request to reach this filter again. Ostensibly, no lengthy
         // processing in the application need be accounted for.
         private static readonly TimeSpan DefaultExpiresTimeSpan = TimeSpan.FromMinutes(1);
 
@@ -51,14 +51,11 @@ namespace CF.Web.AspNetCore.Filters
             },
         };
 
-        private readonly IWebHostEnvironment _env;
         private readonly IScopedRedirectMessageRecorder _redirectMessageRecorder;
         private readonly ILogger _logger;
 
-        public RedirectMessageActionFilter(
-            IWebHostEnvironment env, IScopedRedirectMessageRecorder redirectMessageRecorder, ILogger<ApiActionResultPackageActionFilter> logger)
+        public RedirectMessageActionFilter(IScopedRedirectMessageRecorder redirectMessageRecorder, ILogger<RedirectMessageActionFilter> logger)
         {
-            this._env = env ?? throw new ArgumentNullException(nameof(env));
             this._redirectMessageRecorder = redirectMessageRecorder ?? throw new ArgumentNullException(nameof(redirectMessageRecorder));
             this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -70,9 +67,8 @@ namespace CF.Web.AspNetCore.Filters
                 throw new ArgumentNullException(nameof(context));
             }
 
-            var webController = context.Controller as WebControllerBase;
             if (// Only Web controller actions automatically return a uniform result package.
-                webController != null &&
+                context.Controller is WebControllerBase webController &&
                 // If another filter canceled the action, do not produce a package.
                 !context.Canceled &&
                 // If an exception occurred executing the action, let the global exception handler take care of it.
@@ -126,10 +122,9 @@ namespace CF.Web.AspNetCore.Filters
             }
 
             // Do nothing before the action execution.
-            var webController = context.Controller as WebControllerBase;
-            if (webController != null && (webController.TempData[RedirectMessagesTempDataKey] as string) != null)
+            if (context.Controller is WebControllerBase webController && 
+                webController.TempData[RedirectMessagesTempDataKey] is string redirectMessagesModelJson)
             {
-                var redirectMessagesModelJson = webController.TempData[RedirectMessagesTempDataKey] as string;
                 try
                 {
                     var redirectMessagesModel = JsonConvert.DeserializeObject<RedirectMessagesModel>(redirectMessagesModelJson);
@@ -142,12 +137,8 @@ namespace CF.Web.AspNetCore.Filters
                         // Only record the messages if we can verify they are *most likely* the messages intended to be shown
                         // in the context of this request. There is no 100% guarantee -- cookie relay for PRG is a bit of a kludge.
 
-                        // There may not be a referer header if the redirect failed such that the temp data cookie was not removed.
-                        if (refererValue == StringValues.Empty)
-                        {
-                            this._logger.Error($"No referer header value was found. Message data that was discarded [{redirectMessagesModelJson}].");
-                        }
-                        else if (!string.Equals(new Uri(refererValue, UriKind.Absolute).PathAndQuery, redirectMessagesModel.ReferrerPathAndQuery, StringComparison.OrdinalIgnoreCase))
+                        // There may not be a referer header in all cases, so only enforce matching when it is available.
+                        if (!string.IsNullOrWhiteSpace(refererValue) && !string.Equals(new Uri(refererValue, UriKind.Absolute).PathAndQuery, redirectMessagesModel.ReferrerPathAndQuery, StringComparison.OrdinalIgnoreCase))
                         {
                             // "referer" is a typo in the HTTP specification.
                             this._logger.Error($"The actual referer header value path and query [{refererValue}] did not match the expected referrer path and query [{redirectMessagesModel.ReferrerPathAndQuery}]. Message data that was discarded [{redirectMessagesModelJson}].");
@@ -158,7 +149,7 @@ namespace CF.Web.AspNetCore.Filters
                         }
                         else if (redirectMessagesModel.Expires <= messageRetrieveTimestamp)
                         {
-                            this._logger.Error($"The messages with a time stamp of [{redirectMessagesModel.Expires.ToString("o")}] are expired relative to when they were retrieved [{messageRetrieveTimestamp.ToString("o")}]. Message data that was discarded [{redirectMessagesModelJson}].");
+                            this._logger.Error($"The messages with a time stamp of [{redirectMessagesModel.Expires.ToString("o", CultureInfo.InvariantCulture)}] are expired relative to when they were retrieved [{messageRetrieveTimestamp.ToString("o", CultureInfo.InvariantCulture)}]. Message data that was discarded [{redirectMessagesModelJson}].");
                         }
                         else
                         {

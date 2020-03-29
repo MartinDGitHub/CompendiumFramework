@@ -8,6 +8,7 @@ namespace CF.Web
 {
     public class Startup
     {
+
         public Startup(IConfiguration configuration)
         {
             this.Configuration = configuration;

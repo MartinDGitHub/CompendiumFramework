@@ -8,3 +8,6 @@ dotnet_diagnostic.CA1303.severity = silent
 
 # CA2225: Operator overloads have named alternates
 dotnet_diagnostic.CA2225.severity = silent
+
+# CA1812: is an internal class that is apparently never instantiated. If so, remove the code from the assembly. If this class is intended to contain only static members, make it static (Shared in Visual Basic).
+dotnet_diagnostic.CA1812.severity = silent

@@ -1,7 +1,6 @@
 ﻿using CF.Common.Dto.Messaging;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CF.Web.AspNetCore.Models
 {
