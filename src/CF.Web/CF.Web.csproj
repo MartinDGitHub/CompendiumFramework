@@ -103,16 +103,6 @@
     <TypeScriptSourceRoot />
   </PropertyGroup>
 
-  <!-- BEGIN: CF.Web custom instructions -->
-
-  <!--  When running with IIS, start and recycle the application pool before building to ensure any locks are released that will prevent successully copying the build files. 
-        If start is not called before recycle, an error can occur if the application pool was already stopped. Both the recycle and stop commands can only be applied to
-        started application pools. A recycle is done instead of a stop here, as it is faster.
-  -->
-  <Target Name="IISDebugIISAppPoolStop" BeforeTargets="BeforeBuild" Condition="'$(ActiveDebugProfile)' == 'IIS' And Exists('C:\Windows\System32\inetsrv\appcmd.exe')">
-    <Exec Command="C:\Windows\System32\inetsrv\appcmd.exe start APPPOOL &quot;CF.Web&quot;"></Exec>
-    <Exec Command="C:\Windows\System32\inetsrv\appcmd.exe recycle APPPOOL &quot;CF.Web&quot;"></Exec>
-  </Target>
   <!-- When running with IIS, user secrets must be copied to the web.config folder. -->
   <Target Name="IISDebugCopyUserSecrets" AfterTargets="AfterBuild" Condition="'$(ActiveDebugProfile)' == 'IIS'">
     <Copy SourceFiles="$(APPDATA)\Microsoft\UserSecrets\$(UserSecretsId)\secrets.json" DestinationFolder="$(ProjectDir)" SkipUnchangedFiles="true"></Copy>
@@ -130,6 +120,4 @@
   <Target Name="IISExpressDebugCopyWebConfig" AfterTargets="AfterBuild" Condition="'$(ActiveDebugProfile)' == 'IIS Express'">
     <Copy SourceFiles="$(ProjectDir)\web.config.iisexpress" DestinationFiles="$(ProjectDir)\web.config" SkipUnchangedFiles="true"></Copy>
   </Target>
-  
-  <!-- END: CF.Web custom instructions -->
 </Project>

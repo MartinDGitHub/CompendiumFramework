@@ -10,10 +10,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.IO;
 using System.Text.Json;
 using AuthenticationConstants = CF.Web.AspNetCore.Authentication.AuthenticationConstants;
 
@@ -103,9 +106,9 @@ namespace CF.WebBootstrap
             services.AddHealthChecks();
 
             // In production, the React files will be served from this directory
-            services.AddSpaStaticFiles(config =>
+            services.AddSpaStaticFiles(configuration =>
             {
-                config.RootPath = "ClientApp/build";
+                configuration.RootPath = "ClientApp/build";
             });
 
             // Use extended API versioning.
@@ -162,6 +165,7 @@ namespace CF.WebBootstrap
 
             // Serve up static content prior to authentication/authorization.
             app.UseStaticFiles();
+            app.UseSpaStaticFiles();
 
             // Enable cookies (with consent) for authentication.
             // NOTE: cookies that are not marked as essential will not be set without consent.
@@ -203,13 +207,7 @@ namespace CF.WebBootstrap
                     // 2) running the NPM development server: > npm start
                     // otherwise, the following error will occur:
                     // HttpRequestException: Failed to proxy the request to http://localhost:3000/, because the request to the proxy target failed. Check that the proxy target server is running and accepting requests to http://localhost:3000/.
-                    //
-                    // NOTE: 
-                    // This does not work when running under IIS, due to the proxying not handling the application root (e.g. https://localhost/CF.Web/) when proxying.
-                    // When running under IIS, run the NPM development server, and access the URL directly.
-                    //
-                    // There is a pull request to address this in version 3.3: https://github.com/facebook/create-react-app/pull/7259
-                    spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:3000/cf.web");
                 }
             });
         }
