@@ -31,7 +31,7 @@ namespace CF.WebBootstrap
             // Although inconvenient, this is in accordance with Microsoft guidance:
             //  https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-3.0
             //  "Don't use IOptions<TOptions> or IOptionsMonitor<TOptions> in Startup.ConfigureServices. An inconsistent options state may exist due to the ordering of service registrations."
-            Root rootConfig = new Root();
+            Root rootConfig = new();
             configuration.Bind(rootConfig);
 
             // Bootstrap configuration before adding custom services configuration that may rely on configuration.
@@ -129,6 +129,9 @@ namespace CF.WebBootstrap
 
             // Add a local (in-memory) cache provider.
             services.AddLazyCache();
+
+            // Add entity framework developer exceptions.
+            services.AddDatabaseDeveloperPageExceptionFilter();
         }
 
         // Called after ConfigureServices to apply configuration.
@@ -142,7 +145,7 @@ namespace CF.WebBootstrap
                 // These should come before the global exception handler to catch and handle exceptions
                 // rethrown from it in a development environment.
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
+                app.UseMigrationsEndPoint();
 
                 // Validate the the container registrations in development mode. This assumes there are no
                 // runtime registrations that would change the contents of the container in other environments.

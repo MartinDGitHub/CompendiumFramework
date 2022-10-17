@@ -16,8 +16,10 @@ namespace CF.Infrastructure.DI.Verification
             this._serviceTypes = serviceTypes;
         }
 
-        public ConstructorInfo GetConstructor(Type implementationType)
+        public ConstructorInfo TryGetConstructor(Type implementationType, out string errorMessage)
         {
+            errorMessage = null;
+
             // The .NET Core container will choose the constructor with the most matching parameters
             // if there are multiple constructors. Attempt to replicate that here. In case multiple 
             // constructors qualify, the first will be used.
