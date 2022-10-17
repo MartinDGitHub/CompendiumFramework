@@ -42,7 +42,6 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Test(TestViewModel model)
         {
-            this._logger.Information("Foo!");
             return await this.PostRedirectGetAsync(
                 async () =>
                 {
