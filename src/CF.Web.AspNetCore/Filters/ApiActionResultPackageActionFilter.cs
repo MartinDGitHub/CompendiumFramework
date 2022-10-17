@@ -49,7 +49,7 @@ namespace CF.Web.AspNetCore.Filters
                 {
                     Success = !this._messageRecorder.HasErrors,
                     CorrelationId = this._scopedCorrelationGuidProvider.CorrelationId,
-                    ValidationMessages = this._messageRecorder.Messages.Select(x => new Message(x)) ?? Array.Empty<Message>(),
+                    Messages = this._messageRecorder.Messages.Select(x => new Message(x)) ?? Array.Empty<Message>(),
                 };
 
                 // If error severity messages were recorded, consider this to have been bad request. Return a 404
@@ -64,7 +64,7 @@ namespace CF.Web.AspNetCore.Filters
                 {
                     var objectResult = (ObjectResult)context.Result;
 
-                    resultPackage.Data = objectResult.Value;
+                    resultPackage.Result = objectResult.Value;
 
                     objectResult.Value = resultPackage;
                     objectResult.StatusCode = overrideStatusCode ?? objectResult.StatusCode;
@@ -73,7 +73,7 @@ namespace CF.Web.AspNetCore.Filters
                 {
                     var jsonResult = (JsonResult)context.Result;
 
-                    resultPackage.Data = jsonResult.Value;
+                    resultPackage.Result = jsonResult.Value;
 
                     jsonResult.Value = resultPackage;
                     jsonResult.StatusCode = overrideStatusCode ?? jsonResult.StatusCode;

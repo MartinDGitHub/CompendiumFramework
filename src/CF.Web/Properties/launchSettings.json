@@ -20,8 +20,7 @@
       }
     },
     "CF.Web": {
-      // This prompts VS to stop the application pool and restart it on build.
-      "commandName": "IIS",
+      "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

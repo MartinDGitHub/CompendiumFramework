@@ -5,7 +5,7 @@ namespace CF.Web.AspNetCore.Extensions.ServiceCollection
 {
     public static class AuthenticationIServiceCollectionExtensions
     {
-        public static void AddCustomAuthorization(this IServiceCollection services)
+        public static void AddCustomAuthentication(this IServiceCollection services)
         {
             // Only one default authentication scheme can be added.
             services.AddAuthentication(AuthenticationConstants.DefaultAuthenticationScheme);

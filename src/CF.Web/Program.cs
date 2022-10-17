@@ -1,8 +1,7 @@
 using CF.Common.Logging;
-using CF.Web.AspNetCore.Extensions.ConfigurationRoot;
-using CF.Web.AspNetCore.Extensions.WebHostBuilder;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
+using CF.Infrastructure.Logging;
+using CF.Web.AspNetCore.Extensions.HostBuilder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
@@ -13,6 +12,7 @@ namespace CF.Web
     {
         public static void Main(string[] args)
         {
+            // Build a logger from configuration outside of the 
             ILogger logger;
             try
             {
@@ -20,29 +20,53 @@ namespace CF.Web
                 var configuration = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                    .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: false, reloadOnChange: true)
+                    .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "[ASPNETCORE_ENVIRONMENT not set]"}.json", optional: false, reloadOnChange: true)
                     .AddEnvironmentVariables()
                     .Build();
 
                 // Add logging as early as possible to record errors ramping up the application.
-                logger = configuration.AddLogging();
+                logger = LoggerFactory.GetLogger(configuration);
             }
             catch (Exception ex)
             {
-                // Ensure any errors incurred while getting configuration and logging set up
-                // are written to stdout.
+                // Ensure any errors incurred while getting configuration and logging set up are written to stdout.
                 Console.WriteLine($"Error occurred building configuration:\n{ex.Message}");
                 throw;
             }
 
             try
             {
-                logger.Information("Running the web host.");
-                CreateWebHostBuilder(args).Build().Run();
+                logger.Information("Configuring the web application.");
+
+                var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+                {
+                    Args = args,
+                    ApplicationName = typeof(Program).Assembly.FullName,
+                    ContentRootPath = Directory.GetCurrentDirectory(),
+                });
+
+                logger.Information($"Application Name: {builder.Environment.ApplicationName}");
+                logger.Information($"Environment Name: {builder.Environment.EnvironmentName}");
+                logger.Information($"ContentRoot Path: {builder.Environment.ContentRootPath}");
+                logger.Information($"WebRootPath: {builder.Environment.WebRootPath}");
+
+                builder.Host.UseCustomLogging();
+
+                var startup = new Startup(builder.Configuration);
+
+                startup.ConfigureServices(builder.Services);
+
+                var app = builder.Build();
+
+                startup.Configure(app, app.Services, app.Environment);
+
+                logger.Information("running the web application.");
+
+                app.Run();
             }
             catch (Exception ex)
             {
-                logger.Critical(ex, "Web host terminated unexpectedly.");
+                logger.Critical(ex, "Error occurred configuring and running the web application.");
 
                 throw;
             }
@@ -52,11 +76,5 @@ namespace CF.Web
                 logger.CloseAndFlush();
             }
         }
-
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                // Bootstrap custom logging.
-                .UseCustomLogging()
-                .UseStartup<Startup>();
     }
 }

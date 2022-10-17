@@ -2,14 +2,12 @@ using CF.Application.Authorization.Policies.Access;
 using CF.Common.Logging;
 using CF.Common.Messaging;
 using CF.Web.AspNetCore.Controllers;
+using CF.Web.AspNetCore.Helpers;
 using CF.Web.Models.Home;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.Threading.Tasks;
 
 namespace Web.Controllers
@@ -19,9 +17,10 @@ namespace Web.Controllers
         private readonly ILogger<HomeController> _logger;
 
         public HomeController(
-            IScopedMessageRecorder scopedMessageRecorder, IScopedRedirectMessageRecorder scopedRedirectMessageRecorder, 
+            IScopedMessageRecorder scopedMessageRecorder, IScopedRedirectMessageRecorder scopedRedirectMessageRecorder,
+            IPartialViewHelper partialViewHelper,
             ILogger<HomeController> logger) 
-            : base(scopedMessageRecorder, scopedRedirectMessageRecorder)
+            : base(scopedMessageRecorder, scopedRedirectMessageRecorder, partialViewHelper)
         {
             this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -43,14 +42,16 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Test(TestViewModel model)
         {
-            return await PostRedirectGetAsync(
-                model, 
-                () => {
+            this._logger.Information("Foo!");
+            return await this.PostRedirectGetAsync(
+                async () =>
+                {
                     this.ScopedMessageRecorder.Record(MessageSeverity.Success, "Success!");
-                    return Task.CompletedTask;
-                    }, 
-                new Uri(Url.Action(nameof(Test), new { testId = 42, testValue = @"\&/&?=" })))
-                .ConfigureAwait(false);
+                    await Task.CompletedTask;
+                },                
+                () => this.Redirect($"{Url.Action(nameof(Test))}"),
+                async () => await Task.FromResult(this.View(model)).ConfigureAwait(false)
+                );
         }
 
         [HttpGet]

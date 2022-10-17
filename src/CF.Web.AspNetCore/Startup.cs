@@ -8,15 +8,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.IO;
 using System.Text.Json;
 using AuthenticationConstants = CF.Web.AspNetCore.Authentication.AuthenticationConstants;
 
@@ -85,9 +81,7 @@ namespace CF.WebBootstrap
                 // Mark as essential to system function so that the cookie is used regardless of the cookie
                 // policy being accepted.
                 x.Cookie.IsEssential = true;
-            })
-            // Support a specific compaitibility level so that upgrades are be deliberate.
-            .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            });
 
             // Support ordinary MVC controllers with views and Razor pages.
             services.AddControllersWithViews()
@@ -125,7 +119,7 @@ namespace CF.WebBootstrap
             services.AddHttpContextAccessor();
 
             // Add custom authorization and the authentication that authorization depends on.
-            services.AddCustomAuthorization();
+            services.AddCustomAuthentication();
 
             // Add a local (in-memory) cache provider.
             services.AddLazyCache();

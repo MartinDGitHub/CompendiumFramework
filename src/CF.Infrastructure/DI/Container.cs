@@ -1,17 +1,12 @@
 ﻿using CF.Common.Constants;
 using CF.Common.DI;
 using CF.Infrastructure.DI.Verification;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using SimpleInjector;
 using SimpleInjector.Diagnostics;
 using SimpleInjector.Lifestyles;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
 

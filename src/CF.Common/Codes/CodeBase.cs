@@ -2,6 +2,7 @@
 using CF.Common.Utility;
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace CF.Common.Codes
@@ -10,12 +11,15 @@ namespace CF.Common.Codes
         where TCode : CodeBase<TCode, TId>
         where TId : struct, Enum
     {
-        private static readonly ConcurrentDictionary<Type, CodeCollection<TCode, TId>> _codesByType = new ConcurrentDictionary<Type, CodeCollection<TCode, TId>>();
+        private static readonly ConcurrentDictionary<Type, CodeCollection<TCode, TId>> _codeCollectionByCodeType = new ConcurrentDictionary<Type, CodeCollection<TCode, TId>>();
 
-        public static readonly ICodeCollection<TCode, TId> Codes = _codesByType[typeof(TCode)];
+        public static ICodeCollection<TCode, TId> Codes => _codeCollectionByCodeType[typeof(TCode)];
 
         static CodeBase()
         {
+            // To debug the static constructor, uncomment:
+            // Debugger.Break();
+
             // This static constructor is required to ensure that derived code types are initialized
             // in advance of accessing the static codes collection and potentially other static members
             // on the base type.
@@ -31,7 +35,7 @@ namespace CF.Common.Codes
             this.Id = id;
             this.Value = value.EnsureArgumentNotNullOrWhitespace(nameof(value));
 
-            var codeCollection = _codesByType.GetOrAdd(typeof(TCode), new CodeCollection<TCode, TId>());
+            var codeCollection = _codeCollectionByCodeType.GetOrAdd(typeof(TCode), new CodeCollection<TCode, TId>());
             var added = codeCollection.TryAdd((TCode)this);
             if (!added)
             {
@@ -53,9 +57,9 @@ namespace CF.Common.Codes
 
         public static implicit operator string(CodeBase<TCode, TId> code) => code?.Value;
 
-        public static implicit operator CodeBase<TCode, TId>(string value) => _codesByType[typeof(TCode)][value];
+        public static implicit operator CodeBase<TCode, TId>(string value) => _codeCollectionByCodeType[typeof(TCode)][value];
 
-        public static implicit operator CodeBase<TCode, TId>(TId id) => _codesByType[typeof(TCode)][id];
+        public static implicit operator CodeBase<TCode, TId>(TId id) => _codeCollectionByCodeType[typeof(TCode)][id];
 
         public static bool operator ==(CodeBase<TCode, TId> code1, CodeBase<TCode, TId> code2)
         {

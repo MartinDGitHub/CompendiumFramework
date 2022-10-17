@@ -4,6 +4,9 @@ using System.Threading;
 
 namespace CF.Infrastructure.Logging
 {
+    /// <summary>
+    /// Provides a way to manually get a logger when one cannot be injected via DI.
+    /// </summary>
     public static class LoggerFactory
     {
         private static Serilog.Core.Logger _logger;

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <IsPackable>false</IsPackable>
@@ -17,11 +17,11 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.4.4">
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.8.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.10" />
   </ItemGroup>
 
   <ItemGroup>
@@ -103,15 +103,39 @@
     <TypeScriptSourceRoot />
   </PropertyGroup>
 
-  <!--  When running with IIS, ensure the application pool is recycled to release locks on files held by the IIS application pool (w3wp) process. 
-        This doesn't appear necessary as of MSBuild.exe 16.9+ (VS 2019) when the launchSettings.json specifies: "commandName": "IIS",
+  <!--  When running with the IIS profile, ensure the application pool is recycled to release locks on files held by the IIS application pool (w3wp) process. 
+        This doesn't appear necessary as of MSBuild.exe 16.9+ (VS 2019) when:
+          - Running as Administrator.
+          - The application pool is started prior to the build.
+          - The IIS profile is being used from launchSettings.json configured as:
+            "iisSettings": {
+            ...
+              "iis": {
+                "applicationUrl": "https://localhost/CF.Web",
+                "sslPort": 443
+              },
+            ...
+            },
+            "profiles": {
+            ...
+              "IIS": {
+                "commandName": "IIS",
+                "launchBrowser": true,
+                "environmentVariables": {
+                  "ASPNETCORE_ENVIRONMENT": "Development"
+                },
+                "ancmHostingModel": "InProcess"
+              }
+            ...
+            }
+        Note: if the application pool is stopped prior to the build, it will not be started when the build completes.
         Not running VS as Administrator can result in: error MSB3073: The command "C:\Windows\System32\inetsrv\appcmd.exe recycle APPPOOL "CF.Web"" exited with code 50.
   -->
   <Target Name="IISDebugIISAppPoolStop" BeforeTargets="BeforeBuild" Condition="'$(ActiveDebugProfile)' == 'IIS' And $(MSBuildToolsVersion) &lt; 16.0 And Exists('C:\Windows\System32\inetsrv\appcmd.exe')">
     <!--  Recycle application pool to release locks on files that can prevent publishing. 
           A start is performed before the recycle because calling recycle on a stopped application pool throws an error.
       -->
-    <Exec Command="c:\Windows\System32\inetsrv\appcmd.exe start APPPOOL &quot;CF.Web&quot;" />
+    <Exec Command="c:\Windows\System32\inetsrv\appcmd.exe start APPPOOL &quot;CF.Web&quot;" /> 
     <Exec Command="c:\Windows\System32\inetsrv\appcmd.exe recycle APPPOOL &quot;CF.Web&quot;" />
   </Target>
   <!-- When running with IIS, user secrets must be copied to the web.config folder. -->
@@ -120,13 +144,13 @@
   </Target>
   <!-- When running with IIS, copy the corresponding web.config. -->
   <Target Name="IISDebugCopyWebConfig" AfterTargets="AfterBuild" Condition="'$(ActiveDebugProfile)' == 'IIS'">
-    <Copy SourceFiles="$(ProjectDir)\web.config.iis" DestinationFiles="$(ProjectDir)\web.config" SkipUnchangedFiles="true"></Copy>
+    <Copy SourceFiles="$(ProjectDir)\web.config.iis" DestinationFiles="$(OutDir)\web.config" SkipUnchangedFiles="true"></Copy>
   </Target>
   <!--  When running with IIS, ensure the application pool is started after successful builds. 
-        This doesn't appear necessary as of MSBuild.exe 16.9+ (VS 2019) when the launchSettings.json specifies: "commandName": "IIS",
-        Not running VS as Administrator can result in: error MSB3073: The command "C:\Windows\System32\inetsrv\appcmd.exe recycle APPPOOL "CF.Web"" exited with code 50.
+        This is always done for the IIS profile to ensure the pool is active (i.e. if it was stopped at the start of the build and VS did not stop/start it).
+        See comments above for more details.
   -->
-  <Target Name="IISDebugIISAppPoolStart" AfterTargets="AfterBuild" Condition="'$(ActiveDebugProfile)' == 'IIS' And $(MSBuildToolsVersion) &lt; 16.0 And Exists('C:\Windows\System32\inetsrv\appcmd.exe')">
+  <Target Name="IISDebugIISAppPoolStart" AfterTargets="AfterBuild" Condition="'$(ActiveDebugProfile)' == 'IIS' And Exists('C:\Windows\System32\inetsrv\appcmd.exe')">
     <Exec Command="C:\Windows\System32\inetsrv\appcmd.exe start APPPOOL &quot;CF.Web&quot;"></Exec>
   </Target>
 
