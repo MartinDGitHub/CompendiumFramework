@@ -1,4 +1,0 @@
-﻿[*.cs]
-
-# CA1724: The type name Lifetime conflicts in whole or in part with the namespace name 'System.Runtime.Remoting.Lifetime' defined in the .NET Framework. Rename the type to eliminate the conflict.
-dotnet_diagnostic.CA1724.severity = silent
